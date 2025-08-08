@@ -7,6 +7,12 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+
+    "types": ["@vitest/browser/providers/playwright"],
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
