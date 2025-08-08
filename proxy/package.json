@@ -1,0 +1,16 @@
+{
+  "name": "eagle-webui-proxy",
+  "version": "1.0.0",
+  "description": "Eagle API proxy for Eagle WebUI",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/naamiru/eagle-webui.git"
+  },
+  "license": "The Unlicense",
+  "author": "naamiru",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

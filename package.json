@@ -1,0 +1,19 @@
+{
+  "name": "eagle-webui",
+  "version": "1.0.0",
+  "description": "web interface for the Eagle image viewer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/naamiru/eagle-webui.git"
+  },
+  "license": "The Unlicense",
+  "author": "naamiru",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "workspaces": [
+    "front",
+    "proxy"
+  ]
+}
