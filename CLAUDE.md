@@ -9,6 +9,7 @@ Eagle WebUI - A web interface for the Eagle image viewer application. This is a 
 ## Architecture
 
 ### Frontend (`/front`)
+
 - **Stack**: React 19 + TypeScript + Vite
 - **Routing**: TanStack Router with file-based routing
 - **State Management**: TanStack Query for server state
@@ -20,19 +21,22 @@ Eagle WebUI - A web interface for the Eagle image viewer application. This is a 
   - Routes are defined in `/src/routes/` with auto-generated route tree
 
 ### Backend Proxy (`/proxy`)
-- **Stack**: Fastify + TypeScript
+
+- **Stack**: Fastify + TypeScript (using tsx for runtime)
 - **Purpose**: Proxy server that runs on the same machine as Eagle to bypass CORS and serve Eagle API requests and image files
-- **Structure**: Auto-loaded plugins and routes from `/src/plugins/` and `/src/routes/`
+- **Structure**: Manual route registration in `/src/app.ts`
 
 ## Development Commands
 
 ### Root level (both services)
+
 ```bash
 npm install              # Install dependencies for all workspaces
 npm run dev              # Start both frontend and proxy concurrently
 ```
 
 ### Frontend (`/front`)
+
 ```bash
 npm install -w front     # Install frontend dependencies
 npm run dev -w front     # Start Vite dev server with HMR (host mode)
@@ -44,11 +48,13 @@ npm run test:coverage -w front # Run tests with coverage report
 ```
 
 ### Proxy (`/proxy`)
+
 ```bash
 npm install -w proxy     # Install proxy dependencies
 npm run dev -w proxy     # Start with auto-reload
 npm run start -w proxy   # Production mode
-npm run build:ts -w proxy # Compile TypeScript
+npm run lint -w proxy    # Run Biome linter
+npm run lint:fix -w proxy # Auto-fix linting issues
 npm run test -w proxy    # Run tests
 ```
 
