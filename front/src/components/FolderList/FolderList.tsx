@@ -12,7 +12,7 @@ export function FolderList({ folders }: FolderListProps) {
   }
 
   return (
-    <div className={styles.grid}>
+    <div className={styles.folderGrid}>
       {folders.map((folder) => (
         <FolderItem key={folder.id} folder={folder} />
       ))}

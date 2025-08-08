@@ -1,3 +1,11 @@
 .container {
   min-height: 100vh;
 }
+
+.folderListTitle {
+  margin: 1rem 1.5rem 0.5rem;
+}
+
+.itemListTitle {
+  margin: 1rem 1.5rem 1rem;
+}

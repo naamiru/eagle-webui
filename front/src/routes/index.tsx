@@ -11,7 +11,9 @@ export const Route = createFileRoute("/")({
 function RouteComponent() {
   return (
     <div className={styles.container}>
+      <h4 className={styles.folderListTitle}>フォルダー</h4>
       <FolderList folders={stubFolders} />
+      <h4 className={styles.itemListTitle}>すべて</h4>
       <ItemList items={stubItems} />
     </div>
   );

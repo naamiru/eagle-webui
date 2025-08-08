@@ -26,3 +26,9 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+.folderGrid {
+  composes: grid;
+  margin-left: 1rem;
+  margin-right: 1rem;
+}

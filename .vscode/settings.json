@@ -16,4 +16,6 @@
   "[css]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
+  // leave to biome
+  "css.validate": false
 }
