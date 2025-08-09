@@ -1,14 +1,17 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { foldersQueryOptions } from "~/api/folders";
+import { itemsQueryOptions } from "~/api/items";
 import { FolderList } from "~/components/FolderList/FolderList";
 import { ItemList } from "~/components/ItemList/ItemList";
-import { stubItems } from "~/data/stub-items";
 import styles from "./index.module.css";
 
 export const Route = createFileRoute("/")({
   loader: ({ context }) =>
-    context.queryClient.ensureQueryData(foldersQueryOptions),
+    Promise.all([
+      context.queryClient.ensureQueryData(foldersQueryOptions),
+      context.queryClient.ensureQueryData(itemsQueryOptions(100)),
+    ]),
   component: RouteComponent,
   errorComponent: ErrorComponent,
   pendingComponent: LoadingComponent,
@@ -16,13 +19,14 @@ export const Route = createFileRoute("/")({
 
 function RouteComponent() {
   const { data: folders } = useSuspenseQuery(foldersQueryOptions);
+  const { data: items } = useSuspenseQuery(itemsQueryOptions(100));
 
   return (
     <div className={styles.container}>
       <h4 className={styles.folderListTitle}>フォルダー</h4>
       <FolderList folders={folders} />
       <h4 className={styles.itemListTitle}>すべて</h4>
-      <ItemList items={stubItems} />
+      <ItemList items={items} />
     </div>
   );
 }
