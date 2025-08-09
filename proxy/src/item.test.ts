@@ -69,7 +69,7 @@ suite("/item/list", () => {
 
     t.assert.strictEqual(
       mockFn.mock.calls[0].arguments[0],
-      "/api/item/list?limit=200&offset=0",
+      "/api/item/list?limit=1000",
     );
   });
 
@@ -103,31 +103,10 @@ suite("/item/list", () => {
     t.assert.strictEqual(res.statusCode, 200);
     t.assert.strictEqual(
       mockFn.mock.calls[0].arguments[0],
-      "/api/item/list?limit=50&offset=0",
+      "/api/item/list?limit=50",
     );
   });
 
-  test("accepts and forwards offset parameter", async (t: TestContext) => {
-    const mockData: unknown[] = [];
-
-    const mockFn = t.mock.method(
-      eagleApi,
-      "callEagleApi",
-      async () => mockData,
-    );
-
-    const app = build(t);
-    const res = await app.inject({
-      method: "GET",
-      url: "/item/list?offset=100",
-    });
-
-    t.assert.strictEqual(res.statusCode, 200);
-    t.assert.strictEqual(
-      mockFn.mock.calls[0].arguments[0],
-      "/api/item/list?limit=200&offset=100",
-    );
-  });
 
   test("uses default values when parameters not provided", async (t: TestContext) => {
     const mockData: unknown[] = [];
@@ -147,7 +126,7 @@ suite("/item/list", () => {
     t.assert.strictEqual(res.statusCode, 200);
     t.assert.strictEqual(
       mockFn.mock.calls[0].arguments[0],
-      "/api/item/list?limit=200&offset=0",
+      "/api/item/list?limit=1000",
     );
   });
 

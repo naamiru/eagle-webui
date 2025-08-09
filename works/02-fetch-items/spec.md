@@ -2,7 +2,7 @@
 
 ## Overview
 
-Replace the stub data (`stubItems`) with live item data from the Eagle API, implementing infinite scroll for better performance with large image collections.
+Replace the stub data (`stubItems`) with live item data from the Eagle API using a simple list approach with the existing ItemList component.
 
 ## Current State
 
@@ -12,85 +12,79 @@ Replace the stub data (`stubItems`) with live item data from the Eagle API, impl
 
 ## Implementation Requirements
 
-### 1. Proxy Service (`/proxy`)
+### 1. Proxy Service (`/proxy`) - ✅ Completed
 
-#### New Endpoint: GET /item/list
+#### Endpoint: GET /item/list
 
 **Purpose:** Proxy the Eagle API's item/list endpoint and transform the response data
 
-**Query Parameters (Initial Implementation):**
-- `limit` (number): Number of items to return (default: 200)
-- `offset` (number): Starting position for pagination (default: 0)
+**Query Parameters:**
+- `limit` (number): Number of items to return (default: 1000)
 
-**Note:** The Eagle API supports additional parameters (`orderBy`, `keyword`, `ext`, `tags`, `folders`) that can be added in future iterations but are not required for the initial implementation.
+**Note:** The Eagle API has unreliable offset behavior, so pagination is not implemented. Instead, use a larger limit value to fetch more items at once.
 
 **Implementation Details:**
-1. Create new route file: `proxy/src/item.ts` following the pattern of `folder.ts`
-2. Call Eagle API endpoint: `http://localhost:41595/api/item/list` with query parameters
-3. Transform Eagle API response:
-   - Map Eagle item structure to frontend `Item` interface
-   - For initial implementation, use stub URLs for `original` and `thumbnail` fields:
+1. ✅ Created route file: `proxy/src/item.ts` following the pattern of `folder.ts`
+2. ✅ Calls Eagle API endpoint: `http://localhost:41595/api/item/list` with limit parameter only
+3. ✅ Transforms Eagle API response:
+   - Maps Eagle item structure to frontend `Item` interface
+   - Uses stub URLs for `original` and `thumbnail` fields:
      - Original: `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600`
      - Thumbnail: `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300`
-   - All items will use the same placeholder image for now
-4. Register route in `proxy/src/app.ts`
-
-**Note:** Actual image proxying from Eagle's file system will be implemented in a future iteration.
+   - All items use the same placeholder image for now
+4. ✅ Registered route in `proxy/src/app.ts`
+5. ✅ Added comment explaining Eagle API offset limitations
 
 ### 2. Frontend (`/front`)
 
 #### API Layer
 
 Create `front/src/api/items.ts`:
-- Implement `fetchItems` function with pagination support
-- Create `infiniteItemsQueryOptions` using TanStack Query's `infiniteQuery`
-- Handle pagination with `getNextPageParam` logic
-
-#### New Component: InfiniteItemList
-
-Create `front/src/components/InfiniteItemList/InfiniteItemList.tsx`:
-
-**Features:**
-- Use `useInfiniteQuery` hook for data fetching
-- Implement infinite scroll using IntersectionObserver API
-- Display loading indicator when fetching next page
-- Handle error states (Eagle not running, proxy unavailable)
-- Preserve existing ItemList styling and gallery functionality
-
-**Key Implementation Points:**
-1. Set up IntersectionObserver on a sentinel element at the bottom of the list
-2. Trigger `fetchNextPage` when sentinel becomes visible
-3. Flatten paginated data: `pages.flatMap(page => page.items)`
-4. Reuse existing `ImageItem` component for rendering
-5. Apply existing `styles.grid` class for consistent layout
+- Implement `fetchItems` function that calls `/item/list` with limit parameter
+- Create `itemsQueryOptions` using TanStack Query's standard `query` (not `infiniteQuery`)
+- Handle errors (Eagle not running, proxy unavailable)
 
 #### Route Update
 
 Modify `front/src/routes/index.tsx`:
-1. Replace `<ItemList items={stubItems} />` with `<InfiniteItemList />`
-2. Add query prefetching in the route loader if needed
-3. Update loading and error states to handle item fetching
+1. Keep existing `<ItemList items={...} />` component - no new component needed
+2. Add items query to the route loader to prefetch items with `limit=100`
+3. Replace `stubItems` with real data from the items query
+4. Update error states to handle item fetching failures
+5. Update loading state to show loading indicator while items are being fetched
 
 ## Data Flow
 
-1. User scrolls to bottom of item list
-2. IntersectionObserver triggers `fetchNextPage`
-3. Frontend calls proxy: `GET /item/list?limit=200&offset=400`
-4. Proxy forwards to Eagle API with authentication
-5. Proxy transforms response, replacing file paths with proxy URLs
-6. Frontend receives items and appends to existing list
-7. When user clicks an image, proxy serves the actual file via `/image/:id/:type`
+1. User navigates to index page
+2. Route loader calls `fetchItems(100)` via TanStack Query
+3. Frontend calls proxy: `GET /item/list?limit=100`
+4. Proxy forwards to Eagle API: `GET /api/item/list?limit=100`
+5. Proxy transforms response with placeholder image URLs
+6. Frontend receives items and passes them to existing `<ItemList />` component
+7. ItemList displays up to 100 items in the grid with photoswipe gallery
+
+## Implementation Steps
+
+1. Create `front/src/api/items.ts` with:
+   - `fetchItems(limit?: number)` function
+   - `itemsQueryOptions(limit?: number)` query options
+   
+2. Update `front/src/routes/index.tsx`:
+   - Import items query options
+   - Add items query to loader with `limit=100`
+   - Replace `stubItems` with items from query
+   - Update error handling
 
 ## Testing Considerations
 
-1. Verify infinite scroll functionality
-2. Test error handling when Eagle is not running
-3. Ensure placeholder images load correctly
-4. Test pagination with different limit/offset values
+1. Test error handling when Eagle is not running
+2. Ensure placeholder images load correctly  
+3. Verify 100 items are displayed on the index page
+4. Test that existing ItemList functionality (photoswipe gallery) still works
 
 ## Future Enhancements (Out of Scope)
 
+- Implement actual image proxying from Eagle's file system
+- Add pagination controls for viewing more than 100 items
 - Implement filtering UI for tags, folders, keywords
 - Add sorting controls for different orderBy options
-- Implement virtual scrolling for extremely large collections
-- Add image caching strategy

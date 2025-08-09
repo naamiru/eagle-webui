@@ -24,7 +24,6 @@ interface EagleItem {
 
 interface ItemListQuery {
   limit?: number;
-  offset?: number;
 }
 
 function transformEagleItem(eagleItem: EagleItem): Item {
@@ -46,14 +45,16 @@ const routes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       200: Item[];
     };
   }>("/item/list", async (request) => {
-    const limit = request.query.limit ?? 200;
-    const offset = request.query.offset ?? 0;
+    // Note: Eagle API has unreliable offset behavior - it may return empty results
+    // at certain offset values even when more items exist. Therefore, we only use
+    // the limit parameter and fetch items from the beginning.
+    // For large collections, increase the limit rather than using pagination.
+    const limit = request.query.limit ?? 1000;
 
-    fastify.log.info({ limit, offset }, "Fetching items from Eagle API");
+    fastify.log.info({ limit }, "Fetching items from Eagle API");
 
     const queryParams = new URLSearchParams({
       limit: limit.toString(),
-      offset: offset.toString(),
     });
 
     const response = await callEagleApi<EagleItem[]>(
