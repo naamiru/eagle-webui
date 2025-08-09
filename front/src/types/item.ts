@@ -12,3 +12,7 @@ export interface Folder {
   children: Folder[];
   items: Item[];
 }
+
+export interface Library {
+  path: string;
+}
