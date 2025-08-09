@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-react";
+import { TestWrapper } from "~/test/helpers";
 import { mockEmptyFolder, mockFolderWithImages } from "./__fixtures__/folders";
 import { FolderList } from "./FolderList";
 
@@ -7,7 +8,11 @@ describe("FolderList", () => {
   describe("Component Rendering", () => {
     it("renders grid container with folders", async () => {
       const folders = [mockFolderWithImages, mockEmptyFolder];
-      const screen = await render(<FolderList folders={folders} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderList folders={folders} />
+        </TestWrapper>,
+      );
 
       // Should render grid container
       const container = screen.getByRole("generic");
@@ -16,7 +21,11 @@ describe("FolderList", () => {
 
     it("renders multiple folders correctly", async () => {
       const folders = [mockFolderWithImages, mockEmptyFolder];
-      const screen = await render(<FolderList folders={folders} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderList folders={folders} />
+        </TestWrapper>,
+      );
 
       // Should display both folder names
       await expect.element(screen.getByText("Photos")).toBeVisible();
@@ -25,7 +34,9 @@ describe("FolderList", () => {
 
     it("renders single folder correctly", async () => {
       const screen = await render(
-        <FolderList folders={[mockFolderWithImages]} />,
+        <TestWrapper>
+          <FolderList folders={[mockFolderWithImages]} />
+        </TestWrapper>,
       );
 
       await expect.element(screen.getByText("Photos")).toBeVisible();
@@ -33,7 +44,9 @@ describe("FolderList", () => {
 
     it("applies correct CSS grid class", async () => {
       const screen = await render(
-        <FolderList folders={[mockFolderWithImages]} />,
+        <TestWrapper>
+          <FolderList folders={[mockFolderWithImages]} />
+        </TestWrapper>,
       );
 
       // Grid container should be present
@@ -44,7 +57,11 @@ describe("FolderList", () => {
 
   describe("Empty State Handling", () => {
     it("returns null when folders array is empty", async () => {
-      const screen = await render(<FolderList folders={[]} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderList folders={[]} />
+        </TestWrapper>,
+      );
 
       // Should not render any content when folders array is empty
       const containers = screen.getByRole("generic").elements();
@@ -53,7 +70,11 @@ describe("FolderList", () => {
 
     it("handles undefined folders gracefully", async () => {
       // Test edge case where folders might be undefined
-      const screen = await render(<FolderList folders={[]} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderList folders={[]} />
+        </TestWrapper>,
+      );
 
       const containers = screen.getByRole("generic").elements();
       expect(containers.length).toBe(0);
@@ -77,7 +98,11 @@ describe("FolderList", () => {
         },
       ];
 
-      const screen = await render(<FolderList folders={customFolders} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderList folders={customFolders} />
+        </TestWrapper>,
+      );
 
       // Should render both custom folder names
       await expect.element(screen.getByText("Test Folder 1")).toBeVisible();
@@ -96,7 +121,11 @@ describe("FolderList", () => {
         },
       ];
 
-      const screen = await render(<FolderList folders={mixedFolders} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderList folders={mixedFolders} />
+        </TestWrapper>,
+      );
 
       // All folder names should be visible
       await expect.element(screen.getByText("Photos")).toBeVisible();
@@ -113,7 +142,11 @@ describe("FolderList", () => {
         { id: "folder-3", name: "Folder 3", children: [], items: [] },
       ];
 
-      const screen = await render(<FolderList folders={folders} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderList folders={folders} />
+        </TestWrapper>,
+      );
 
       // All folders should render without key conflicts
       await expect.element(screen.getByText("Folder 1")).toBeVisible();
@@ -133,7 +166,11 @@ describe("FolderList", () => {
         },
       ];
 
-      const screen = await render(<FolderList folders={validFolders} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderList folders={validFolders} />
+        </TestWrapper>,
+      );
 
       await expect.element(screen.getByText("Valid Folder")).toBeVisible();
     });
@@ -156,7 +193,11 @@ describe("FolderList", () => {
         },
       ];
 
-      const screen = await render(<FolderList folders={specialNameFolders} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderList folders={specialNameFolders} />
+        </TestWrapper>,
+      );
 
       // All special character names should render
       await expect
@@ -181,7 +222,11 @@ describe("FolderList", () => {
         items: [],
       };
 
-      const screen = await render(<FolderList folders={[longNameFolder]} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderList folders={[longNameFolder]} />
+        </TestWrapper>,
+      );
 
       await expect.element(screen.getByText(longNameFolder.name)).toBeVisible();
     });
@@ -196,7 +241,11 @@ describe("FolderList", () => {
         items: [],
       };
 
-      const screen = await render(<FolderList folders={[emptyNameFolder]} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderList folders={[emptyNameFolder]} />
+        </TestWrapper>,
+      );
 
       // Component should render without crashing even with empty name
       const container = screen.getByRole("generic");
@@ -210,7 +259,9 @@ describe("FolderList", () => {
       ];
 
       const screen = await render(
-        <FolderList folders={duplicateNameFolders} />,
+        <TestWrapper>
+          <FolderList folders={duplicateNameFolders} />
+        </TestWrapper>,
       );
 
       // Both folders should render (different IDs)
@@ -226,7 +277,11 @@ describe("FolderList", () => {
         items: [],
       };
 
-      const screen = await render(<FolderList folders={[zeroIdFolder]} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderList folders={[zeroIdFolder]} />
+        </TestWrapper>,
+      );
 
       await expect.element(screen.getByText("Zero ID Folder")).toBeVisible();
     });

@@ -1,12 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-react";
+import { TestWrapper } from "~/test/helpers";
 import { mockEmptyFolder, mockFolderWithImages } from "./__fixtures__/folders";
 import { FolderItem } from "./FolderItem";
 
 describe("FolderItem", () => {
   describe("Component Rendering", () => {
     it("renders folder name in overlay", async () => {
-      const screen = await render(<FolderItem folder={mockFolderWithImages} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderItem folder={mockFolderWithImages} />
+        </TestWrapper>,
+      );
 
       await expect
         .element(screen.getByText(mockFolderWithImages.name))
@@ -14,20 +19,28 @@ describe("FolderItem", () => {
     });
 
     it("shows thumbnail image when getFolderThumbnail() returns URL", async () => {
-      const screen = await render(<FolderItem folder={mockFolderWithImages} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderItem folder={mockFolderWithImages} />
+        </TestWrapper>,
+      );
 
       const img = screen.getByRole("img");
       await expect.element(img).toBeVisible();
       await expect
         .element(img)
         .toHaveAttribute("alt", `Folder: ${mockFolderWithImages.name}`);
-      await expect
-        .element(img)
-        .toHaveAttribute("src", "https://example.com/thumb1.jpg");
+      // Check for dynamic URL with first item's ID
+      const expectedUrl = `http://localhost:57821/item/thumbnail?id=item-1&libraryPath=%2Ftest%2Flibrary%2Fpath`;
+      await expect.element(img).toHaveAttribute("src", expectedUrl);
     });
 
     it("shows empty placeholder when no thumbnail available", async () => {
-      const screen = await render(<FolderItem folder={mockEmptyFolder} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderItem folder={mockEmptyFolder} />
+        </TestWrapper>,
+      );
 
       // Should not have an img element
       const images = screen.getByRole("img").elements();
@@ -39,7 +52,11 @@ describe("FolderItem", () => {
     });
 
     it("applies correct CSS modules classes", async () => {
-      const screen = await render(<FolderItem folder={mockFolderWithImages} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderItem folder={mockFolderWithImages} />
+        </TestWrapper>,
+      );
 
       // Verify component renders correctly with expected content
       const img = screen.getByRole("img");
@@ -50,7 +67,11 @@ describe("FolderItem", () => {
     });
 
     it("sets appropriate alt text", async () => {
-      const screen = await render(<FolderItem folder={mockFolderWithImages} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderItem folder={mockFolderWithImages} />
+        </TestWrapper>,
+      );
 
       const img = screen.getByRole("img");
       await expect
@@ -68,7 +89,11 @@ describe("FolderItem", () => {
         items: [],
       };
 
-      const screen = await render(<FolderItem folder={customFolder} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderItem folder={customFolder} />
+        </TestWrapper>,
+      );
 
       await expect
         .element(screen.getByText("Custom Test Folder"))
@@ -76,17 +101,25 @@ describe("FolderItem", () => {
     });
 
     it("handles folder with nested images", async () => {
-      const screen = await render(<FolderItem folder={mockFolderWithImages} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderItem folder={mockFolderWithImages} />
+        </TestWrapper>,
+      );
 
       // Should show thumbnail from first image in folder
       const img = screen.getByRole("img");
-      await expect
-        .element(img)
-        .toHaveAttribute("src", "https://example.com/thumb1.jpg");
+      // Check for dynamic URL with first item's ID
+      const expectedUrl = `http://localhost:57821/item/thumbnail?id=item-1&libraryPath=%2Ftest%2Flibrary%2Fpath`;
+      await expect.element(img).toHaveAttribute("src", expectedUrl);
     });
 
     it("handles empty folder", async () => {
-      const screen = await render(<FolderItem folder={mockEmptyFolder} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderItem folder={mockEmptyFolder} />
+        </TestWrapper>,
+      );
 
       // Should show folder name
       await expect
@@ -106,7 +139,11 @@ describe("FolderItem", () => {
       ];
 
       for (const folder of foldersWithDifferentNames) {
-        const screen = await render(<FolderItem folder={folder} />);
+        const screen = await render(
+          <TestWrapper>
+            <FolderItem folder={folder} />
+          </TestWrapper>,
+        );
         await expect.element(screen.getByText(folder.name)).toBeVisible();
       }
     });
@@ -118,7 +155,11 @@ describe("FolderItem", () => {
         children: [],
         items: [],
       };
-      const screen = await render(<FolderItem folder={emptyNameFolder} />);
+      const screen = await render(
+        <TestWrapper>
+          <FolderItem folder={emptyNameFolder} />
+        </TestWrapper>,
+      );
 
       // Should render without error even with empty name
       // Component should exist and not crash

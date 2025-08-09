@@ -1,13 +1,20 @@
+import { useLibrary } from "~/contexts/LibraryContext";
 import type { Folder } from "~/types/item";
+import { getThumbnailUrl } from "~/utils/image";
 import styles from "./FolderItem.module.css";
-import { getFolderThumbnail } from "./utils";
+import { getFirstFolderImage } from "./utils";
 
 interface FolderItemProps {
   folder: Folder;
 }
 
 export function FolderItem({ folder }: FolderItemProps) {
-  const thumbnailUrl = getFolderThumbnail(folder);
+  const library = useLibrary();
+  const firstImage = getFirstFolderImage(folder);
+
+  const thumbnailUrl = firstImage
+    ? getThumbnailUrl(firstImage.id, library.path)
+    : undefined;
 
   return (
     <div className={styles.item}>
@@ -16,6 +23,7 @@ export function FolderItem({ folder }: FolderItemProps) {
           src={thumbnailUrl}
           alt={`Folder: ${folder.name}`}
           className={styles.thumbnail}
+          loading="lazy"
         />
       ) : (
         <div className={styles.empty} />

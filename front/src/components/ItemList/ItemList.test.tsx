@@ -1,12 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-react";
+import { TestWrapper } from "~/test/helpers";
 import { mockImage1, mockImage2, mockImages } from "./__fixtures__/images";
 import { ItemList } from "./ItemList";
 
 describe("ItemList", () => {
   describe("Gallery Container", () => {
     it("wraps content in PhotoSwipe Gallery component", async () => {
-      const screen = await render(<ItemList items={[mockImage1]} />);
+      const screen = await render(
+        <TestWrapper>
+          <ItemList items={[mockImage1]} />
+        </TestWrapper>,
+      );
 
       // Gallery component should be present (PhotoSwipe Gallery)
       const container = screen.getByRole("generic");
@@ -14,7 +19,11 @@ describe("ItemList", () => {
     });
 
     it("applies grid CSS module", async () => {
-      const screen = await render(<ItemList items={mockImages} />);
+      const screen = await render(
+        <TestWrapper>
+          <ItemList items={mockImages} />
+        </TestWrapper>,
+      );
 
       // Verify component renders correctly (grid CSS is applied internally)
       const images = screen.getByRole("img").elements();
@@ -22,7 +31,11 @@ describe("ItemList", () => {
     });
 
     it("PhotoSwipe CSS is imported correctly", async () => {
-      const screen = await render(<ItemList items={[mockImage1]} />);
+      const screen = await render(
+        <TestWrapper>
+          <ItemList items={[mockImage1]} />
+        </TestWrapper>,
+      );
 
       // Should render without CSS import errors
       const container = screen.getByRole("generic");
@@ -32,7 +45,11 @@ describe("ItemList", () => {
 
   describe("Item Rendering Logic", () => {
     it("renders ImageItem for each item", async () => {
-      const screen = await render(<ItemList items={mockImages} />);
+      const screen = await render(
+        <TestWrapper>
+          <ItemList items={mockImages} />
+        </TestWrapper>,
+      );
 
       // Should have image elements
       const images = screen.getByRole("img").all();
@@ -45,21 +62,29 @@ describe("ItemList", () => {
     });
 
     it("renders single image correctly", async () => {
-      const screen = await render(<ItemList items={[mockImage1]} />);
+      const screen = await render(
+        <TestWrapper>
+          <ItemList items={[mockImage1]} />
+        </TestWrapper>,
+      );
 
       const images = screen.getByRole("img").all();
       expect(images.length).toBe(1);
 
-      await expect
-        .element(images[0])
-        .toHaveAttribute("src", mockImage1.thumbnail);
+      // Check for exact dynamic URL
+      const expectedUrl = `http://localhost:57821/item/thumbnail?id=item-1&libraryPath=%2Ftest%2Flibrary%2Fpath`;
+      await expect.element(images[0]).toHaveAttribute("src", expectedUrl);
       await expect
         .element(images[0])
         .toHaveAttribute("alt", `${mockImage1.id}`);
     });
 
     it("handles empty items array by rendering nothing", async () => {
-      const screen = await render(<ItemList items={[]} />);
+      const screen = await render(
+        <TestWrapper>
+          <ItemList items={[]} />
+        </TestWrapper>,
+      );
 
       // Should not render any content when items array is empty
       const images = screen.getByRole("img").elements();
@@ -70,7 +95,9 @@ describe("ItemList", () => {
   describe("PhotoSwipe Integration", () => {
     it("integrates with PhotoSwipe for image gallery functionality", async () => {
       const screen = await render(
-        <ItemList items={[mockImage1, mockImage2]} />,
+        <TestWrapper>
+          <ItemList items={[mockImage1, mockImage2]} />
+        </TestWrapper>,
       );
 
       // Verify images are clickable (PhotoSwipe Item wrapper)
@@ -84,12 +111,17 @@ describe("ItemList", () => {
     });
 
     it("passes correct props to PhotoSwipe Item component", async () => {
-      const screen = await render(<ItemList items={[mockImage1]} />);
+      const screen = await render(
+        <TestWrapper>
+          <ItemList items={[mockImage1]} />
+        </TestWrapper>,
+      );
 
       const img = screen.getByRole("img");
 
-      // Verify image properties are set correctly
-      await expect.element(img).toHaveAttribute("src", mockImage1.thumbnail);
+      // Verify image properties are set correctly with dynamic URL
+      const expectedUrl = `http://localhost:57821/item/thumbnail?id=item-1&libraryPath=%2Ftest%2Flibrary%2Fpath`;
+      await expect.element(img).toHaveAttribute("src", expectedUrl);
       await expect.element(img).toHaveAttribute("alt", `${mockImage1.id}`);
     });
   });
@@ -99,28 +131,26 @@ describe("ItemList", () => {
       const differentSizeImages = [
         {
           id: "item-1",
-          original: "test1.jpg",
-          thumbnail: "thumb1.jpg",
           width: 800,
           height: 600,
         },
         {
           id: "item-2",
-          original: "test2.jpg",
-          thumbnail: "thumb2.jpg",
           width: 1920,
           height: 1080,
         },
         {
           id: "item-3",
-          original: "test3.jpg",
-          thumbnail: "thumb3.jpg",
           width: 400,
           height: 800,
         },
       ];
 
-      const screen = await render(<ItemList items={differentSizeImages} />);
+      const screen = await render(
+        <TestWrapper>
+          <ItemList items={differentSizeImages} />
+        </TestWrapper>,
+      );
 
       const images = screen.getByRole("img").elements();
       expect(images.length).toBe(3);

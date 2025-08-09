@@ -17,7 +17,6 @@ export function findFirstImage(folder: Folder): Item | undefined {
   return undefined;
 }
 
-export function getFolderThumbnail(folder: Folder): string | undefined {
-  const firstImage = findFirstImage(folder);
-  return firstImage?.thumbnail;
+export function getFirstFolderImage(folder: Folder): Item | undefined {
+  return findFirstImage(folder);
 }

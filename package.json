@@ -10,7 +10,8 @@
   "author": "naamiru",
   "type": "module",
   "scripts": {
-    "dev": "concurrently 'npm run dev -w front' 'npm run dev -w proxy'"
+    "dev": "concurrently 'npm run dev -w front' 'npm run dev -w proxy'",
+    "test": "npm run test -w front -- --run && npm run test -w proxy -- --run"
   },
   "workspaces": [
     "front",

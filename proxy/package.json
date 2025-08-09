@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tsx src/server.ts",
     "dev": "tsx --watch src/server.ts",
-    "test": "vitest run",
+    "test": "vitest",
     "lint": "biome check .",
     "lint:fix": "biome check --write ."
   },

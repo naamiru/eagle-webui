@@ -87,8 +87,6 @@ describe("fetchFolders", () => {
             items: [
               {
                 id: "item-1",
-                original: "https://example.com/image.jpg",
-                thumbnail: "https://example.com/thumb.jpg",
                 width: 800,
                 height: 600,
               },
