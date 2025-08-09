@@ -12,22 +12,32 @@ test("callEagleApi returns data on success", async (t: TestContext) => {
     data: mockData,
   };
 
-  t.mock.method(globalThis, 'fetch', async () => ({
-    ok: true,
-    status: 200,
-    json: async () => mockResponse,
-  } as Response));
+  t.mock.method(
+    globalThis,
+    "fetch",
+    async () =>
+      ({
+        ok: true,
+        status: 200,
+        json: async () => mockResponse,
+      }) as Response,
+  );
 
   const result = await callEagleApi("/api/folder/list");
   t.assert.deepStrictEqual(result, mockData);
 });
 
 test("callEagleApi throws EagleApiError on HTTP error", async (t: TestContext) => {
-  t.mock.method(globalThis, 'fetch', async () => ({
-    ok: false,
-    status: 404,
-    statusText: "Not Found",
-  } as Response));
+  t.mock.method(
+    globalThis,
+    "fetch",
+    async () =>
+      ({
+        ok: false,
+        status: 404,
+        statusText: "Not Found",
+      }) as Response,
+  );
 
   await t.assert.rejects(
     callEagleApi("/api/folder/list"),
@@ -45,11 +55,16 @@ test("callEagleApi throws EagleApiError on Eagle error status", async (t: TestCo
     message: "Database locked",
   };
 
-  t.mock.method(globalThis, 'fetch', async () => ({
-    ok: true,
-    status: 200,
-    json: async () => mockResponse,
-  } as Response));
+  t.mock.method(
+    globalThis,
+    "fetch",
+    async () =>
+      ({
+        ok: true,
+        status: 200,
+        json: async () => mockResponse,
+      }) as Response,
+  );
 
   await t.assert.rejects(
     callEagleApi("/api/folder/list"),
@@ -65,7 +80,9 @@ test("callEagleApi throws EagleApiError on timeout", async (t: TestContext) => {
   const error = new Error("The operation was aborted");
   error.name = "AbortError";
 
-  t.mock.method(globalThis, 'fetch', async () => { throw error; });
+  t.mock.method(globalThis, "fetch", async () => {
+    throw error;
+  });
 
   await t.assert.rejects(
     callEagleApi("/api/folder/list"),
@@ -81,7 +98,9 @@ test("callEagleApi throws EagleApiError on ECONNREFUSED", async (t: TestContext)
   const error = new Error("fetch failed") as FetchError;
   error.code = "ECONNREFUSED";
 
-  t.mock.method(globalThis, 'fetch', async () => { throw error; });
+  t.mock.method(globalThis, "fetch", async () => {
+    throw error;
+  });
 
   await t.assert.rejects(
     callEagleApi("/api/folder/list"),
@@ -97,7 +116,9 @@ test("callEagleApi throws EagleApiError on network error", async (t: TestContext
   const error = new Error("Network unreachable") as FetchError;
   error.code = "ENETUNREACH";
 
-  t.mock.method(globalThis, 'fetch', async () => { throw error; });
+  t.mock.method(globalThis, "fetch", async () => {
+    throw error;
+  });
 
   await t.assert.rejects(
     callEagleApi("/api/folder/list"),
@@ -110,11 +131,18 @@ test("callEagleApi throws EagleApiError on network error", async (t: TestContext
 });
 
 test("callEagleApi throws EagleApiError on JSON parse error", async (t: TestContext) => {
-  t.mock.method(globalThis, 'fetch', async () => ({
-    ok: true,
-    status: 200,
-    json: async () => { throw new SyntaxError("Unexpected token"); },
-  } as unknown as Response));
+  t.mock.method(
+    globalThis,
+    "fetch",
+    async () =>
+      ({
+        ok: true,
+        status: 200,
+        json: async () => {
+          throw new SyntaxError("Unexpected token");
+        },
+      }) as unknown as Response,
+  );
 
   await t.assert.rejects(
     callEagleApi("/api/folder/list"),
