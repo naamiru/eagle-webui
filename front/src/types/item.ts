@@ -1,4 +1,4 @@
-export interface ItemData {
+export interface Item {
   id: number;
   original: string;
   thumbnail: string;
@@ -6,9 +6,9 @@ export interface ItemData {
   height: number;
 }
 
-export interface FolderData {
+export interface Folder {
   id: number;
   name: string;
-  children: FolderData[];
-  items: ItemData[];
+  children: Folder[];
+  items: Item[];
 }

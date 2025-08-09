@@ -1,6 +1,6 @@
-import type { FolderData, ItemData } from "~/types/item";
+import type { Folder, Item } from "~/types/item";
 
-export const mockImage1: ItemData = {
+export const mockImage1: Item = {
   id: 1,
   original: "https://example.com/image1.jpg",
   thumbnail: "https://example.com/thumb1.jpg",
@@ -8,7 +8,7 @@ export const mockImage1: ItemData = {
   height: 600,
 };
 
-export const mockImage2: ItemData = {
+export const mockImage2: Item = {
   id: 2,
   original: "https://example.com/image2.jpg",
   thumbnail: "https://example.com/thumb2.jpg",
@@ -16,14 +16,14 @@ export const mockImage2: ItemData = {
   height: 800,
 };
 
-export const mockEmptyFolder: FolderData = {
+export const mockEmptyFolder: Folder = {
   id: 101,
   name: "Empty Folder",
   children: [],
   items: [],
 };
 
-export const mockFolderWithImages: FolderData = {
+export const mockFolderWithImages: Folder = {
   id: 102,
   name: "Photos",
   children: [],

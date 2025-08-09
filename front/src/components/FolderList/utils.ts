@@ -1,6 +1,6 @@
-import type { FolderData, ItemData } from "~/types/item";
+import type { Folder, Item } from "~/types/item";
 
-export function findFirstImage(folder: FolderData): ItemData | undefined {
+export function findFirstImage(folder: Folder): Item | undefined {
   // First, look for direct images in the folder
   if (folder.items.length > 0) {
     return folder.items[0];
@@ -17,7 +17,7 @@ export function findFirstImage(folder: FolderData): ItemData | undefined {
   return undefined;
 }
 
-export function getFolderThumbnail(folder: FolderData): string | undefined {
+export function getFolderThumbnail(folder: Folder): string | undefined {
   const firstImage = findFirstImage(folder);
   return firstImage?.thumbnail;
 }

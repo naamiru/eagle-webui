@@ -1,9 +1,9 @@
 import styles from "~/styles/List.module.css";
-import type { FolderData } from "~/types/item";
+import type { Folder } from "~/types/item";
 import { FolderItem } from "./FolderItem";
 
 interface FolderListProps {
-  folders: FolderData[];
+  folders: Folder[];
 }
 
 export function FolderList({ folders }: FolderListProps) {

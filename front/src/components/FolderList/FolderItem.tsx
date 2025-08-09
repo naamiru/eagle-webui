@@ -1,9 +1,9 @@
-import type { FolderData } from "~/types/item";
+import type { Folder } from "~/types/item";
 import styles from "./FolderItem.module.css";
 import { getFolderThumbnail } from "./utils";
 
 interface FolderItemProps {
-  folder: FolderData;
+  folder: Folder;
 }
 
 export function FolderItem({ folder }: FolderItemProps) {

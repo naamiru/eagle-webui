@@ -1,14 +1,14 @@
-import { Item } from "react-photoswipe-gallery";
-import type { ItemData } from "~/types/item";
+import { Item as GalleryItem } from "react-photoswipe-gallery";
+import type { Item } from "~/types/item";
 import styles from "./ImageItem.module.css";
 
 interface ImageItemProps {
-  image: ItemData;
+  image: Item;
 }
 
 export function ImageItem({ image }: ImageItemProps) {
   return (
-    <Item
+    <GalleryItem
       original={image.original}
       thumbnail={image.thumbnail}
       width={image.width}
@@ -24,6 +24,6 @@ export function ImageItem({ image }: ImageItemProps) {
           className={styles.thumbnail}
         />
       )}
-    </Item>
+    </GalleryItem>
   );
 }

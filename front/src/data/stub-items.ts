@@ -1,7 +1,7 @@
-import type { FolderData, ItemData } from "~/types/item";
+import type { Folder, Item } from "~/types/item";
 
 // New structure - only images
-export const stubItems: ItemData[] = [
+export const stubItems: Item[] = [
   {
     id: 1,
     original:
@@ -113,7 +113,7 @@ export const stubItems: ItemData[] = [
 ];
 
 // New structure - folders with separated children and items
-export const stubFolders: FolderData[] = [
+export const stubFolders: Folder[] = [
   {
     id: 101,
     name: "Vacation Photos",

@@ -9,8 +9,8 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "preview": "vite preview",
-    "test": "vitest",
-    "test:coverage": "vitest --coverage"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.84.1",
