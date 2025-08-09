@@ -107,7 +107,6 @@ suite("/item/list", () => {
     );
   });
 
-
   test("uses default values when parameters not provided", async (t: TestContext) => {
     const mockData: unknown[] = [];
 
