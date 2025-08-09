@@ -2,6 +2,7 @@ import cors from "@fastify/cors";
 import fastify, { type FastifyServerOptions } from "fastify";
 import errorHandler from "./error-handler";
 import folderRoutes from "./folder";
+import itemRoutes from "./item";
 
 export default function build(options: FastifyServerOptions = {}) {
   const app = fastify(options);
@@ -13,6 +14,7 @@ export default function build(options: FastifyServerOptions = {}) {
   });
 
   app.register(folderRoutes);
+  app.register(itemRoutes);
 
   return app;
 }
