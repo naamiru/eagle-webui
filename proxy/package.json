@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tsx src/server.ts",
     "dev": "tsx --watch src/server.ts",
-    "test": "node --test --experimental-test-module-mocks --import tsx 'src/**/*.test.ts'",
+    "test": "vitest run",
     "lint": "biome check .",
     "lint:fix": "biome check --write ."
   },
@@ -17,7 +17,8 @@
     "@types/node": "^24.2.1",
     "fastify-tsconfig": "^3.0.0",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "@fastify/cors": "^11.1.0",

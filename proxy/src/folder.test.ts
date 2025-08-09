@@ -1,30 +1,34 @@
-import { suite, type TestContext, test } from "node:test";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import * as eagleApi from "./eagle-api";
 import { build } from "./test-helper";
 
-suite("/folder/list", () => {
-  test("returns transformed folder list", async (t: TestContext) => {
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+describe("/folder/list", () => {
+  test("returns transformed folder list", async () => {
     const mockData = [
       { id: "folder-1", name: "Family Photos" },
       { id: "folder-2", name: "Work Documents" },
     ];
 
-    t.mock.method(eagleApi, "callEagleApi", async () => mockData);
+    vi.spyOn(eagleApi, "callEagleApi").mockResolvedValue(mockData);
 
-    const app = build(t);
+    const app = build();
     const res = await app.inject({
       method: "GET",
       url: "/folder/list",
     });
 
-    t.assert.strictEqual(res.statusCode, 200);
-    t.assert.deepStrictEqual(res.json(), [
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual([
       { id: "folder-1", name: "Family Photos", children: [], items: [] },
       { id: "folder-2", name: "Work Documents", children: [], items: [] },
     ]);
   });
 
-  test("handles nested folder structure", async (t: TestContext) => {
+  test("handles nested folder structure", async () => {
     const mockData = [
       {
         id: "parent-1",
@@ -44,53 +48,53 @@ suite("/folder/list", () => {
       },
     ];
 
-    t.mock.method(eagleApi, "callEagleApi", async () => mockData);
+    vi.spyOn(eagleApi, "callEagleApi").mockResolvedValue(mockData);
 
-    const app = build(t);
+    const app = build();
     const res = await app.inject({
       method: "GET",
       url: "/folder/list",
     });
 
-    t.assert.strictEqual(res.statusCode, 200);
+    expect(res.statusCode).toBe(200);
     const result = res.json();
-    t.assert.strictEqual(result[0].id, "parent-1");
-    t.assert.strictEqual(result[0].name, "Parent Folder");
-    t.assert.strictEqual(result[0].children[0].id, "child-1");
-    t.assert.strictEqual(result[0].children[0].children[0].id, "grandchild-1");
-    t.assert.deepStrictEqual(result[0].items, []);
+    expect(result[0].id).toBe("parent-1");
+    expect(result[0].name).toBe("Parent Folder");
+    expect(result[0].children[0].id).toBe("child-1");
+    expect(result[0].children[0].children[0].id).toBe("grandchild-1");
+    expect(result[0].items).toEqual([]);
   });
 
-  test("handles empty folder list", async (t: TestContext) => {
-    t.mock.method(eagleApi, "callEagleApi", async () => []);
+  test("handles empty folder list", async () => {
+    vi.spyOn(eagleApi, "callEagleApi").mockResolvedValue([]);
 
-    const app = build(t);
+    const app = build();
     const res = await app.inject({
       method: "GET",
       url: "/folder/list",
     });
 
-    t.assert.strictEqual(res.statusCode, 200);
-    t.assert.deepStrictEqual(res.json(), []);
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual([]);
   });
 
-  test("handles folders without children field", async (t: TestContext) => {
+  test("handles folders without children field", async () => {
     const mockData = [
       { id: "folder-1", name: "No Children Folder" },
       { id: "folder-2", name: "Another Folder", children: [] },
     ];
 
-    t.mock.method(eagleApi, "callEagleApi", async () => mockData);
+    vi.spyOn(eagleApi, "callEagleApi").mockResolvedValue(mockData);
 
-    const app = build(t);
+    const app = build();
     const res = await app.inject({
       method: "GET",
       url: "/folder/list",
     });
 
-    t.assert.strictEqual(res.statusCode, 200);
+    expect(res.statusCode).toBe(200);
     const result = res.json();
-    t.assert.deepStrictEqual(result[0].children, []);
-    t.assert.deepStrictEqual(result[1].children, []);
+    expect(result[0].children).toEqual([]);
+    expect(result[1].children).toEqual([]);
   });
 });

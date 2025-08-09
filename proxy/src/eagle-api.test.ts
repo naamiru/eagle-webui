@@ -1,155 +1,140 @@
-import { type TestContext, test } from "node:test";
+import { afterEach, expect, test, vi } from "vitest";
 import { callEagleApi, type EagleApiError } from "./eagle-api";
 
 interface FetchError extends Error {
   code?: string;
 }
 
-test("callEagleApi returns data on success", async (t: TestContext) => {
+// Reset mocks after each test
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+test("callEagleApi returns data on success", async () => {
   const mockData = [{ id: "folder-1", name: "Test Folder" }];
   const mockResponse = {
     status: "success",
     data: mockData,
   };
 
-  t.mock.method(
-    globalThis,
-    "fetch",
-    async () =>
-      ({
-        ok: true,
-        status: 200,
-        json: async () => mockResponse,
-      }) as Response,
-  );
+  vi.spyOn(globalThis, "fetch").mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: async () => mockResponse,
+  } as Response);
 
   const result = await callEagleApi("/api/folder/list");
-  t.assert.deepStrictEqual(result, mockData);
+  expect(result).toEqual(mockData);
 });
 
-test("callEagleApi throws EagleApiError on HTTP error", async (t: TestContext) => {
-  t.mock.method(
-    globalThis,
-    "fetch",
-    async () =>
-      ({
-        ok: false,
-        status: 404,
-        statusText: "Not Found",
-      }) as Response,
-  );
+test("callEagleApi throws EagleApiError on HTTP error", async () => {
+  vi.spyOn(globalThis, "fetch").mockResolvedValue({
+    ok: false,
+    status: 404,
+    statusText: "Not Found",
+  } as Response);
 
-  await t.assert.rejects(
-    callEagleApi("/api/folder/list"),
-    (error: EagleApiError) => {
-      t.assert.strictEqual(error.httpCode, 502);
-      t.assert.ok(error.message.includes("Eagle API returned status 404"));
-      return true;
-    },
-  );
+  await expect(callEagleApi("/api/folder/list")).rejects.toThrow();
+  
+  try {
+    await callEagleApi("/api/folder/list");
+  } catch (error) {
+    const eagleError = error as EagleApiError;
+    expect(eagleError.httpCode).toBe(502);
+    expect(eagleError.message).toContain("Eagle API returned status 404");
+  }
 });
 
-test("callEagleApi throws EagleApiError on Eagle error status", async (t: TestContext) => {
+test("callEagleApi throws EagleApiError on Eagle error status", async () => {
   const mockResponse = {
     status: "error",
     message: "Database locked",
   };
 
-  t.mock.method(
-    globalThis,
-    "fetch",
-    async () =>
-      ({
-        ok: true,
-        status: 200,
-        json: async () => mockResponse,
-      }) as Response,
-  );
+  vi.spyOn(globalThis, "fetch").mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: async () => mockResponse,
+  } as Response);
 
-  await t.assert.rejects(
-    callEagleApi("/api/folder/list"),
-    (error: EagleApiError) => {
-      t.assert.strictEqual(error.httpCode, 502);
-      t.assert.ok(error.message.includes("Eagle API error"));
-      return true;
-    },
-  );
+  await expect(callEagleApi("/api/folder/list")).rejects.toThrow();
+  
+  try {
+    await callEagleApi("/api/folder/list");
+  } catch (error) {
+    const eagleError = error as EagleApiError;
+    expect(eagleError.httpCode).toBe(502);
+    expect(eagleError.message).toContain("Eagle API error");
+  }
 });
 
-test("callEagleApi throws EagleApiError on timeout", async (t: TestContext) => {
+test("callEagleApi throws EagleApiError on timeout", async () => {
   const error = new Error("The operation was aborted");
   error.name = "AbortError";
 
-  t.mock.method(globalThis, "fetch", async () => {
-    throw error;
-  });
+  vi.spyOn(globalThis, "fetch").mockRejectedValue(error);
 
-  await t.assert.rejects(
-    callEagleApi("/api/folder/list"),
-    (error: EagleApiError) => {
-      t.assert.strictEqual(error.httpCode, 504);
-      t.assert.ok(error.message.includes("timed out after 30 seconds"));
-      return true;
-    },
-  );
+  await expect(callEagleApi("/api/folder/list")).rejects.toThrow();
+  
+  try {
+    await callEagleApi("/api/folder/list");
+  } catch (error) {
+    const eagleError = error as EagleApiError;
+    expect(eagleError.httpCode).toBe(504);
+    expect(eagleError.message).toContain("timed out after 30 seconds");
+  }
 });
 
-test("callEagleApi throws EagleApiError on ECONNREFUSED", async (t: TestContext) => {
+test("callEagleApi throws EagleApiError on ECONNREFUSED", async () => {
   const error = new Error("fetch failed") as FetchError;
   error.code = "ECONNREFUSED";
 
-  t.mock.method(globalThis, "fetch", async () => {
-    throw error;
-  });
+  vi.spyOn(globalThis, "fetch").mockRejectedValue(error);
 
-  await t.assert.rejects(
-    callEagleApi("/api/folder/list"),
-    (error: EagleApiError) => {
-      t.assert.strictEqual(error.httpCode, 503);
-      t.assert.ok(error.message.includes("Eagle service is not running"));
-      return true;
-    },
-  );
+  await expect(callEagleApi("/api/folder/list")).rejects.toThrow();
+  
+  try {
+    await callEagleApi("/api/folder/list");
+  } catch (error) {
+    const eagleError = error as EagleApiError;
+    expect(eagleError.httpCode).toBe(503);
+    expect(eagleError.message).toContain("Eagle service is not running");
+  }
 });
 
-test("callEagleApi throws EagleApiError on network error", async (t: TestContext) => {
+test("callEagleApi throws EagleApiError on network error", async () => {
   const error = new Error("Network unreachable") as FetchError;
   error.code = "ENETUNREACH";
 
-  t.mock.method(globalThis, "fetch", async () => {
-    throw error;
-  });
+  vi.spyOn(globalThis, "fetch").mockRejectedValue(error);
 
-  await t.assert.rejects(
-    callEagleApi("/api/folder/list"),
-    (error: EagleApiError) => {
-      t.assert.strictEqual(error.httpCode, 503);
-      t.assert.ok(error.message.includes("Network error"));
-      return true;
-    },
-  );
+  await expect(callEagleApi("/api/folder/list")).rejects.toThrow();
+  
+  try {
+    await callEagleApi("/api/folder/list");
+  } catch (error) {
+    const eagleError = error as EagleApiError;
+    expect(eagleError.httpCode).toBe(503);
+    expect(eagleError.message).toContain("Network error");
+  }
 });
 
-test("callEagleApi throws EagleApiError on JSON parse error", async (t: TestContext) => {
-  t.mock.method(
-    globalThis,
-    "fetch",
-    async () =>
-      ({
-        ok: true,
-        status: 200,
-        json: async () => {
-          throw new SyntaxError("Unexpected token");
-        },
-      }) as unknown as Response,
-  );
-
-  await t.assert.rejects(
-    callEagleApi("/api/folder/list"),
-    (error: EagleApiError) => {
-      t.assert.strictEqual(error.httpCode, 502);
-      t.assert.ok(error.message.includes("Invalid response format"));
-      return true;
+test("callEagleApi throws EagleApiError on JSON parse error", async () => {
+  vi.spyOn(globalThis, "fetch").mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: async () => {
+      throw new SyntaxError("Unexpected token");
     },
-  );
+  } as unknown as Response);
+
+  await expect(callEagleApi("/api/folder/list")).rejects.toThrow();
+  
+  try {
+    await callEagleApi("/api/folder/list");
+  } catch (error) {
+    const eagleError = error as EagleApiError;
+    expect(eagleError.httpCode).toBe(502);
+    expect(eagleError.message).toContain("Invalid response format");
+  }
 });

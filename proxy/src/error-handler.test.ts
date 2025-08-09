@@ -1,10 +1,10 @@
-import { type TestContext, test } from "node:test";
 import type { FastifyError } from "fastify";
+import { expect, test } from "vitest";
 import { EagleApiError } from "./eagle-api";
 import { build } from "./test-helper";
 
-test("handles EagleApiError with correct status code and message", async (t: TestContext) => {
-  const app = build(t);
+test("handles EagleApiError with correct status code and message", async () => {
+  const app = build();
 
   // Register a route that throws EagleApiError
   app.get("/test-eagle-error", async () => {
@@ -16,13 +16,13 @@ test("handles EagleApiError with correct status code and message", async (t: Tes
     url: "/test-eagle-error",
   });
 
-  t.assert.strictEqual(res.statusCode, 503);
+  expect(res.statusCode).toBe(503);
   const result = res.json();
-  t.assert.strictEqual(result.error, "Eagle service is not running");
+  expect(result.error).toBe("Eagle service is not running");
 });
 
-test("handles EagleApiError with cause", async (t: TestContext) => {
-  const app = build(t);
+test("handles EagleApiError with cause", async () => {
+  const app = build();
   const cause = new Error("Connection refused");
 
   app.get("/test-eagle-error-with-cause", async () => {
@@ -34,13 +34,13 @@ test("handles EagleApiError with cause", async (t: TestContext) => {
     url: "/test-eagle-error-with-cause",
   });
 
-  t.assert.strictEqual(res.statusCode, 502);
+  expect(res.statusCode).toBe(502);
   const result = res.json();
-  t.assert.strictEqual(result.error, "Eagle API error");
+  expect(result.error).toBe("Eagle API error");
 });
 
-test("handles unknown error with 500 status", async (t: TestContext) => {
-  const app = build(t);
+test("handles unknown error with 500 status", async () => {
+  const app = build();
 
   app.get("/test-unknown-error", async () => {
     throw new Error("Something went wrong");
@@ -51,13 +51,13 @@ test("handles unknown error with 500 status", async (t: TestContext) => {
     url: "/test-unknown-error",
   });
 
-  t.assert.strictEqual(res.statusCode, 500);
+  expect(res.statusCode).toBe(500);
   const result = res.json();
-  t.assert.strictEqual(result.error, "An unexpected error occurred");
+  expect(result.error).toBe("An unexpected error occurred");
 });
 
-test("handles error with custom status code", async (t: TestContext) => {
-  const app = build(t);
+test("handles error with custom status code", async () => {
+  const app = build();
 
   app.get("/test-custom-status", async () => {
     const error = new Error("Bad request") as FastifyError;
@@ -70,13 +70,13 @@ test("handles error with custom status code", async (t: TestContext) => {
     url: "/test-custom-status",
   });
 
-  t.assert.strictEqual(res.statusCode, 400);
+  expect(res.statusCode).toBe(400);
   const result = res.json();
-  t.assert.strictEqual(result.error, "An unexpected error occurred");
+  expect(result.error).toBe("An unexpected error occurred");
 });
 
-test("handles non-Error objects", async (t: TestContext) => {
-  const app = build(t);
+test("handles non-Error objects", async () => {
+  const app = build();
 
   app.get("/test-non-error", async () => {
     throw "String error";
@@ -87,13 +87,13 @@ test("handles non-Error objects", async (t: TestContext) => {
     url: "/test-non-error",
   });
 
-  t.assert.strictEqual(res.statusCode, 500);
+  expect(res.statusCode).toBe(500);
   const result = res.json();
-  t.assert.strictEqual(result.error, "An unexpected error occurred");
+  expect(result.error).toBe("An unexpected error occurred");
 });
 
-test("handles error without message", async (t: TestContext) => {
-  const app = build(t);
+test("handles error without message", async () => {
+  const app = build();
 
   app.get("/test-no-message", async () => {
     const error = new Error() as FastifyError;
@@ -106,7 +106,7 @@ test("handles error without message", async (t: TestContext) => {
     url: "/test-no-message",
   });
 
-  t.assert.strictEqual(res.statusCode, 500);
+  expect(res.statusCode).toBe(500);
   const result = res.json();
-  t.assert.strictEqual(result.error, "An unexpected error occurred");
+  expect(result.error).toBe("An unexpected error occurred");
 });

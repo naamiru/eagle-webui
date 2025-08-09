@@ -1,8 +1,8 @@
-import type { TestContext } from "node:test";
+import { afterEach } from "vitest";
 import buildApp from "./app";
 
-export function build(t: TestContext) {
+export function build() {
   const app = buildApp();
-  t.after(() => app.close());
+  afterEach(() => app.close());
   return app;
 }

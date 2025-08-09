@@ -1,9 +1,13 @@
-import { suite, type TestContext, test } from "node:test";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import * as eagleApi from "./eagle-api";
 import { build } from "./test-helper";
 
-suite("/item/list", () => {
-  test("returns transformed items with default parameters", async (t: TestContext) => {
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+describe("/item/list", () => {
+  test("returns transformed items with default parameters", async () => {
     const mockData = [
       {
         id: "item1",
@@ -29,51 +33,38 @@ suite("/item/list", () => {
       },
     ];
 
-    const mockFn = t.mock.method(
-      eagleApi,
-      "callEagleApi",
-      async () => mockData,
-    );
+    const mockFn = vi
+      .spyOn(eagleApi, "callEagleApi")
+      .mockResolvedValue(mockData);
 
-    const app = build(t);
+    const app = build();
     const res = await app.inject({
       method: "GET",
       url: "/item/list",
     });
 
-    t.assert.strictEqual(res.statusCode, 200);
+    expect(res.statusCode).toBe(200);
     const items = res.json();
 
-    t.assert.strictEqual(Array.isArray(items), true);
-    t.assert.strictEqual(items.length, 2);
+    expect(Array.isArray(items)).toBe(true);
+    expect(items.length).toBe(2);
 
-    t.assert.deepStrictEqual(items[0], {
+    expect(items[0]).toEqual({
       id: "item1",
-      original:
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600",
-      thumbnail:
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300",
       width: 1920,
       height: 1080,
     });
 
-    t.assert.deepStrictEqual(items[1], {
+    expect(items[1]).toEqual({
       id: "item2",
-      original:
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600",
-      thumbnail:
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300",
       width: 1280,
       height: 720,
     });
 
-    t.assert.strictEqual(
-      mockFn.mock.calls[0].arguments[0],
-      "/api/item/list?limit=1000",
-    );
+    expect(mockFn).toHaveBeenCalledWith("/api/item/list?limit=1000");
   });
 
-  test("accepts and forwards limit parameter", async (t: TestContext) => {
+  test("accepts and forwards limit parameter", async () => {
     const mockData = [
       {
         id: "item1",
@@ -88,48 +79,38 @@ suite("/item/list", () => {
       },
     ];
 
-    const mockFn = t.mock.method(
-      eagleApi,
-      "callEagleApi",
-      async () => mockData,
-    );
+    const mockFn = vi
+      .spyOn(eagleApi, "callEagleApi")
+      .mockResolvedValue(mockData);
 
-    const app = build(t);
+    const app = build();
     const res = await app.inject({
       method: "GET",
       url: "/item/list?limit=50",
     });
 
-    t.assert.strictEqual(res.statusCode, 200);
-    t.assert.strictEqual(
-      mockFn.mock.calls[0].arguments[0],
-      "/api/item/list?limit=50",
-    );
+    expect(res.statusCode).toBe(200);
+    expect(mockFn).toHaveBeenCalledWith("/api/item/list?limit=50");
   });
 
-  test("uses default values when parameters not provided", async (t: TestContext) => {
+  test("uses default values when parameters not provided", async () => {
     const mockData: unknown[] = [];
 
-    const mockFn = t.mock.method(
-      eagleApi,
-      "callEagleApi",
-      async () => mockData,
-    );
+    const mockFn = vi
+      .spyOn(eagleApi, "callEagleApi")
+      .mockResolvedValue(mockData);
 
-    const app = build(t);
+    const app = build();
     const res = await app.inject({
       method: "GET",
       url: "/item/list",
     });
 
-    t.assert.strictEqual(res.statusCode, 200);
-    t.assert.strictEqual(
-      mockFn.mock.calls[0].arguments[0],
-      "/api/item/list?limit=1000",
-    );
+    expect(res.statusCode).toBe(200);
+    expect(mockFn).toHaveBeenCalledWith("/api/item/list?limit=1000");
   });
 
-  test("transforms Eagle item structure to frontend format", async (t: TestContext) => {
+  test("transforms Eagle item structure to frontend format", async () => {
     const mockData = [
       {
         id: "item1",
@@ -148,23 +129,19 @@ suite("/item/list", () => {
       },
     ];
 
-    t.mock.method(eagleApi, "callEagleApi", async () => mockData);
+    vi.spyOn(eagleApi, "callEagleApi").mockResolvedValue(mockData);
 
-    const app = build(t);
+    const app = build();
     const res = await app.inject({
       method: "GET",
       url: "/item/list",
     });
 
-    t.assert.strictEqual(res.statusCode, 200);
+    expect(res.statusCode).toBe(200);
     const items = res.json();
 
-    t.assert.deepStrictEqual(items[0], {
+    expect(items[0]).toEqual({
       id: "item1",
-      original:
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600",
-      thumbnail:
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300",
       width: 3840,
       height: 2160,
     });
@@ -172,30 +149,30 @@ suite("/item/list", () => {
     // Verify no extra fields are included
     // biome-ignore lint/suspicious/noExplicitAny: Need to verify absence of properties
     const item = items[0] as any;
-    t.assert.strictEqual(item.name, undefined);
-    t.assert.strictEqual(item.size, undefined);
-    t.assert.strictEqual(item.ext, undefined);
-    t.assert.strictEqual(item.tags, undefined);
-    t.assert.strictEqual(item.folders, undefined);
-    t.assert.strictEqual(item.url, undefined);
-    t.assert.strictEqual(item.modificationTime, undefined);
+    expect(item.name).toBeUndefined();
+    expect(item.size).toBeUndefined();
+    expect(item.ext).toBeUndefined();
+    expect(item.tags).toBeUndefined();
+    expect(item.folders).toBeUndefined();
+    expect(item.url).toBeUndefined();
+    expect(item.modificationTime).toBeUndefined();
   });
 
-  test("handles empty item list from Eagle", async (t: TestContext) => {
+  test("handles empty item list from Eagle", async () => {
     const mockData: unknown[] = [];
 
-    t.mock.method(eagleApi, "callEagleApi", async () => mockData);
+    vi.spyOn(eagleApi, "callEagleApi").mockResolvedValue(mockData);
 
-    const app = build(t);
+    const app = build();
     const res = await app.inject({
       method: "GET",
       url: "/item/list",
     });
 
-    t.assert.strictEqual(res.statusCode, 200);
+    expect(res.statusCode).toBe(200);
     const items = res.json();
 
-    t.assert.strictEqual(Array.isArray(items), true);
-    t.assert.strictEqual(items.length, 0);
+    expect(Array.isArray(items)).toBe(true);
+    expect(items.length).toBe(0);
   });
 });

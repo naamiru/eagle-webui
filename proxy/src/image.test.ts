@@ -1,10 +1,10 @@
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { suite, type TestContext, test } from "node:test";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { build } from "./test-helper";
 
-suite("Image serving endpoints", () => {
+describe("Image serving endpoints", () => {
   let tempDir: string;
 
   const createTempDir = async () => {
@@ -17,12 +17,17 @@ suite("Image serving endpoints", () => {
     }
   };
 
-  suite("Thumbnail Path Resolution", () => {
-    test("should find thumbnail file using glob pattern", async (t: TestContext) => {
+  describe("Thumbnail Path Resolution", () => {
+    beforeEach(async () => {
       await createTempDir();
-      t.after(cleanupTempDir);
+    });
 
-      const app = build(t);
+    afterEach(async () => {
+      await cleanupTempDir();
+    });
+
+    test("should find thumbnail file using glob pattern", async () => {
+      const app = build();
       const itemId = "TEST123";
       const itemDir = join(tempDir, "images", `${itemId}.info`);
       await mkdir(itemDir, { recursive: true });
@@ -36,16 +41,13 @@ suite("Image serving endpoints", () => {
         url: `/item/thumbnail?id=${itemId}&libraryPath=${tempDir}`,
       });
 
-      t.assert.strictEqual(response.statusCode, 200);
-      t.assert.strictEqual(response.headers["content-type"], "image/jpeg");
-      t.assert.strictEqual(response.payload, thumbnailContent);
+      expect(response.statusCode).toBe(200);
+      expect(response.headers["content-type"]).toBe("image/jpeg");
+      expect(response.payload).toBe(thumbnailContent);
     });
 
-    test("should return 404 when no thumbnail file found", async (t: TestContext) => {
-      await createTempDir();
-      t.after(cleanupTempDir);
-
-      const app = build(t);
+    test("should return 404 when no thumbnail file found", async () => {
+      const app = build();
       const itemId = "NOTFOUND";
 
       const response = await app.inject({
@@ -53,15 +55,12 @@ suite("Image serving endpoints", () => {
         url: `/item/thumbnail?id=${itemId}&libraryPath=${tempDir}`,
       });
 
-      t.assert.strictEqual(response.statusCode, 404);
-      t.assert.deepStrictEqual(response.json(), { error: "Image not found" });
+      expect(response.statusCode).toBe(404);
+      expect(response.json()).toEqual({ error: "Image not found" });
     });
 
-    test("should handle multiple matching files and return first", async (t: TestContext) => {
-      await createTempDir();
-      t.after(cleanupTempDir);
-
-      const app = build(t);
+    test("should handle multiple matching files and return first", async () => {
+      const app = build();
       const itemId = "MULTI123";
       const itemDir = join(tempDir, "images", `${itemId}.info`);
       await mkdir(itemDir, { recursive: true });
@@ -75,15 +74,12 @@ suite("Image serving endpoints", () => {
         url: `/item/thumbnail?id=${itemId}&libraryPath=${tempDir}`,
       });
 
-      t.assert.strictEqual(response.statusCode, 200);
-      t.assert.ok(response.headers["content-type"]?.includes("image"));
+      expect(response.statusCode).toBe(200);
+      expect(response.headers["content-type"]).toMatch(/image/);
     });
 
-    test("should work with different file extensions", async (t: TestContext) => {
-      await createTempDir();
-      t.after(cleanupTempDir);
-
-      const app = build(t);
+    test("should work with different file extensions", async () => {
+      const app = build();
       const itemId = "WEBP123";
       const itemDir = join(tempDir, "images", `${itemId}.info`);
       await mkdir(itemDir, { recursive: true });
@@ -96,18 +92,23 @@ suite("Image serving endpoints", () => {
         url: `/item/thumbnail?id=${itemId}&libraryPath=${tempDir}`,
       });
 
-      t.assert.strictEqual(response.statusCode, 200);
-      t.assert.strictEqual(response.headers["content-type"], "image/webp");
-      t.assert.strictEqual(response.payload, thumbnailContent);
+      expect(response.statusCode).toBe(200);
+      expect(response.headers["content-type"]).toBe("image/webp");
+      expect(response.payload).toBe(thumbnailContent);
     });
   });
 
-  suite("Original Path Resolution", () => {
-    test("should derive original filename from thumbnail filename", async (t: TestContext) => {
+  describe("Original Path Resolution", () => {
+    beforeEach(async () => {
       await createTempDir();
-      t.after(cleanupTempDir);
+    });
 
-      const app = build(t);
+    afterEach(async () => {
+      await cleanupTempDir();
+    });
+
+    test("should derive original filename from thumbnail filename", async () => {
+      const app = build();
       const itemId = "ORIG123";
       const itemDir = join(tempDir, "images", `${itemId}.info`);
       await mkdir(itemDir, { recursive: true });
@@ -122,16 +123,13 @@ suite("Image serving endpoints", () => {
         url: `/item/image?id=${itemId}&libraryPath=${tempDir}`,
       });
 
-      t.assert.strictEqual(response.statusCode, 200);
-      t.assert.strictEqual(response.headers["content-type"], "image/jpeg");
-      t.assert.strictEqual(response.payload, originalContent);
+      expect(response.statusCode).toBe(200);
+      expect(response.headers["content-type"]).toBe("image/jpeg");
+      expect(response.payload).toBe(originalContent);
     });
 
-    test("should handle various filename formats", async (t: TestContext) => {
-      await createTempDir();
-      t.after(cleanupTempDir);
-
-      const app = build(t);
+    test("should handle various filename formats", async () => {
+      const app = build();
       const itemId = "SPECIAL123";
       const itemDir = join(tempDir, "images", `${itemId}.info`);
       await mkdir(itemDir, { recursive: true });
@@ -146,15 +144,12 @@ suite("Image serving endpoints", () => {
         url: `/item/image?id=${itemId}&libraryPath=${tempDir}`,
       });
 
-      t.assert.strictEqual(response.statusCode, 200);
-      t.assert.strictEqual(response.payload, originalContent);
+      expect(response.statusCode).toBe(200);
+      expect(response.payload).toBe(originalContent);
     });
 
-    test("should return 404 when original file missing but thumbnail exists", async (t: TestContext) => {
-      await createTempDir();
-      t.after(cleanupTempDir);
-
-      const app = build(t);
+    test("should return 404 when original file missing but thumbnail exists", async () => {
+      const app = build();
       const itemId = "THUMBONLY";
       const itemDir = join(tempDir, "images", `${itemId}.info`);
       await mkdir(itemDir, { recursive: true });
@@ -167,15 +162,12 @@ suite("Image serving endpoints", () => {
         url: `/item/image?id=${itemId}&libraryPath=${tempDir}`,
       });
 
-      t.assert.strictEqual(response.statusCode, 404);
-      t.assert.deepStrictEqual(response.json(), { error: "Image not found" });
+      expect(response.statusCode).toBe(404);
+      expect(response.json()).toEqual({ error: "Image not found" });
     });
 
-    test("should return 404 when no thumbnail exists", async (t: TestContext) => {
-      await createTempDir();
-      t.after(cleanupTempDir);
-
-      const app = build(t);
+    test("should return 404 when no thumbnail exists", async () => {
+      const app = build();
       const itemId = "NOTHING";
 
       const response = await app.inject({
@@ -183,22 +175,22 @@ suite("Image serving endpoints", () => {
         url: `/item/image?id=${itemId}&libraryPath=${tempDir}`,
       });
 
-      t.assert.strictEqual(response.statusCode, 404);
-      t.assert.deepStrictEqual(response.json(), { error: "Image not found" });
+      expect(response.statusCode).toBe(404);
+      expect(response.json()).toEqual({ error: "Image not found" });
     });
   });
 
-  suite("Parameter Validation", () => {
-    test("should validate required query parameters for thumbnail", async (t: TestContext) => {
-      const app = build(t);
+  describe("Parameter Validation", () => {
+    test("should validate required query parameters for thumbnail", async () => {
+      const app = build();
 
       // Test missing id
       let response = await app.inject({
         method: "GET",
         url: "/item/thumbnail?libraryPath=/tmp",
       });
-      t.assert.strictEqual(response.statusCode, 400);
-      t.assert.deepStrictEqual(response.json(), {
+      expect(response.statusCode).toBe(400);
+      expect(response.json()).toEqual({
         error: "Missing required parameters: id and libraryPath",
       });
 
@@ -207,33 +199,38 @@ suite("Image serving endpoints", () => {
         method: "GET",
         url: "/item/thumbnail?id=123",
       });
-      t.assert.strictEqual(response.statusCode, 400);
+      expect(response.statusCode).toBe(400);
 
       // Test empty parameters
       response = await app.inject({
         method: "GET",
         url: "/item/thumbnail?id=&libraryPath=",
       });
-      t.assert.strictEqual(response.statusCode, 400);
+      expect(response.statusCode).toBe(400);
     });
 
-    test("should validate required query parameters for image", async (t: TestContext) => {
-      const app = build(t);
+    test("should validate required query parameters for image", async () => {
+      const app = build();
 
       const response = await app.inject({
         method: "GET",
         url: "/item/image?id=",
       });
-      t.assert.strictEqual(response.statusCode, 400);
+      expect(response.statusCode).toBe(400);
     });
   });
 
-  suite("Integration Tests", () => {
-    test("should handle concurrent requests", async (t: TestContext) => {
+  describe("Integration Tests", () => {
+    beforeEach(async () => {
       await createTempDir();
-      t.after(cleanupTempDir);
+    });
 
-      const app = build(t);
+    afterEach(async () => {
+      await cleanupTempDir();
+    });
+
+    test("should handle concurrent requests", async () => {
+      const app = build();
 
       // Create multiple test files
       const promises = [];
@@ -259,16 +256,13 @@ suite("Image serving endpoints", () => {
 
       // All requests should succeed
       responses.forEach((response, index) => {
-        t.assert.strictEqual(response.statusCode, 200);
-        t.assert.strictEqual(response.payload, `content${index}`);
+        expect(response.statusCode).toBe(200);
+        expect(response.payload).toBe(`content${index}`);
       });
     });
 
-    test("should handle large files efficiently", async (t: TestContext) => {
-      await createTempDir();
-      t.after(cleanupTempDir);
-
-      const app = build(t);
+    test("should handle large files efficiently", async () => {
+      const app = build();
       const itemId = "LARGE123";
       const itemDir = join(tempDir, "images", `${itemId}.info`);
       await mkdir(itemDir, { recursive: true });
@@ -284,17 +278,14 @@ suite("Image serving endpoints", () => {
       });
       const duration = Date.now() - start;
 
-      t.assert.strictEqual(response.statusCode, 200);
-      t.assert.strictEqual(response.payload.length, largeContent.length);
+      expect(response.statusCode).toBe(200);
+      expect(response.payload.length).toBe(largeContent.length);
       // Should complete reasonably quickly (less than 2 seconds)
-      t.assert.ok(duration < 2000);
+      expect(duration).toBeLessThan(2000);
     });
 
-    test("should prevent directory traversal attacks", async (t: TestContext) => {
-      await createTempDir();
-      t.after(cleanupTempDir);
-
-      const app = build(t);
+    test("should prevent directory traversal attacks", async () => {
+      const app = build();
 
       // Try to access files outside the library path
       const response = await app.inject({
@@ -303,16 +294,21 @@ suite("Image serving endpoints", () => {
       });
 
       // Should not be able to access files outside library
-      t.assert.strictEqual(response.statusCode, 404);
+      expect(response.statusCode).toBe(404);
     });
   });
 
-  suite("MIME Type Detection", () => {
-    test("should detect correct MIME types for different image formats", async (t: TestContext) => {
+  describe("MIME Type Detection", () => {
+    beforeEach(async () => {
       await createTempDir();
-      t.after(cleanupTempDir);
+    });
 
-      const app = build(t);
+    afterEach(async () => {
+      await cleanupTempDir();
+    });
+
+    test("should detect correct MIME types for different image formats", async () => {
+      const app = build();
       const formats = [
         { ext: "jpg", mime: "image/jpeg" },
         { ext: "jpeg", mime: "image/jpeg" },
@@ -336,16 +332,13 @@ suite("Image serving endpoints", () => {
           url: `/item/thumbnail?id=${itemId}&libraryPath=${tempDir}`,
         });
 
-        t.assert.strictEqual(response.statusCode, 200);
-        t.assert.strictEqual(response.headers["content-type"], format.mime);
+        expect(response.statusCode).toBe(200);
+        expect(response.headers["content-type"]).toBe(format.mime);
       }
     });
 
-    test("should handle case insensitive file extensions", async (t: TestContext) => {
-      await createTempDir();
-      t.after(cleanupTempDir);
-
-      const app = build(t);
+    test("should handle case insensitive file extensions", async () => {
+      const app = build();
       const itemId = "CASE123";
       const itemDir = join(tempDir, "images", `${itemId}.info`);
       await mkdir(itemDir, { recursive: true });
@@ -358,8 +351,8 @@ suite("Image serving endpoints", () => {
         url: `/item/thumbnail?id=${itemId}&libraryPath=${tempDir}`,
       });
 
-      t.assert.strictEqual(response.statusCode, 200);
-      t.assert.strictEqual(response.headers["content-type"], "image/jpeg");
+      expect(response.statusCode).toBe(200);
+      expect(response.headers["content-type"]).toBe("image/jpeg");
     });
   });
 });
