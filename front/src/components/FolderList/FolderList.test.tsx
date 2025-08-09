@@ -64,13 +64,13 @@ describe("FolderList", () => {
     it("passes correct props to FolderItem components", async () => {
       const customFolders = [
         {
-          id: 1,
+          id: "folder-1",
           name: "Test Folder 1",
           children: [],
           items: [],
         },
         {
-          id: 2,
+          id: "folder-2",
           name: "Test Folder 2",
           children: [],
           items: [],
@@ -89,7 +89,7 @@ describe("FolderList", () => {
         mockFolderWithImages, // Has items
         mockEmptyFolder, // Empty
         {
-          id: 999,
+          id: "folder-999",
           name: "Folder with Children",
           children: [mockEmptyFolder],
           items: [],
@@ -108,9 +108,9 @@ describe("FolderList", () => {
 
     it("maintains correct key props for folder items", async () => {
       const folders = [
-        { id: 1, name: "Folder 1", children: [], items: [] },
-        { id: 2, name: "Folder 2", children: [], items: [] },
-        { id: 3, name: "Folder 3", children: [], items: [] },
+        { id: "folder-1", name: "Folder 1", children: [], items: [] },
+        { id: "folder-2", name: "Folder 2", children: [], items: [] },
+        { id: "folder-3", name: "Folder 3", children: [], items: [] },
       ];
 
       const screen = await render(<FolderList folders={folders} />);
@@ -126,7 +126,7 @@ describe("FolderList", () => {
     it("accepts valid FolderData array", async () => {
       const validFolders = [
         {
-          id: 100,
+          id: "folder-100",
           name: "Valid Folder",
           children: [],
           items: [],
@@ -140,10 +140,20 @@ describe("FolderList", () => {
 
     it("handles folders with special characters in names", async () => {
       const specialNameFolders = [
-        { id: 1, name: "Folder with Spaces", children: [], items: [] },
-        { id: 2, name: "Folder-with-Dashes", children: [], items: [] },
-        { id: 3, name: "Folder_with_Underscores", children: [], items: [] },
-        { id: 4, name: "Folder (with parentheses)", children: [], items: [] },
+        { id: "folder-1", name: "Folder with Spaces", children: [], items: [] },
+        { id: "folder-2", name: "Folder-with-Dashes", children: [], items: [] },
+        {
+          id: "folder-3",
+          name: "Folder_with_Underscores",
+          children: [],
+          items: [],
+        },
+        {
+          id: "folder-4",
+          name: "Folder (with parentheses)",
+          children: [],
+          items: [],
+        },
       ];
 
       const screen = await render(<FolderList folders={specialNameFolders} />);
@@ -165,7 +175,7 @@ describe("FolderList", () => {
 
     it("handles very long folder names", async () => {
       const longNameFolder = {
-        id: 1,
+        id: "folder-1",
         name: "This is a very long folder name that should still render correctly without breaking the layout or component functionality",
         children: [],
         items: [],
@@ -180,7 +190,7 @@ describe("FolderList", () => {
   describe("Edge Cases", () => {
     it("handles folder with empty name", async () => {
       const emptyNameFolder = {
-        id: 1,
+        id: "folder-empty",
         name: "",
         children: [],
         items: [],
@@ -195,8 +205,8 @@ describe("FolderList", () => {
 
     it("handles folders with duplicate names", async () => {
       const duplicateNameFolders = [
-        { id: 1, name: "Same Name", children: [], items: [] },
-        { id: 2, name: "Same Name", children: [], items: [] },
+        { id: "folder-1", name: "Same Name", children: [], items: [] },
+        { id: "folder-2", name: "Same Name", children: [], items: [] },
       ];
 
       const screen = await render(
@@ -210,7 +220,7 @@ describe("FolderList", () => {
 
     it("handles folder with zero ID", async () => {
       const zeroIdFolder = {
-        id: 0,
+        id: "folder-0",
         name: "Zero ID Folder",
         children: [],
         items: [],

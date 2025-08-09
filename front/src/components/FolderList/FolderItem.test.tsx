@@ -62,7 +62,7 @@ describe("FolderItem", () => {
   describe("Props & Integration", () => {
     it("accepts FolderData prop correctly", async () => {
       const customFolder = {
-        id: 999,
+        id: "folder-999",
         name: "Custom Test Folder",
         children: [],
         items: [],
@@ -100,9 +100,9 @@ describe("FolderItem", () => {
 
     it("renders folder name correctly for different folder names", async () => {
       const foldersWithDifferentNames = [
-        { id: 1, name: "My Photos", children: [], items: [] },
-        { id: 2, name: "Work Documents", children: [], items: [] },
-        { id: 3, name: "Travel 2024", children: [], items: [] },
+        { id: "folder-1", name: "My Photos", children: [], items: [] },
+        { id: "folder-2", name: "Work Documents", children: [], items: [] },
+        { id: "folder-3", name: "Travel 2024", children: [], items: [] },
       ];
 
       for (const folder of foldersWithDifferentNames) {
@@ -112,7 +112,12 @@ describe("FolderItem", () => {
     });
 
     it("handles empty folder name edge case", async () => {
-      const emptyNameFolder = { id: 4, name: "", children: [], items: [] };
+      const emptyNameFolder = {
+        id: "folder-4",
+        name: "",
+        children: [],
+        items: [],
+      };
       const screen = await render(<FolderItem folder={emptyNameFolder} />);
 
       // Should render without error even with empty name

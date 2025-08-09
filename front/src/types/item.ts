@@ -1,5 +1,5 @@
 export interface Item {
-  id: number;
+  id: string;
   original: string;
   thumbnail: string;
   width: number;
@@ -7,7 +7,7 @@ export interface Item {
 }
 
 export interface Folder {
-  id: number;
+  id: string;
   name: string;
   children: Folder[];
   items: Item[];

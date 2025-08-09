@@ -39,9 +39,9 @@ describe("ItemList", () => {
       expect(images.length).toBe(3);
 
       // Check specific image attributes
-      await expect.element(images[0]).toHaveAttribute("alt", "1");
-      await expect.element(images[1]).toHaveAttribute("alt", "2");
-      await expect.element(images[2]).toHaveAttribute("alt", "3");
+      await expect.element(images[0]).toHaveAttribute("alt", "item-1");
+      await expect.element(images[1]).toHaveAttribute("alt", "item-2");
+      await expect.element(images[2]).toHaveAttribute("alt", "item-3");
     });
 
     it("renders single image correctly", async () => {
@@ -98,21 +98,21 @@ describe("ItemList", () => {
     it("handles items with different dimensions", async () => {
       const differentSizeImages = [
         {
-          id: 1,
+          id: "item-1",
           original: "test1.jpg",
           thumbnail: "thumb1.jpg",
           width: 800,
           height: 600,
         },
         {
-          id: 2,
+          id: "item-2",
           original: "test2.jpg",
           thumbnail: "thumb2.jpg",
           width: 1920,
           height: 1080,
         },
         {
-          id: 3,
+          id: "item-3",
           original: "test3.jpg",
           thumbnail: "thumb3.jpg",
           width: 400,
