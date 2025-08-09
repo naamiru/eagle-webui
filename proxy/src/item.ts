@@ -4,8 +4,6 @@ import { callEagleApi } from "./eagle-api";
 
 interface Item {
   id: string;
-  original: string;
-  thumbnail: string;
   width: number;
   height: number;
 }
@@ -29,10 +27,6 @@ interface ItemListQuery {
 function transformEagleItem(eagleItem: EagleItem): Item {
   return {
     id: eagleItem.id,
-    original:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600",
-    thumbnail:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300",
     width: eagleItem.width,
     height: eagleItem.height,
   };

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tsx src/server.ts",
     "dev": "tsx --watch src/server.ts",
-    "test": "node --test --test-only --import tsx 'src/**/*.test.ts'",
+    "test": "node --test --experimental-test-module-mocks --import tsx 'src/**/*.test.ts'",
     "lint": "biome check .",
     "lint:fix": "biome check --write ."
   },
@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@fastify/cors": "^11.1.0",
+    "@fastify/send": "^4.1.0",
     "fastify": "^5.4.0",
     "fastify-plugin": "^5.0.1",
     "pino-pretty": "^13.1.1"

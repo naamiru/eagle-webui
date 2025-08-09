@@ -148,10 +148,10 @@ async function streamImageFile(
 
 #### Response Headers
 
-Both endpoints should set:
-- `Content-Type`: Detected MIME type
-- `Cache-Control`: `public, max-age=86400` (24 hours)
+Both endpoints will automatically set appropriate headers via `@fastify/static`:
+- `Content-Type`: Automatically detected MIME type
 - `Last-Modified`: File modification time
+- Other standard HTTP headers for static file serving
 
 ### 2. App Registration: `proxy/src/app.ts`
 
