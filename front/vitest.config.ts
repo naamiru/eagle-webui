@@ -5,7 +5,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   test: {
-    setupFiles: ["./src/test/setup.ts"],
+    setupFiles: ["./app/test/setup.ts"],
     browser: {
       enabled: true,
       headless: true,
@@ -16,10 +16,8 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: [
-      "@tanstack/react-router",
       "@tanstack/react-query",
       "@tanstack/react-query-devtools",
-      "@tanstack/react-router-devtools",
       "react-dom/client",
     ],
   },

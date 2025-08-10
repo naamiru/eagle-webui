@@ -6,10 +6,6 @@
   height: 100%;
 }
 
-.link:hover .item {
-  opacity: 0.9;
-}
-
 .item {
   position: relative;
   width: 100%;
@@ -19,6 +15,10 @@
   cursor: pointer;
   padding: 5%;
   transition: opacity 0.2s ease;
+}
+
+.link:hover .item {
+  opacity: 0.9;
 }
 
 .thumbnail {

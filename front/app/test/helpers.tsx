@@ -1,11 +1,5 @@
-import {
-  createMemoryHistory,
-  createRootRoute,
-  createRouter,
-  RouterProvider,
-  Outlet,
-} from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { createRoutesStub } from "react-router";
 import { test as testBase } from "vitest";
 import LibraryContext from "~/contexts/LibraryContext";
 import type { Library } from "~/types/item";
@@ -25,22 +19,18 @@ export function TestWrapper({
   library = defaultTestLibrary,
 }: TestWrapperProps) {
   // Create a minimal test router
-  const rootRoute = createRootRoute({
-    component: () => (
-      <LibraryContext.Provider value={library}>
-        <Outlet />
-        {children}
-      </LibraryContext.Provider>
-    ),
-  });
-  
-  const testRouter = createRouter({
-    routeTree: rootRoute,
-    history: createMemoryHistory({ initialEntries: ["/"] }),
-    defaultPreload: "intent",
-  });
+  const Stub = createRoutesStub([
+    {
+      path: "/",
+      Component: () => (
+        <LibraryContext.Provider value={library}>
+          {children}
+        </LibraryContext.Provider>
+      ),
+    },
+  ]);
 
-  return <RouterProvider router={testRouter} />;
+  return <Stub initialEntries={["/"]} />;
 }
 
 export const test = testBase.extend({

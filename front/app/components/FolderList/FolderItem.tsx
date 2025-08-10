@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 import { useLibrary } from "~/contexts/LibraryContext";
 import type { Folder } from "~/types/item";
 import { getThumbnailUrl } from "~/utils/image";
@@ -17,11 +17,7 @@ export function FolderItem({ folder }: FolderItemProps) {
     : undefined;
 
   return (
-    <Link
-      to="/folders/$folderId"
-      params={{ folderId: folder.id }}
-      className={styles.link}
-    >
+    <Link to={`/folders/${folder.id}`} className={styles.link}>
       <div className={styles.item}>
         {thumbnailUrl ? (
           <img
