@@ -14,8 +14,6 @@ interface Folder {
 interface EagleFolder {
   id: string;
   name: string;
-  imageCount: number;
-  descendantImageCount: number;
   children?: EagleFolder[];
 }
 
@@ -34,25 +32,10 @@ function collectDescendantIds(folder: EagleFolder): string[] {
 
 async function fetchCoverImage(folder: EagleFolder): Promise<Item | undefined> {
   try {
-    let targetIds: string[] = [];
-
-    // Priority 1: If has direct images, search current folder only
-    if (folder.imageCount > 0) {
-      targetIds = [folder.id];
-    }
-    // Priority 2: If has descendant images, search all descendants
-    else if (folder.descendantImageCount > 0) {
-      targetIds = collectDescendantIds(folder);
-    }
-    // No images: return undefined
-    else {
-      return undefined;
-    }
-
-    const folderParams = targetIds.join(",");
-    const queryParams = new URLSearchParams({
+    // Priority 1: Try to get image from current folder first
+    let queryParams = new URLSearchParams({
       limit: "1",
-      folders: folderParams,
+      folders: folder.id,
     });
 
     const items = await callEagleApi<EagleItem[]>(
@@ -61,6 +44,23 @@ async function fetchCoverImage(folder: EagleFolder): Promise<Item | undefined> {
 
     if (items.length > 0) {
       return transformEagleItem(items[0]);
+    }
+
+    // Priority 2: Try descendants if current folder is empty
+    const descendantIds = collectDescendantIds(folder);
+    if (descendantIds.length > 0) {
+      queryParams = new URLSearchParams({
+        limit: "1",
+        folders: descendantIds.join(","),
+      });
+
+      const descendantItems = await callEagleApi<EagleItem[]>(
+        `/api/item/list?${queryParams.toString()}`,
+      );
+
+      if (descendantItems.length > 0) {
+        return transformEagleItem(descendantItems[0]);
+      }
     }
 
     return undefined;

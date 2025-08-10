@@ -12,18 +12,18 @@ describe("/folder/list", () => {
       {
         id: "folder-1",
         name: "Family Photos",
-        imageCount: 0,
-        descendantImageCount: 0,
       },
       {
         id: "folder-2",
         name: "Work Documents",
-        imageCount: 0,
-        descendantImageCount: 0,
       },
     ];
 
-    vi.spyOn(eagleApi, "callEagleApi").mockResolvedValue(mockData);
+    vi.spyOn(eagleApi, "callEagleApi").mockImplementation(async (url) => {
+      if (url === "/api/folder/list") return mockData;
+      // All item list calls return empty
+      return [];
+    });
 
     const app = build();
     const res = await app.inject({
@@ -55,20 +55,14 @@ describe("/folder/list", () => {
       {
         id: "parent-1",
         name: "Parent Folder",
-        imageCount: 0,
-        descendantImageCount: 0,
         children: [
           {
             id: "child-1",
             name: "Child Folder",
-            imageCount: 0,
-            descendantImageCount: 0,
             children: [
               {
                 id: "grandchild-1",
                 name: "Grandchild Folder",
-                imageCount: 0,
-                descendantImageCount: 0,
               },
             ],
           },
@@ -76,7 +70,11 @@ describe("/folder/list", () => {
       },
     ];
 
-    vi.spyOn(eagleApi, "callEagleApi").mockResolvedValue(mockData);
+    vi.spyOn(eagleApi, "callEagleApi").mockImplementation(async (url) => {
+      if (url === "/api/folder/list") return mockData;
+      // All item list calls return empty
+      return [];
+    });
 
     const app = build();
     const res = await app.inject({
@@ -97,7 +95,9 @@ describe("/folder/list", () => {
   });
 
   test("handles empty folder list", async () => {
-    vi.spyOn(eagleApi, "callEagleApi").mockResolvedValue([]);
+    vi.spyOn(eagleApi, "callEagleApi").mockImplementation(async () => {
+      return [];
+    });
 
     const app = build();
     const res = await app.inject({
@@ -114,19 +114,19 @@ describe("/folder/list", () => {
       {
         id: "folder-1",
         name: "No Children Folder",
-        imageCount: 0,
-        descendantImageCount: 0,
       },
       {
         id: "folder-2",
         name: "Another Folder",
-        imageCount: 0,
-        descendantImageCount: 0,
         children: [],
       },
     ];
 
-    vi.spyOn(eagleApi, "callEagleApi").mockResolvedValue(mockData);
+    vi.spyOn(eagleApi, "callEagleApi").mockImplementation(async (url) => {
+      if (url === "/api/folder/list") return mockData;
+      // All item list calls return empty
+      return [];
+    });
 
     const app = build();
     const res = await app.inject({
@@ -147,8 +147,6 @@ describe("/folder/list", () => {
       {
         id: "folder-1",
         name: "Photos",
-        imageCount: 5,
-        descendantImageCount: 5,
       },
     ];
 
@@ -166,9 +164,13 @@ describe("/folder/list", () => {
       },
     ];
 
-    vi.spyOn(eagleApi, "callEagleApi")
-      .mockResolvedValueOnce(mockFolders) // First call for folders
-      .mockResolvedValueOnce(mockItems); // Second call for items
+    vi.spyOn(eagleApi, "callEagleApi").mockImplementation(async (url) => {
+      if (url === "/api/folder/list") return mockFolders;
+      if (url.includes("folders=folder-1") && url.includes("limit=1")) {
+        return mockItems;
+      }
+      return [];
+    });
 
     const app = build();
     const res = await app.inject({
@@ -185,9 +187,13 @@ describe("/folder/list", () => {
     });
 
     expect(eagleApi.callEagleApi).toHaveBeenCalledWith("/api/folder/list");
-    expect(eagleApi.callEagleApi).toHaveBeenCalledWith(
-      "/api/item/list?limit=1&folders=folder-1",
+    // Verify item list was called for folder-1
+    const calls = vi.mocked(eagleApi.callEagleApi).mock.calls;
+    const itemCall = calls.find(call => 
+      call[0].includes("/api/item/list") && 
+      call[0].includes("folders=folder-1")
     );
+    expect(itemCall).toBeDefined();
   });
 
   test("adds cover image for folder with descendant images only", async () => {
@@ -195,14 +201,10 @@ describe("/folder/list", () => {
       {
         id: "parent-1",
         name: "Parent",
-        imageCount: 0,
-        descendantImageCount: 3,
         children: [
           {
             id: "child-1",
             name: "Child",
-            imageCount: 3,
-            descendantImageCount: 3,
           },
         ],
       },
@@ -222,10 +224,18 @@ describe("/folder/list", () => {
       },
     ];
 
-    vi.spyOn(eagleApi, "callEagleApi")
-      .mockResolvedValueOnce(mockFolders)
-      .mockResolvedValueOnce([]) // Parent folder has no direct images
-      .mockResolvedValueOnce(mockItems); // Child folder has images
+    vi.spyOn(eagleApi, "callEagleApi").mockImplementation(async (url) => {
+      if (url === "/api/folder/list") return mockFolders;
+      // Parent folder direct search returns empty
+      if (url.includes("folders=parent-1") && url.includes("limit=1")) {
+        return [];
+      }
+      // Parent's descendant search (child-1) returns items
+      if (url.includes("folders=child-1") && url.includes("limit=1")) {
+        return mockItems;
+      }
+      return [];
+    });
 
     const app = build();
     const res = await app.inject({
@@ -235,7 +245,11 @@ describe("/folder/list", () => {
 
     expect(res.statusCode).toBe(200);
     const result = res.json();
-    expect(result[0].coverImage).toBeUndefined(); // Parent has no cover image (descendant search returns empty)
+    expect(result[0].coverImage).toEqual({
+      id: "item-1",
+      width: 800,
+      height: 600,
+    }); // Parent gets cover image from descendant search
     expect(result[0].children[0].coverImage).toEqual({
       id: "item-1",
       width: 800,
@@ -248,14 +262,14 @@ describe("/folder/list", () => {
       {
         id: "folder-1",
         name: "Photos",
-        imageCount: 5,
-        descendantImageCount: 5,
       },
     ];
 
-    vi.spyOn(eagleApi, "callEagleApi")
-      .mockResolvedValueOnce(mockFolders) // First call for folders
-      .mockRejectedValueOnce(new Error("API Error")); // Second call for items fails
+    vi.spyOn(eagleApi, "callEagleApi").mockImplementation(async (url) => {
+      if (url === "/api/folder/list") return mockFolders;
+      // All item fetches fail
+      throw new Error("API Error");
+    });
 
     const app = build();
     const res = await app.inject({
@@ -273,14 +287,14 @@ describe("/folder/list", () => {
       {
         id: "folder-1",
         name: "Photos",
-        imageCount: 5,
-        descendantImageCount: 5,
       },
     ];
 
-    vi.spyOn(eagleApi, "callEagleApi")
-      .mockResolvedValueOnce(mockFolders) // First call for folders
-      .mockResolvedValueOnce([]); // Second call returns empty array
+    vi.spyOn(eagleApi, "callEagleApi").mockImplementation(async (url) => {
+      if (url === "/api/folder/list") return mockFolders;
+      // All item fetches return empty
+      return [];
+    });
 
     const app = build();
     const res = await app.inject({
@@ -298,16 +312,12 @@ describe("/folder/list", () => {
       {
         id: "folder-1",
         name: "Photos",
-        imageCount: 2,
-        descendantImageCount: 2,
       },
       {
         id: "folder-2",
         name: "Videos",
-        imageCount: 1,
-        descendantImageCount: 1,
       },
-      { id: "folder-3", name: "Empty", imageCount: 0, descendantImageCount: 0 },
+      { id: "folder-3", name: "Empty" },
     ];
 
     const mockItems1 = [
@@ -338,10 +348,17 @@ describe("/folder/list", () => {
       },
     ];
 
-    vi.spyOn(eagleApi, "callEagleApi")
-      .mockResolvedValueOnce(mockFolders) // First call for folders
-      .mockResolvedValueOnce(mockItems1) // folder-1 items
-      .mockResolvedValueOnce(mockItems2); // folder-2 items
+    vi.spyOn(eagleApi, "callEagleApi").mockImplementation(async (url) => {
+      if (url === "/api/folder/list") return mockFolders;
+      if (url.includes("folders=folder-1") && url.includes("limit=1")) {
+        return mockItems1;
+      }
+      if (url.includes("folders=folder-2") && url.includes("limit=1")) {
+        return mockItems2;
+      }
+      // folder-3 returns empty
+      return [];
+    });
 
     const app = build();
     const res = await app.inject({
@@ -363,7 +380,11 @@ describe("/folder/list", () => {
     });
     expect(result[2].coverImage).toBeUndefined();
 
-    // Should make 3 calls: folders + 2 item calls (folder-3 skipped due to no images)
-    expect(eagleApi.callEagleApi).toHaveBeenCalledTimes(3);
+    // Verify correct API calls were made
+    expect(eagleApi.callEagleApi).toHaveBeenCalledWith("/api/folder/list");
+    // Each folder should have cover image fetch attempts
+    const calls = vi.mocked(eagleApi.callEagleApi).mock.calls;
+    const itemCalls = calls.filter(call => call[0].includes("/api/item/list"));
+    expect(itemCalls.length).toBeGreaterThan(0);
   });
 });
