@@ -2,13 +2,13 @@ import type { FastifyInstance, FastifyPluginAsync } from "fastify";
 import fp from "fastify-plugin";
 import { callEagleApi } from "./eagle-api";
 
-interface Item {
+export interface Item {
   id: string;
   width: number;
   height: number;
 }
 
-interface EagleItem {
+export interface EagleItem {
   id: string;
   name: string;
   size: number;
@@ -24,7 +24,7 @@ interface ItemListQuery {
   limit?: number;
 }
 
-function transformEagleItem(eagleItem: EagleItem): Item {
+export function transformEagleItem(eagleItem: EagleItem): Item {
   return {
     id: eagleItem.id,
     width: eagleItem.width,

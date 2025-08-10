@@ -35,7 +35,7 @@ test("callEagleApi throws EagleApiError on HTTP error", async () => {
   } as Response);
 
   await expect(callEagleApi("/api/folder/list")).rejects.toThrow();
-  
+
   try {
     await callEagleApi("/api/folder/list");
   } catch (error) {
@@ -58,7 +58,7 @@ test("callEagleApi throws EagleApiError on Eagle error status", async () => {
   } as Response);
 
   await expect(callEagleApi("/api/folder/list")).rejects.toThrow();
-  
+
   try {
     await callEagleApi("/api/folder/list");
   } catch (error) {
@@ -75,7 +75,7 @@ test("callEagleApi throws EagleApiError on timeout", async () => {
   vi.spyOn(globalThis, "fetch").mockRejectedValue(error);
 
   await expect(callEagleApi("/api/folder/list")).rejects.toThrow();
-  
+
   try {
     await callEagleApi("/api/folder/list");
   } catch (error) {
@@ -92,7 +92,7 @@ test("callEagleApi throws EagleApiError on ECONNREFUSED", async () => {
   vi.spyOn(globalThis, "fetch").mockRejectedValue(error);
 
   await expect(callEagleApi("/api/folder/list")).rejects.toThrow();
-  
+
   try {
     await callEagleApi("/api/folder/list");
   } catch (error) {
@@ -109,7 +109,7 @@ test("callEagleApi throws EagleApiError on network error", async () => {
   vi.spyOn(globalThis, "fetch").mockRejectedValue(error);
 
   await expect(callEagleApi("/api/folder/list")).rejects.toThrow();
-  
+
   try {
     await callEagleApi("/api/folder/list");
   } catch (error) {
@@ -129,7 +129,7 @@ test("callEagleApi throws EagleApiError on JSON parse error", async () => {
   } as unknown as Response);
 
   await expect(callEagleApi("/api/folder/list")).rejects.toThrow();
-  
+
   try {
     await callEagleApi("/api/folder/list");
   } catch (error) {

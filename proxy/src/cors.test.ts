@@ -163,7 +163,7 @@ test("preflight request without origin header", async () => {
     },
   });
 
-  // When origin: true is set and no origin header is provided, 
+  // When origin: true is set and no origin header is provided,
   // Fastify CORS returns 400 for preflight requests
   expect(res.statusCode).toBe(400);
 });
