@@ -1,7 +1,12 @@
 import { describe, expect } from "vitest";
 import { render } from "vitest-browser-react";
 import { test as it, TestWrapper } from "~/test/helpers";
-import { mockEmptyFolder, mockFolderWithImages } from "./__fixtures__/folders";
+import {
+  mockEmptyFolder,
+  mockFolderWithImages,
+  mockFolderWithoutCoverImage,
+  mockLegacyFolder,
+} from "./__fixtures__/folders";
 import { FolderItem } from "./FolderItem";
 
 describe("FolderItem", () => {
@@ -18,7 +23,7 @@ describe("FolderItem", () => {
         .toBeVisible();
     });
 
-    it("shows thumbnail image when getFolderThumbnail() returns URL", async () => {
+    it("shows thumbnail image when folder has coverImage", async () => {
       const screen = await render(
         <TestWrapper>
           <FolderItem folder={mockFolderWithImages} />
@@ -30,7 +35,7 @@ describe("FolderItem", () => {
       await expect
         .element(img)
         .toHaveAttribute("alt", `Folder: ${mockFolderWithImages.name}`);
-      // Check for dynamic URL with first item's ID
+      // Check for dynamic URL with cover image's ID
       const expectedUrl = `http://localhost:57821/item/thumbnail?id=item-1&libraryPath=%2Ftest%2Flibrary%2Fpath`;
       await expect.element(img).toHaveAttribute("src", expectedUrl);
     });
@@ -100,16 +105,16 @@ describe("FolderItem", () => {
         .toBeVisible();
     });
 
-    it("handles folder with nested images", async () => {
+    it("handles folder with cover image", async () => {
       const screen = await render(
         <TestWrapper>
           <FolderItem folder={mockFolderWithImages} />
         </TestWrapper>,
       );
 
-      // Should show thumbnail from first image in folder
+      // Should show thumbnail from cover image
       const img = screen.getByRole("img");
-      // Check for dynamic URL with first item's ID
+      // Check for dynamic URL with cover image's ID
       const expectedUrl = `http://localhost:57821/item/thumbnail?id=item-1&libraryPath=%2Ftest%2Flibrary%2Fpath`;
       await expect.element(img).toHaveAttribute("src", expectedUrl);
     });
@@ -165,6 +170,67 @@ describe("FolderItem", () => {
       // Component should exist and not crash
       const images = screen.getByRole("img").elements();
       expect(images.length).toBe(0); // No images since empty folder with empty name
+    });
+  });
+
+  describe("Cover Image Display", () => {
+    it("shows thumbnail when folder has coverImage property", async () => {
+      const screen = await render(
+        <TestWrapper>
+          <FolderItem folder={mockFolderWithImages} />
+        </TestWrapper>,
+      );
+
+      const img = screen.getByRole("img");
+      await expect.element(img).toBeVisible();
+      const expectedUrl = `http://localhost:57821/item/thumbnail?id=item-1&libraryPath=%2Ftest%2Flibrary%2Fpath`;
+      await expect.element(img).toHaveAttribute("src", expectedUrl);
+    });
+
+    it("shows gray placeholder when folder has coverImage undefined", async () => {
+      const screen = await render(
+        <TestWrapper>
+          <FolderItem folder={mockFolderWithoutCoverImage} />
+        </TestWrapper>,
+      );
+
+      // Should not have an img element
+      const images = screen.getByRole("img").elements();
+      expect(images.length).toBe(0);
+
+      // Should show folder name
+      await expect
+        .element(screen.getByText(mockFolderWithoutCoverImage.name))
+        .toBeVisible();
+    });
+
+    it("shows gray placeholder when folder has no coverImage property (legacy)", async () => {
+      const screen = await render(
+        <TestWrapper>
+          <FolderItem folder={mockLegacyFolder} />
+        </TestWrapper>,
+      );
+
+      // Should not have an img element
+      const images = screen.getByRole("img").elements();
+      expect(images.length).toBe(0);
+
+      // Should show folder name
+      await expect
+        .element(screen.getByText(mockLegacyFolder.name))
+        .toBeVisible();
+    });
+
+    it("constructs thumbnail URL correctly with coverImage.id", async () => {
+      const screen = await render(
+        <TestWrapper>
+          <FolderItem folder={mockFolderWithImages} />
+        </TestWrapper>,
+      );
+
+      const img = screen.getByRole("img");
+      const expectedUrl = `http://localhost:57821/item/thumbnail?id=item-1&libraryPath=%2Ftest%2Flibrary%2Fpath`;
+      await expect.element(img).toHaveAttribute("src", expectedUrl);
     });
   });
 });

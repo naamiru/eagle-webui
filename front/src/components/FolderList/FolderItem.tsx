@@ -2,7 +2,6 @@ import { useLibrary } from "~/contexts/LibraryContext";
 import type { Folder } from "~/types/item";
 import { getThumbnailUrl } from "~/utils/image";
 import styles from "./FolderItem.module.css";
-import { getFirstFolderImage } from "./utils";
 
 interface FolderItemProps {
   folder: Folder;
@@ -10,7 +9,7 @@ interface FolderItemProps {
 
 export function FolderItem({ folder }: FolderItemProps) {
   const library = useLibrary();
-  const firstImage = getFirstFolderImage(folder);
+  const firstImage = folder.coverImage;
 
   const thumbnailUrl = firstImage
     ? getThumbnailUrl(firstImage.id, library.path)

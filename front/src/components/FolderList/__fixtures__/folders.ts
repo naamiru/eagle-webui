@@ -23,5 +23,21 @@ export const mockFolderWithImages: Folder = {
   id: "folder-102",
   name: "Photos",
   children: [],
-  items: [mockImage1, mockImage2],
+  items: [],
+  coverImage: mockImage1,
+};
+
+export const mockFolderWithoutCoverImage: Folder = {
+  id: "folder-103",
+  name: "Photos without Cover",
+  children: [],
+  items: [],
+  coverImage: undefined,
+};
+
+export const mockLegacyFolder: Folder = {
+  id: "folder-104",
+  name: "Legacy Folder",
+  children: [],
+  items: [],
 };

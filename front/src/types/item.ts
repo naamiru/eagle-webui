@@ -9,6 +9,7 @@ export interface Folder {
   name: string;
   children: Folder[];
   items: Item[];
+  coverImage?: Item;
 }
 
 export interface Library {
