@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect } from "vitest";
 import { render } from "vitest-browser-react";
-import { TestWrapper } from "~/test/helpers";
+import { test as it, TestWrapper } from "~/test/helpers";
 import { mockImage1, mockImage2, mockImages } from "./__fixtures__/images";
 import { ItemList } from "./ItemList";
 

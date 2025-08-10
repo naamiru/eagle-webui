@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect } from "vitest";
 import { render } from "vitest-browser-react";
-import { TestWrapper } from "~/test/helpers";
+import { test as it, TestWrapper } from "~/test/helpers";
 import { mockEmptyFolder, mockFolderWithImages } from "./__fixtures__/folders";
 import { FolderList } from "./FolderList";
 
