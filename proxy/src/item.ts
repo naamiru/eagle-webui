@@ -22,6 +22,7 @@ export interface EagleItem {
 
 interface ItemListQuery {
   limit?: number;
+  folder?: string;
 }
 
 export function transformEagleItem(eagleItem: EagleItem): Item {
@@ -44,12 +45,18 @@ const routes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     // the limit parameter and fetch items from the beginning.
     // For large collections, increase the limit rather than using pagination.
     const limit = request.query.limit ?? 1000;
+    const folder = request.query.folder?.trim();
 
-    fastify.log.info({ limit }, "Fetching items from Eagle API");
+    fastify.log.info({ limit, folder }, "Fetching items from Eagle API");
 
     const queryParams = new URLSearchParams({
       limit: limit.toString(),
     });
+
+    // Add folders parameter if folder ID is provided
+    if (folder && folder.length > 0) {
+      queryParams.set("folders", folder);
+    }
 
     const response = await callEagleApi<EagleItem[]>(
       `/api/item/list?${queryParams.toString()}`,

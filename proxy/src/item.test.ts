@@ -175,4 +175,237 @@ describe("/item/list", () => {
     expect(Array.isArray(items)).toBe(true);
     expect(items.length).toBe(0);
   });
+
+  describe("folder parameter handling", () => {
+    test("accepts folder parameter and passes to Eagle API", async () => {
+      const mockData = [
+        {
+          id: "item1",
+          name: "Test Image",
+          size: 1024,
+          ext: "jpg",
+          tags: ["test"],
+          folders: ["folder123"],
+          url: "file:///path/to/image.jpg",
+          width: 1920,
+          height: 1080,
+        },
+      ];
+
+      const mockFn = vi
+        .spyOn(eagleApi, "callEagleApi")
+        .mockResolvedValue(mockData);
+
+      const app = build();
+      const res = await app.inject({
+        method: "GET",
+        url: "/item/list?folder=folder123",
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(mockFn).toHaveBeenCalledWith(
+        "/api/item/list?limit=1000&folders=folder123",
+      );
+    });
+
+    test("works without folder parameter (backward compatibility)", async () => {
+      const mockData = [
+        {
+          id: "item1",
+          name: "Test Image",
+          size: 1024,
+          ext: "jpg",
+          tags: [],
+          folders: [],
+          url: "file:///path/to/image.jpg",
+          width: 1920,
+          height: 1080,
+        },
+      ];
+
+      const mockFn = vi
+        .spyOn(eagleApi, "callEagleApi")
+        .mockResolvedValue(mockData);
+
+      const app = build();
+      const res = await app.inject({
+        method: "GET",
+        url: "/item/list",
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(mockFn).toHaveBeenCalledWith("/api/item/list?limit=1000");
+    });
+
+    test("ignores empty folder parameter", async () => {
+      const mockData: unknown[] = [];
+
+      const mockFn = vi
+        .spyOn(eagleApi, "callEagleApi")
+        .mockResolvedValue(mockData);
+
+      const app = build();
+      const res = await app.inject({
+        method: "GET",
+        url: "/item/list?folder=",
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(mockFn).toHaveBeenCalledWith("/api/item/list?limit=1000");
+    });
+
+    test("ignores whitespace-only folder parameter", async () => {
+      const mockData: unknown[] = [];
+
+      const mockFn = vi
+        .spyOn(eagleApi, "callEagleApi")
+        .mockResolvedValue(mockData);
+
+      const app = build();
+      const res = await app.inject({
+        method: "GET",
+        url: "/item/list?folder=%20%20%20",
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(mockFn).toHaveBeenCalledWith("/api/item/list?limit=1000");
+    });
+
+    test("handles both folder and limit parameters", async () => {
+      const mockData = [
+        {
+          id: "item1",
+          name: "Test Image",
+          size: 1024,
+          ext: "jpg",
+          tags: [],
+          folders: ["folder456"],
+          url: "file:///path/to/image.jpg",
+          width: 1920,
+          height: 1080,
+        },
+      ];
+
+      const mockFn = vi
+        .spyOn(eagleApi, "callEagleApi")
+        .mockResolvedValue(mockData);
+
+      const app = build();
+      const res = await app.inject({
+        method: "GET",
+        url: "/item/list?folder=folder456&limit=100",
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(mockFn).toHaveBeenCalledWith(
+        "/api/item/list?limit=100&folders=folder456",
+      );
+    });
+
+    test("uses default limit when only folder provided", async () => {
+      const mockData: unknown[] = [];
+
+      const mockFn = vi
+        .spyOn(eagleApi, "callEagleApi")
+        .mockResolvedValue(mockData);
+
+      const app = build();
+      const res = await app.inject({
+        method: "GET",
+        url: "/item/list?folder=folder789",
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(mockFn).toHaveBeenCalledWith(
+        "/api/item/list?limit=1000&folders=folder789",
+      );
+    });
+
+    test("handles special characters in folder ID", async () => {
+      const mockData: unknown[] = [];
+
+      const mockFn = vi
+        .spyOn(eagleApi, "callEagleApi")
+        .mockResolvedValue(mockData);
+
+      const app = build();
+      const res = await app.inject({
+        method: "GET",
+        url: "/item/list?folder=folder%20with%20spaces%26special%40chars",
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(mockFn).toHaveBeenCalledWith(
+        "/api/item/list?limit=1000&folders=folder+with+spaces%26special%40chars",
+      );
+    });
+
+    test("returns empty array for non-existent folder", async () => {
+      const mockData: unknown[] = [];
+
+      vi.spyOn(eagleApi, "callEagleApi").mockResolvedValue(mockData);
+
+      const app = build();
+      const res = await app.inject({
+        method: "GET",
+        url: "/item/list?folder=nonexistent",
+      });
+
+      expect(res.statusCode).toBe(200);
+      const items = res.json();
+
+      expect(Array.isArray(items)).toBe(true);
+      expect(items.length).toBe(0);
+    });
+
+    test("transforms folder-specific items correctly", async () => {
+      const mockData = [
+        {
+          id: "item1",
+          name: "Folder Image 1",
+          size: 1024,
+          ext: "jpg",
+          tags: ["folder-specific"],
+          folders: ["target-folder"],
+          url: "file:///path/to/image1.jpg",
+          width: 1920,
+          height: 1080,
+        },
+        {
+          id: "item2",
+          name: "Folder Image 2",
+          size: 2048,
+          ext: "png",
+          tags: ["folder-specific"],
+          folders: ["target-folder"],
+          url: "file:///path/to/image2.png",
+          width: 1280,
+          height: 720,
+        },
+      ];
+
+      vi.spyOn(eagleApi, "callEagleApi").mockResolvedValue(mockData);
+
+      const app = build();
+      const res = await app.inject({
+        method: "GET",
+        url: "/item/list?folder=target-folder",
+      });
+
+      expect(res.statusCode).toBe(200);
+      const items = res.json();
+
+      expect(items.length).toBe(2);
+      expect(items[0]).toEqual({
+        id: "item1",
+        width: 1920,
+        height: 1080,
+      });
+      expect(items[1]).toEqual({
+        id: "item2",
+        width: 1280,
+        height: 720,
+      });
+    });
+  });
 });
