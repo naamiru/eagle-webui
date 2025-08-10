@@ -1,5 +1,5 @@
-import { access, glob } from "node:fs/promises";
-import { basename, dirname, join } from "node:path";
+import { readdir } from "node:fs/promises";
+import { basename, join, parse } from "node:path";
 import type { Readable } from "node:stream";
 import send from "@fastify/send";
 import type {
@@ -22,20 +22,46 @@ interface ImageReqRep {
   };
 }
 
+async function listItemFiles(
+  libraryPath: string,
+  itemId: string,
+): Promise<string[]> {
+  try {
+    const itemDir = join(libraryPath, "images", `${itemId}.info`);
+    const files = await readdir(itemDir);
+
+    // Filter out metadata.json and dot files
+    return files
+      .filter((file) => file !== "metadata.json" && !file.startsWith("."))
+      .map((file) => join(itemDir, file));
+  } catch (_error) {
+    return [];
+  }
+}
+
 async function resolveThumbnailPath(
   libraryPath: string,
   itemId: string,
 ): Promise<string | null> {
   try {
-    const pattern = join(
-      libraryPath,
-      "images",
-      `${itemId}.info`,
-      "*_thumbnail.*",
-    );
-    for await (const match of glob(pattern)) {
-      return match;
+    const files = await listItemFiles(libraryPath, itemId);
+
+    // First, look for thumbnail files (files with _thumbnail before extension)
+    for (const file of files) {
+      const filename = parse(file).name;
+      if (filename.endsWith("_thumbnail")) {
+        return file;
+      }
     }
+
+    // If no thumbnail, return the first original file
+    for (const file of files) {
+      const filename = parse(file).name;
+      if (!filename.endsWith("_thumbnail")) {
+        return file;
+      }
+    }
+
     return null;
   } catch (_error) {
     return null;
@@ -47,18 +73,17 @@ async function resolveOriginalPath(
   itemId: string,
 ): Promise<string | null> {
   try {
-    const thumbnailPath = await resolveThumbnailPath(libraryPath, itemId);
-    if (!thumbnailPath) {
-      return null;
+    const files = await listItemFiles(libraryPath, itemId);
+
+    // Find the first file that doesn't end with _thumbnail
+    for (const file of files) {
+      const filename = parse(file).name;
+      if (!filename.endsWith("_thumbnail")) {
+        return file;
+      }
     }
 
-    const thumbnailFilename = basename(thumbnailPath);
-    const originalFilename = thumbnailFilename.replace("_thumbnail", "");
-    const originalPath = join(dirname(thumbnailPath), originalFilename);
-
-    // Check if original file exists
-    await access(originalPath);
-    return originalPath;
+    return null;
   } catch (_error) {
     return null;
   }

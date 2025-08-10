@@ -59,6 +59,49 @@ describe("Image serving endpoints", () => {
       expect(response.json()).toEqual({ error: "Image not found" });
     });
 
+    test("should fall back to original file when no thumbnail exists", async () => {
+      const app = build();
+      const itemId = "NOTHUMBNAIL";
+      const itemDir = join(tempDir, "images", `${itemId}.info`);
+      await mkdir(itemDir, { recursive: true });
+
+      // Only create original file, no thumbnail
+      const originalContent = "original image content";
+      await writeFile(join(itemDir, "photo.jpg"), originalContent);
+
+      const response = await app.inject({
+        method: "GET",
+        url: `/item/thumbnail?id=${itemId}&libraryPath=${tempDir}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.headers["content-type"]).toBe("image/jpeg");
+      expect(response.payload).toBe(originalContent);
+    });
+
+    test("should ignore metadata.json and dot files", async () => {
+      const app = build();
+      const itemId = "FILTERED";
+      const itemDir = join(tempDir, "images", `${itemId}.info`);
+      await mkdir(itemDir, { recursive: true });
+
+      // Create metadata.json and dot files (should be ignored)
+      await writeFile(join(itemDir, "metadata.json"), "{}");
+      await writeFile(join(itemDir, ".hidden"), "hidden");
+
+      // Create actual image file
+      const imageContent = "actual image";
+      await writeFile(join(itemDir, "image.png"), imageContent);
+
+      const response = await app.inject({
+        method: "GET",
+        url: `/item/thumbnail?id=${itemId}&libraryPath=${tempDir}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.payload).toBe(imageContent);
+    });
+
     test("should handle multiple matching files and return first", async () => {
       const app = build();
       const itemId = "MULTI123";
@@ -107,7 +150,7 @@ describe("Image serving endpoints", () => {
       await cleanupTempDir();
     });
 
-    test("should derive original filename from thumbnail filename", async () => {
+    test("should find original file directly (not derived from thumbnail)", async () => {
       const app = build();
       const itemId = "ORIG123";
       const itemDir = join(tempDir, "images", `${itemId}.info`);
@@ -125,6 +168,26 @@ describe("Image serving endpoints", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.headers["content-type"]).toBe("image/jpeg");
+      expect(response.payload).toBe(originalContent);
+    });
+
+    test("should find original file even without thumbnail", async () => {
+      const app = build();
+      const itemId = "ORIGONLY";
+      const itemDir = join(tempDir, "images", `${itemId}.info`);
+      await mkdir(itemDir, { recursive: true });
+
+      // Only create original file
+      const originalContent = "only original";
+      await writeFile(join(itemDir, "image.png"), originalContent);
+
+      const response = await app.inject({
+        method: "GET",
+        url: `/item/image?id=${itemId}&libraryPath=${tempDir}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.headers["content-type"]).toBe("image/png");
       expect(response.payload).toBe(originalContent);
     });
 
@@ -148,7 +211,7 @@ describe("Image serving endpoints", () => {
       expect(response.payload).toBe(originalContent);
     });
 
-    test("should return 404 when original file missing but thumbnail exists", async () => {
+    test("should return 404 when only thumbnail exists (no original file)", async () => {
       const app = build();
       const itemId = "THUMBONLY";
       const itemDir = join(tempDir, "images", `${itemId}.info`);
@@ -166,7 +229,7 @@ describe("Image serving endpoints", () => {
       expect(response.json()).toEqual({ error: "Image not found" });
     });
 
-    test("should return 404 when no thumbnail exists", async () => {
+    test("should return 404 when no files exist", async () => {
       const app = build();
       const itemId = "NOTHING";
 
@@ -177,6 +240,27 @@ describe("Image serving endpoints", () => {
 
       expect(response.statusCode).toBe(404);
       expect(response.json()).toEqual({ error: "Image not found" });
+    });
+
+    test("should handle multiple original files (return first non-thumbnail)", async () => {
+      const app = build();
+      const itemId = "MULTIORIGINAL";
+      const itemDir = join(tempDir, "images", `${itemId}.info`);
+      await mkdir(itemDir, { recursive: true });
+
+      // Create multiple files
+      await writeFile(join(itemDir, "image1.jpg"), "first");
+      await writeFile(join(itemDir, "image2.png"), "second");
+      await writeFile(join(itemDir, "photo_thumbnail.jpg"), "thumbnail");
+
+      const response = await app.inject({
+        method: "GET",
+        url: `/item/image?id=${itemId}&libraryPath=${tempDir}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      // Should return one of the non-thumbnail files
+      expect(["first", "second"]).toContain(response.payload);
     });
   });
 

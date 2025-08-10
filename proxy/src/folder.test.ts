@@ -189,9 +189,10 @@ describe("/folder/list", () => {
     expect(eagleApi.callEagleApi).toHaveBeenCalledWith("/api/folder/list");
     // Verify item list was called for folder-1
     const calls = vi.mocked(eagleApi.callEagleApi).mock.calls;
-    const itemCall = calls.find(call => 
-      call[0].includes("/api/item/list") && 
-      call[0].includes("folders=folder-1")
+    const itemCall = calls.find(
+      (call) =>
+        call[0].includes("/api/item/list") &&
+        call[0].includes("folders=folder-1"),
     );
     expect(itemCall).toBeDefined();
   });
@@ -384,7 +385,9 @@ describe("/folder/list", () => {
     expect(eagleApi.callEagleApi).toHaveBeenCalledWith("/api/folder/list");
     // Each folder should have cover image fetch attempts
     const calls = vi.mocked(eagleApi.callEagleApi).mock.calls;
-    const itemCalls = calls.filter(call => call[0].includes("/api/item/list"));
+    const itemCalls = calls.filter((call) =>
+      call[0].includes("/api/item/list"),
+    );
     expect(itemCalls.length).toBeGreaterThan(0);
   });
 });
