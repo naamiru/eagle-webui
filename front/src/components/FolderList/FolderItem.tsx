@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useLibrary } from "~/contexts/LibraryContext";
 import type { Folder } from "~/types/item";
 import { getThumbnailUrl } from "~/utils/image";
@@ -16,20 +17,26 @@ export function FolderItem({ folder }: FolderItemProps) {
     : undefined;
 
   return (
-    <div className={styles.item}>
-      {thumbnailUrl ? (
-        <img
-          src={thumbnailUrl}
-          alt={`Folder: ${folder.name}`}
-          className={styles.thumbnail}
-          loading="lazy"
-        />
-      ) : (
-        <div className={styles.empty} />
-      )}
-      <div className={styles.overlay}>
-        <div className={styles.name}>{folder.name}</div>
+    <Link
+      to="/folders/$folderId"
+      params={{ folderId: folder.id }}
+      className={styles.link}
+    >
+      <div className={styles.item}>
+        {thumbnailUrl ? (
+          <img
+            src={thumbnailUrl}
+            alt={`Folder: ${folder.name}`}
+            className={styles.thumbnail}
+            loading="lazy"
+          />
+        ) : (
+          <div className={styles.empty} />
+        )}
+        <div className={styles.overlay}>
+          <div className={styles.name}>{folder.name}</div>
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }

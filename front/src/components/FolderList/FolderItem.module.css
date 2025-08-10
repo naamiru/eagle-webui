@@ -1,3 +1,15 @@
+.link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.link:hover .item {
+  opacity: 0.9;
+}
+
 .item {
   position: relative;
   width: 100%;
@@ -6,6 +18,7 @@
   overflow: hidden;
   cursor: pointer;
   padding: 5%;
+  transition: opacity 0.2s ease;
 }
 
 .thumbnail {
