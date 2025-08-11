@@ -61,7 +61,12 @@ async function authPlugin(fastify: FastifyInstance, opts: AuthOptions) {
     url: `http://${localIp}:57821`,
     token: token,
   });
-  const setupUrl = `http://${localIp}:5173/settings?${params.toString()}`;
+  
+  const isProduction = process.env.NODE_ENV === "production";
+  const frontendUrl = isProduction 
+    ? "https://naamiru.github.io/eagle-webui/settings"
+    : `http://${localIp}:5173/settings`;
+  const setupUrl = `${frontendUrl}?${params.toString()}`;
 
   fastify.log.info("=".repeat(70));
   fastify.log.info("Eagle WebUI Ready! Visit this URL to start:");
