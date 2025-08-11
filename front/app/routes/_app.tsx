@@ -1,6 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Outlet, redirect } from "react-router";
-
 import { libraryQueryOptions } from "~/api/library";
 import LibraryContext from "~/contexts/LibraryContext";
 import { getQueryClient } from "~/integrations/tanstack-query";
