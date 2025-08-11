@@ -12,6 +12,7 @@ self.addEventListener("install", () => {
 
 self.addEventListener("activate", () => {
   console.log("PWD: activate");
+  self.clients.claim();
 });
 
 export {};

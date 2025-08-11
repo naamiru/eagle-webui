@@ -9,14 +9,14 @@ import {
 } from "react-router";
 import type { Route } from "./+types/root";
 import "./styles/app.css";
-import { registerSW } from "virtual:pwa-register";
-import { useEffect } from "react";
+// import { registerSW } from "virtual:pwa-register";
+// import { useEffect } from "react";
 import { getQueryClient } from "./integrations/tanstack-query";
 
 export default function Root() {
-  useEffect(() => {
-    registerSW();
-  }, []);
+  // useEffect(() => {
+  //   registerSW();
+  // }, []);
 
   const queryClient = getQueryClient();
   return (
