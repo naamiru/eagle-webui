@@ -24,6 +24,18 @@ export function ItemList({ items }: ItemListProps) {
         counter: false,
         zoom: false,
       }}
+      onOpen={(pswp) => {
+        // for touch device, hide controls on open
+        if (pswp.element?.classList.contains("pswp--touch")) {
+          pswp.on("openingAnimationStart", () => {
+            pswp.element?.classList.add("pswp--opening");
+          });
+          pswp.on("openingAnimationEnd", () => {
+            pswp.element?.classList.remove("pswp--opening");
+            pswp.element?.classList.remove("pswp--ui-visible");
+          });
+        }
+      }}
     >
       <div className={styles.grid}>
         {items.map((item) => (
