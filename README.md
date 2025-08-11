@@ -30,12 +30,8 @@ npm install -w proxy
 npm start -w proxy
 ```
 
-The proxy server will:
-1. Generate a secure authentication token
-2. Display a setup URL in the console
-3. Start listening on `http://localhost:57821`
+Copy the setup URL from the console output. It will look like:
 
-**Important**: Copy the setup URL from the console output. It will look like:
 ```
 Eagle WebUI Ready! Visit this URL to start using the web interface:
 http://192.168.1.100:5173/settings?url=http://192.168.1.100:57821&token=...
@@ -44,6 +40,7 @@ http://192.168.1.100:5173/settings?url=http://192.168.1.100:57821&token=...
 ### 3. Access the Web Interface
 
 For first-time setup:
+
 1. Open the setup URL from step 2 in your browser (or visit https://naamiru.github.io/eagle-webui/)
 2. The proxy URL and authentication token will be configured automatically
 3. You'll be redirected to the main interface once connected
