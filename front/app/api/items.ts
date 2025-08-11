@@ -1,11 +1,13 @@
 import { queryOptions } from "@tanstack/react-query";
+import { getProxyUrl } from "~/services/settings";
 import type { Item } from "~/types/item";
 
 export const fetchItems = async (
   limit?: number,
   folderId?: string,
 ): Promise<Item[]> => {
-  const url = new URL("http://localhost:57821/item/list");
+  const proxyUrl = getProxyUrl();
+  const url = new URL(`${proxyUrl}/item/list`);
   if (limit !== undefined) {
     url.searchParams.set("limit", limit.toString());
   }

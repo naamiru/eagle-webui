@@ -1,8 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
+import { getProxyUrl } from "~/services/settings";
 import type { Library } from "~/types/item";
 
 export const fetchLibrary = async (): Promise<Library> => {
-  const response = await fetch("http://localhost:57821/library/info");
+  const proxyUrl = getProxyUrl();
+  const response = await fetch(`${proxyUrl}/library/info`);
 
   if (!response.ok) {
     throw new Error(

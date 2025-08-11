@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { FolderList } from "~/components/FolderList/FolderList";
 import { ItemList } from "~/components/ItemList/ItemList";
+import Icon from "~/components/Icon/Icon";
 import styles from "~/styles/_index.module.css";
 import type { Folder, Item } from "~/types/item";
 import pageStyles from "./FolderPage.module.css";
@@ -27,7 +28,10 @@ export function FolderPage({ folders, items, folderId }: FolderPageProps) {
 
   return (
     <>
-      <FolderHeader folderName={currentFolder.name} parentFolderId={parentFolder?.id} />
+      <FolderHeader
+        folderName={currentFolder.name}
+        parentFolderId={parentFolder?.id}
+      />
       <div className={styles.container}>
         {currentFolder.children.length > 0 && (
           <>
@@ -61,20 +65,11 @@ function FolderHeader({ folderName, parentFolderId }: FolderHeaderProps) {
       <nav>
         <ul>
           <li>
-            <Link to={parentFolderId ? `/folders/${parentFolderId}` : "/"} aria-label="戻る">
-              <svg
-                width="20"
-                height="20"
-                fill="currentColor"
-                viewBox="0 0 16 16"
-                style={{ verticalAlign: "middle" }}
-              >
-                <title>Back</title>
-                <path
-                  fillRule="evenodd"
-                  d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
-                />
-              </svg>
+            <Link
+              to={parentFolderId ? `/folders/${parentFolderId}` : "/"}
+              aria-label="戻る"
+            >
+              <Icon name="arrowLeft" size={20} aria-label="Back" />
             </Link>
           </li>
         </ul>

@@ -1,5 +1,17 @@
 .container {
   min-height: 100vh;
+  position: relative;
+}
+
+.settingsLink {
+  position: absolute;
+  top: -0.2rem;
+  right: 1.5rem;
+  text-decoration: none;
+}
+
+.settingsLink:hover {
+  color: var(--pico-color-slate-800);
 }
 
 .folderListTitle {

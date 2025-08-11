@@ -2,7 +2,7 @@
  * Utility functions for constructing image URLs
  */
 
-const BASE_URL = "http://localhost:57821";
+import { getProxyUrl } from "~/services/settings";
 
 /**
  * Builds an image URL with the given endpoint and parameters
@@ -16,11 +16,12 @@ function buildImageUrl(
   itemId: string,
   libraryPath: string,
 ): string {
+  const baseUrl = getProxyUrl();
   const params = new URLSearchParams({
     id: itemId,
     libraryPath: libraryPath,
   });
-  return `${BASE_URL}${endpoint}?${params.toString()}`;
+  return `${baseUrl}${endpoint}?${params.toString()}`;
 }
 
 /**

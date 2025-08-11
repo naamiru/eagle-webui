@@ -1,4 +1,4 @@
-import { QueryClientProvider, useSuspenseQuery } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   isRouteErrorResponse,
@@ -10,14 +10,8 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
-import { libraryQueryOptions } from "./api/library";
-import LibraryContext from "./contexts/LibraryContext";
 import "./styles/app.css";
 import { getQueryClient } from "./integrations/tanstack-query";
-
-export async function clientLoader() {
-  return getQueryClient().ensureQueryData(libraryQueryOptions);
-}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
@@ -41,13 +35,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const { data: library } = useSuspenseQuery(libraryQueryOptions);
-
   return (
-    <LibraryContext.Provider value={library}>
+    <>
       <Outlet />
       <ReactQueryDevtools buttonPosition="bottom-right" />
-    </LibraryContext.Provider>
+    </>
   );
 }
 

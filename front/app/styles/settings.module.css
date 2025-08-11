@@ -1,0 +1,45 @@
+.container {
+  padding: 0 2rem 2rem 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 1rem;
+}
+
+.setupAlert {
+  margin-bottom: 1rem;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.statusIndicator {
+  margin-bottom: 1rem;
+}
+
+.connected {
+  color: var(--pico-color-green-500);
+}
+
+.error {
+  color: var(--pico-color-red-500);
+}
+
+.unknown {
+  color: var(--pico-color-slate-500);
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.troubleshooting {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--pico-color-slate-300);
+}
