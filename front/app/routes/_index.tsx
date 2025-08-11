@@ -20,9 +20,9 @@ export default function Index() {
 
   return (
     <div className={styles.container}>
-      <h4 className={styles.folderListTitle}>フォルダー</h4>
+      <h6 className={styles.folderListTitle}>フォルダー</h6>
       <FolderList folders={folders} />
-      <h4 className={styles.itemListTitle}>すべて</h4>
+      <h6 className={styles.itemListTitle}>すべて</h6>
       <ItemList items={items} />
     </div>
   );

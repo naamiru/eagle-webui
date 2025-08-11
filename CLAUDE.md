@@ -11,14 +11,14 @@ Eagle WebUI - A web interface for the Eagle image viewer application. This is a 
 ### Frontend (`/front`)
 
 - **Stack**: React 19 + TypeScript + Vite
-- **Routing**: TanStack Router with file-based routing
+- **Routing**: React Router v7 with framework mode (file-based routing)
 - **State Management**: TanStack Query for server state
 - **Styling**: CSS Modules + Pico CSS framework
 - **Image Gallery**: react-photoswipe-gallery for image viewing
 - **Key Components**:
   - `FolderList`: Displays hierarchical folder structure
   - `ItemList`: Grid view of image items
-  - Routes are defined in `/src/routes/` with auto-generated route tree
+  - Routes are defined in `/app/routes/` with file-based routing conventions
 
 ### Backend Proxy (`/proxy`)
 
