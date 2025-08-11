@@ -4,6 +4,7 @@ import { callEagleApi } from "./eagle-api";
 
 export interface Item {
   id: string;
+  name: string;
   width: number;
   height: number;
 }
@@ -28,6 +29,7 @@ interface ItemListQuery {
 export function transformEagleItem(eagleItem: EagleItem): Item {
   return {
     id: eagleItem.id,
+    name: eagleItem.name,
     width: eagleItem.width,
     height: eagleItem.height,
   };

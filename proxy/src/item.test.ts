@@ -51,12 +51,14 @@ describe("/item/list", () => {
 
     expect(items[0]).toEqual({
       id: "item1",
+      name: "Test Image 1",
       width: 1920,
       height: 1080,
     });
 
     expect(items[1]).toEqual({
       id: "item2",
+      name: "Test Image 2",
       width: 1280,
       height: 720,
     });
@@ -142,6 +144,7 @@ describe("/item/list", () => {
 
     expect(items[0]).toEqual({
       id: "item1",
+      name: "Test Image",
       width: 3840,
       height: 2160,
     });
@@ -149,7 +152,6 @@ describe("/item/list", () => {
     // Verify no extra fields are included
     // biome-ignore lint/suspicious/noExplicitAny: Need to verify absence of properties
     const item = items[0] as any;
-    expect(item.name).toBeUndefined();
     expect(item.size).toBeUndefined();
     expect(item.ext).toBeUndefined();
     expect(item.tags).toBeUndefined();
@@ -398,11 +400,13 @@ describe("/item/list", () => {
       expect(items.length).toBe(2);
       expect(items[0]).toEqual({
         id: "item1",
+        name: "Folder Image 1",
         width: 1920,
         height: 1080,
       });
       expect(items[1]).toEqual({
         id: "item2",
+        name: "Folder Image 2",
         width: 1280,
         height: 720,
       });

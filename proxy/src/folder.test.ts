@@ -182,6 +182,7 @@ describe("/folder/list", () => {
     const result = res.json();
     expect(result[0].coverImage).toEqual({
       id: "item-1",
+      name: "photo1.jpg",
       width: 800,
       height: 600,
     });
@@ -248,11 +249,13 @@ describe("/folder/list", () => {
     const result = res.json();
     expect(result[0].coverImage).toEqual({
       id: "item-1",
+      name: "photo1.jpg",
       width: 800,
       height: 600,
     }); // Parent gets cover image from descendant search
     expect(result[0].children[0].coverImage).toEqual({
       id: "item-1",
+      name: "photo1.jpg",
       width: 800,
       height: 600,
     });
@@ -338,7 +341,7 @@ describe("/folder/list", () => {
     const mockItems2 = [
       {
         id: "item-2",
-        name: "video1.mp4",
+        name: "photo2.jpg",
         width: 1920,
         height: 1080,
         size: 2048,
@@ -371,11 +374,13 @@ describe("/folder/list", () => {
     const result = res.json();
     expect(result[0].coverImage).toEqual({
       id: "item-1",
+      name: "photo1.jpg",
       width: 800,
       height: 600,
     });
     expect(result[1].coverImage).toEqual({
       id: "item-2",
+      name: "photo2.jpg",
       width: 1920,
       height: 1080,
     });

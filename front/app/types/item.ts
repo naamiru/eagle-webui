@@ -1,5 +1,6 @@
 export interface Item {
   id: string;
+  name: string;
   width: number;
   height: number;
 }
