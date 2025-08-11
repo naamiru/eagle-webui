@@ -14,7 +14,17 @@ export function ItemList({ items }: ItemListProps) {
   }
 
   return (
-    <Gallery>
+    <Gallery
+      withCaption
+      options={{
+        showAnimationDuration: 150,
+        hideAnimationDuration: 150,
+        bgOpacity: 1,
+        easing: "ease-out",
+        counter: false,
+        zoom: false,
+      }}
+    >
       <div className={styles.grid}>
         {items.map((item) => (
           <ImageItem key={item.id} image={item} />

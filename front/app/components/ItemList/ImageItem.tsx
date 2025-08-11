@@ -20,6 +20,7 @@ export function ImageItem({ image }: ImageItemProps) {
       thumbnail={thumbnailUrl}
       width={image.width}
       height={image.height}
+      caption="画像タイトル"
       cropped
     >
       {({ ref, open }) => (
