@@ -1,6 +1,6 @@
 {
   "name": "eagle-webui-proxy",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Eagle API proxy for Eagle WebUI",
   "main": "app.ts",
   "scripts": {
