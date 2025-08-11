@@ -1,5 +1,4 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   isRouteErrorResponse,
   Links,
@@ -13,33 +12,25 @@ import type { Route } from "./+types/root";
 import "./styles/app.css";
 import { getQueryClient } from "./integrations/tanstack-query";
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export default function Root() {
   const queryClient = getQueryClient();
   return (
     <html lang="ja">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Eagle Web UI</title>
         <Meta />
         <Links />
       </head>
       <body>
         <QueryClientProvider client={queryClient}>
-          {children}
+          <Outlet />
         </QueryClientProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
-  );
-}
-
-export default function App() {
-  return (
-    <>
-      <Outlet />
-      <ReactQueryDevtools buttonPosition="bottom-right" />
-    </>
   );
 }
 

@@ -1,15 +1,16 @@
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
+import { folderItemsQueryOptions } from "~/api/items";
 import { FolderList } from "~/components/FolderList/FolderList";
-import { ItemList } from "~/components/ItemList/ItemList";
 import Icon from "~/components/Icon/Icon";
+import { ItemList } from "~/components/ItemList/ItemList";
 import styles from "~/styles/_index.module.css";
-import type { Folder, Item } from "~/types/item";
+import type { Folder } from "~/types/item";
 import pageStyles from "./FolderPage.module.css";
 
 interface FolderPageProps {
   folders: Folder[];
-  items: Item[];
   folderId: string;
 }
 
@@ -18,13 +19,17 @@ interface FolderHeaderProps {
   parentFolderId?: string;
 }
 
-export function FolderPage({ folders, items, folderId }: FolderPageProps) {
+export function FolderPage({ folders, folderId }: FolderPageProps) {
   const currentFolder = findFolderById(folders, folderId);
   const parentFolder = findParentFolder(folders, folderId);
 
   if (!currentFolder) {
     throw new Error(`Folder with ID ${folderId} not found`);
   }
+
+  const { data: items, error } = useQuery(folderItemsQueryOptions(folderId));
+
+  if (error) throw error;
 
   return (
     <>
@@ -40,7 +45,7 @@ export function FolderPage({ folders, items, folderId }: FolderPageProps) {
             <h6 className={styles.itemListTitle}>内容</h6>
           </>
         )}
-        <ItemList items={items} />
+        {items && <ItemList items={items} />}
       </div>
     </>
   );

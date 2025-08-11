@@ -17,7 +17,11 @@ export function FolderItem({ folder }: FolderItemProps) {
     : undefined;
 
   return (
-    <Link to={`/folders/${folder.id}`} className={styles.link}>
+    <Link
+      to={`/folders/${folder.id}`}
+      className={styles.link}
+      prefetch="intent"
+    >
       <div className={styles.item}>
         {thumbnailUrl ? (
           <img

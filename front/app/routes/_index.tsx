@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { getQueryClient } from "~/integrations/tanstack-query";
 import { foldersQueryOptions } from "../api/folders";
@@ -7,18 +7,18 @@ import { FolderList } from "../components/FolderList/FolderList";
 import Icon from "../components/Icon/Icon";
 import { ItemList } from "../components/ItemList/ItemList";
 import styles from "../styles/_index.module.css";
+import type { Route } from "./+types/_index";
 
-export async function clientLoader() {
+export async function clientLoader(): Route.LoaderArgs {
   const queryClient = getQueryClient();
-  return Promise.all([
-    queryClient.ensureQueryData(foldersQueryOptions),
-    queryClient.ensureQueryData(itemsQueryOptions(100)),
-  ]);
+  queryClient.prefetchQuery(itemsQueryOptions(100));
+  return await queryClient.ensureQueryData(foldersQueryOptions);
 }
 
-export default function Index() {
-  const { data: folders } = useSuspenseQuery(foldersQueryOptions);
-  const { data: items } = useSuspenseQuery(itemsQueryOptions(100));
+export default function Index({ loaderData: folders }): Route.ComponentProps {
+  const { data: items, error } = useQuery(itemsQueryOptions(100));
+
+  if (error) throw error;
 
   return (
     <div className={styles.container}>
@@ -31,8 +31,13 @@ export default function Index() {
       </Link>
       <h6 className={styles.folderListTitle}>フォルダー</h6>
       <FolderList folders={folders} />
-      <h6 className={styles.itemListTitle}>すべて</h6>
-      <ItemList items={items} />
+
+      {items && (
+        <>
+          <h6 className={styles.itemListTitle}>すべて</h6>
+          <ItemList items={items} />
+        </>
+      )}
     </div>
   );
 }

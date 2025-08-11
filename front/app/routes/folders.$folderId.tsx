@@ -6,15 +6,13 @@ import type { Route } from "./+types/folders.$folderId";
 
 export async function clientLoader({ params: { folderId } }: Route.LoaderArgs) {
   const queryClient = getQueryClient();
-  return Promise.all([
-    queryClient.ensureQueryData(foldersQueryOptions),
-    queryClient.ensureQueryData(folderItemsQueryOptions(folderId)),
-  ]);
+  queryClient.prefetchQuery(folderItemsQueryOptions(folderId));
+  return await queryClient.ensureQueryData(foldersQueryOptions);
 }
 
 export default function FolderRoute({
-  loaderData: [folders, items],
+  loaderData: folders,
   params: { folderId },
 }: Route.ComponentProps) {
-  return <FolderPage folders={folders} items={items} folderId={folderId} />;
+  return <FolderPage folders={folders} folderId={folderId} />;
 }
