@@ -2,7 +2,7 @@ import { afterEach } from "vitest";
 import buildApp from "./app";
 
 export function build() {
-  const app = buildApp();
+  const app = buildApp({ skipAuth: true });
   afterEach(() => app.close());
   return app;
 }

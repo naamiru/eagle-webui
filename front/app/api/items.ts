@@ -1,21 +1,21 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getProxyUrl } from "~/services/settings";
 import type { Item } from "~/types/item";
+import { fetchWithAuth } from "./utils";
 
 export const fetchItems = async (
   limit?: number,
   folderId?: string,
 ): Promise<Item[]> => {
-  const proxyUrl = getProxyUrl();
-  const url = new URL(`${proxyUrl}/item/list`);
+  const params = new URLSearchParams();
   if (limit !== undefined) {
-    url.searchParams.set("limit", limit.toString());
+    params.set("limit", limit.toString());
   }
   if (folderId !== undefined && folderId.trim() !== "") {
-    url.searchParams.set("folder", folderId.trim());
+    params.set("folder", folderId.trim());
   }
 
-  const response = await fetch(url.toString());
+  const endpoint = params.toString() ? `/item/list?${params}` : "/item/list";
+  const response = await fetchWithAuth(endpoint);
 
   if (!response.ok) {
     throw new Error(

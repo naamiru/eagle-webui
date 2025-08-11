@@ -30,6 +30,9 @@ describe("fetchFolders", () => {
 
     expect(mockFetch).toHaveBeenCalledWith(
       "http://localhost:57821/folder/list",
+      expect.objectContaining({
+        headers: expect.any(Headers),
+      }),
     );
     expect(result).toEqual(mockFolders);
   });

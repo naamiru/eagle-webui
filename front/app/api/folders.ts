@@ -1,10 +1,9 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getProxyUrl } from "~/services/settings";
 import type { Folder } from "~/types/item";
+import { fetchWithAuth } from "./utils";
 
 export const fetchFolders = async (): Promise<Folder[]> => {
-  const proxyUrl = getProxyUrl();
-  const response = await fetch(`${proxyUrl}/folder/list`);
+  const response = await fetchWithAuth("/folder/list");
 
   if (!response.ok) {
     throw new Error(

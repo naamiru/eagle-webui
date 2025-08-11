@@ -1,2 +1,5 @@
 [tools]
 node = "22.17.1"
+
+[env]
+EAGLE_WEBUI_PROXY_TOKEN = "a7f3b8c9d2e1f4a6b8c5d9e2f1a4b7c3d6e9f2a5b8c1d4e7f0a3b6c9d2e5f8a1"

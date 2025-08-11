@@ -1,5 +1,5 @@
 import { readdir } from "node:fs/promises";
-import { basename, join, parse } from "node:path";
+import { join, parse } from "node:path";
 import type { Readable } from "node:stream";
 import send from "@fastify/send";
 import type {

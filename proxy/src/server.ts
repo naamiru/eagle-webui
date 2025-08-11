@@ -8,10 +8,9 @@ const server = build({
   },
 });
 
-server.listen({ port: 57821, host: "::" }, (err, address) => {
+server.listen({ port: 57821, host: "::" }, (err) => {
   if (err) {
     server.log.error(err);
     process.exit(1);
   }
-  server.log.info(`Server listening at ${address}`);
 });

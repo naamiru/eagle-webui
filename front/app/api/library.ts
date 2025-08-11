@@ -1,10 +1,9 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getProxyUrl } from "~/services/settings";
 import type { Library } from "~/types/item";
+import { fetchWithAuth } from "./utils";
 
 export const fetchLibrary = async (): Promise<Library> => {
-  const proxyUrl = getProxyUrl();
-  const response = await fetch(`${proxyUrl}/library/info`);
+  const response = await fetchWithAuth("/library/info");
 
   if (!response.ok) {
     throw new Error(

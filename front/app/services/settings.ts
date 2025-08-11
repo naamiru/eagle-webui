@@ -1,39 +1,69 @@
-import { libraryQueryOptions } from "~/api/library";
-import { getQueryClient } from "~/integrations/tanstack-query";
+// Types
+export interface ProxyConfig {
+  url: string;
+  token?: string;
+}
 
 // Constants
-export const STORAGE_KEY = "eagle-proxy-url";
+export const STORAGE_KEY = "eagle-proxy-config";
 export const DEFAULT_PROXY_URL = "http://localhost:57821";
 
 // Functions
-export function getProxyUrl(): string {
+export function getProxyConfig(): ProxyConfig {
   if (typeof window === "undefined") {
-    return DEFAULT_PROXY_URL;
+    return { url: DEFAULT_PROXY_URL };
   }
 
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return stored || DEFAULT_PROXY_URL;
+    if (stored) {
+      return JSON.parse(stored);
+    }
+    return { url: DEFAULT_PROXY_URL };
   } catch {
-    // localStorage unavailable (private browsing, etc.)
-    return DEFAULT_PROXY_URL;
+    // localStorage unavailable or invalid JSON
+    return { url: DEFAULT_PROXY_URL };
   }
 }
 
-export function setProxyUrl(url: string): void {
+export function getProxyUrl(): string {
+  return getProxyConfig().url;
+}
+
+export function getProxyToken(): string | undefined {
+  return getProxyConfig().token;
+}
+
+export function setProxyConfig(config: ProxyConfig): void {
   if (typeof window === "undefined") {
     return;
   }
 
   try {
-    localStorage.setItem(STORAGE_KEY, url);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
   } catch {
     // localStorage unavailable - could show warning to user
-    console.warn("Unable to save proxy URL setting");
+    console.warn("Unable to save proxy settings");
   }
 }
 
-export function hasStoredProxyUrl(): boolean {
+export function setProxyUrl(url: string): void {
+  const config = getProxyConfig();
+  config.url = url;
+  setProxyConfig(config);
+}
+
+export function setProxyToken(token: string | undefined): void {
+  const config = getProxyConfig();
+  if (token) {
+    config.token = token;
+  } else {
+    delete config.token;
+  }
+  setProxyConfig(config);
+}
+
+export function hasStoredProxyConfig(): boolean {
   if (typeof window === "undefined") {
     return false;
   }
@@ -46,48 +76,57 @@ export function hasStoredProxyUrl(): boolean {
   }
 }
 
-export async function validateProxyUrl(url: string): Promise<boolean> {
+export function hasStoredProxyToken(): boolean {
+  const config = getProxyConfig();
+  return !!config.token;
+}
+
+export type ValidationResult = "connected" | "unauthorized" | "unreachable";
+
+export async function validateProxyConnection(
+  url: string,
+  token?: string,
+): Promise<ValidationResult> {
   try {
     // Basic URL format validation
     new URL(url);
 
-    const queryClient = getQueryClient();
-
-    // If this is the current proxy URL and we have fresh cached data, it's valid
-    if (url === getProxyUrl()) {
-      const cachedData = queryClient.getQueryData(libraryQueryOptions.queryKey);
-      const queryState = queryClient.getQueryState(
-        libraryQueryOptions.queryKey,
-      );
-      if (cachedData && queryState && !queryState.isStale) {
-        return true; // Cache hit - URL is definitely valid
+    // First check health endpoint without auth
+    try {
+      const healthResponse = await fetch(`${url}/health`);
+      if (!healthResponse.ok && healthResponse.status !== 401) {
+        return "unreachable";
       }
+    } catch {
+      return "unreachable";
     }
 
-    // Create validation query based on existing library query
-    const validationQuery = {
-      ...libraryQueryOptions,
-      queryKey: ["library", "validation", url],
-      queryFn: async () => {
-        const response = await fetch(`${url}/library/info`);
-        if (!response.ok) {
-          throw new Error(
-            `Failed to fetch library info: ${response.status} ${response.statusText}`,
-          );
-        }
-        return response.json();
-      },
-      retry: false, // Don't retry for validation
-      staleTime: 0, // Always fresh for validation
-    };
+    // Then validate with token using library endpoint
+    const headers: HeadersInit = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
 
-    // Use fetchQuery to test the connection
-    await queryClient.fetchQuery(validationQuery);
+    const response = await fetch(`${url}/library/info`, { headers });
 
-    return true;
+    if (response.status === 401) {
+      return "unauthorized";
+    }
+
+    if (!response.ok) {
+      return "unreachable";
+    }
+
+    return "connected";
   } catch (_error) {
-    return false;
+    return "unreachable";
   }
+}
+
+export async function validateProxyUrl(url: string): Promise<boolean> {
+  const config = getProxyConfig();
+  const result = await validateProxyConnection(url, config.token);
+  return result === "connected";
 }
 
 export function resetToDefault(): void {
@@ -98,6 +137,6 @@ export function resetToDefault(): void {
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch {
-    console.warn("Unable to reset proxy URL setting");
+    console.warn("Unable to reset proxy settings");
   }
 }

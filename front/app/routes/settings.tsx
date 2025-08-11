@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import Icon from "~/components/Icon/Icon";
 import {
   DEFAULT_PROXY_URL,
-  getProxyUrl,
+  getProxyConfig,
+  type ProxyConfig,
   resetToDefault,
-  setProxyUrl,
-  validateProxyUrl,
+  setProxyConfig,
+  type ValidationResult,
+  validateProxyConnection,
 } from "~/services/settings";
 import styles from "~/styles/settings.module.css";
 
@@ -16,15 +18,92 @@ export default function Settings() {
   const isInitialSetup = searchParams.get("initial") === "true";
 
   const [proxyUrl, setProxyUrlState] = useState("");
+  const [proxyToken, setProxyTokenState] = useState("");
+  const [showToken, setShowToken] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<
     "connected" | "error" | "unknown"
   >("unknown");
   const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    setProxyUrlState(getProxyUrl());
+  const handleValidationResult = useCallback((result: ValidationResult) => {
+    switch (result) {
+      case "connected":
+        setConnectionStatus("connected");
+        setErrorMessage("");
+        break;
+      case "unauthorized":
+        setConnectionStatus("error");
+        setErrorMessage(
+          "Authentication failed. Please check your token is correct.",
+        );
+        break;
+      case "unreachable":
+        setConnectionStatus("error");
+        setErrorMessage(
+          "Cannot reach proxy server. Please check the URL and ensure the Eagle proxy is running.",
+        );
+        break;
+    }
   }, []);
+
+  const handleAutoSetup = useCallback(
+    async (url: string, token: string) => {
+      setIsValidating(true);
+      setErrorMessage("");
+      setConnectionStatus("unknown");
+
+      try {
+        const result = await validateProxyConnection(url.trim(), token.trim());
+
+        if (result === "connected") {
+          const config: ProxyConfig = {
+            url: url.trim(),
+            token: token.trim(),
+          };
+          setProxyConfig(config);
+          setConnectionStatus("connected");
+          setErrorMessage("");
+
+          // Auto-redirect after successful validation
+          setTimeout(() => {
+            navigate("/");
+          }, 1000);
+        } else {
+          handleValidationResult(result);
+        }
+      } catch (_error) {
+        setConnectionStatus("error");
+        setErrorMessage("Network error occurred while testing connection");
+      } finally {
+        setIsValidating(false);
+      }
+    },
+    [handleValidationResult, navigate],
+  );
+
+  useEffect(() => {
+    const config = getProxyConfig();
+    setProxyUrlState(config.url);
+    setProxyTokenState(config.token || "");
+
+    // Handle query parameters for auto-setup
+    const urlParam = searchParams.get("url");
+    const tokenParam = searchParams.get("token");
+
+    if (urlParam) {
+      setProxyUrlState(urlParam);
+    }
+
+    if (tokenParam) {
+      setProxyTokenState(tokenParam);
+    }
+
+    // Auto-validate if both parameters are present
+    if (urlParam && tokenParam) {
+      handleAutoSetup(urlParam, tokenParam);
+    }
+  }, [searchParams, handleAutoSetup]);
 
   const handleTest = async () => {
     if (!proxyUrl.trim()) {
@@ -38,11 +117,20 @@ export default function Settings() {
     setConnectionStatus("unknown");
 
     try {
-      const isValid = await validateProxyUrl(proxyUrl.trim());
+      const result = await validateProxyConnection(
+        proxyUrl.trim(),
+        proxyToken.trim() || undefined,
+      );
 
-      if (isValid) {
+      if (result === "connected") {
+        const config: ProxyConfig = {
+          url: proxyUrl.trim(),
+        };
+        if (proxyToken.trim()) {
+          config.token = proxyToken.trim();
+        }
+        setProxyConfig(config);
         setConnectionStatus("connected");
-        setProxyUrl(proxyUrl.trim());
         setErrorMessage("");
 
         // Auto-redirect after successful validation
@@ -50,10 +138,7 @@ export default function Settings() {
           navigate("/");
         }, 1000);
       } else {
-        setConnectionStatus("error");
-        setErrorMessage(
-          "Failed to connect to proxy server. Please check the URL and ensure the Eagle proxy is running.",
-        );
+        handleValidationResult(result);
       }
     } catch (_error) {
       setConnectionStatus("error");
@@ -66,6 +151,7 @@ export default function Settings() {
   const handleReset = () => {
     resetToDefault();
     setProxyUrlState(DEFAULT_PROXY_URL);
+    setProxyTokenState("");
     setConnectionStatus("unknown");
     setErrorMessage("");
   };
@@ -138,6 +224,34 @@ export default function Settings() {
           </small>
         </div>
 
+        <div className={styles.formGroup}>
+          <label htmlFor="proxyToken">Authentication Token:</label>
+          <div className={styles.tokenInputWrapper}>
+            <input
+              id="proxyToken"
+              type={showToken ? "text" : "password"}
+              value={proxyToken}
+              onChange={(e) => setProxyTokenState(e.target.value)}
+              placeholder="Enter authentication token"
+            />
+            <button
+              type="button"
+              className={styles.toggleTokenButton}
+              onClick={() => setShowToken(!showToken)}
+              aria-label={showToken ? "Hide token" : "Show token"}
+            >
+              <Icon
+                name={showToken ? "eyeOff" : "eye"}
+                size={20}
+                aria-hidden="true"
+              />
+            </button>
+          </div>
+          <small>
+            The authentication token provided when starting the proxy server
+          </small>
+        </div>
+
         <div className={styles.statusIndicator}>
           <strong>Connection Status: </strong>
           <span className={getStatusClass()}>{getStatusText()}</span>
@@ -179,6 +293,10 @@ export default function Settings() {
           <li>Check that the URL is correct (including http:// or https://)</li>
           <li>
             Verify the port number matches your proxy server configuration
+          </li>
+          <li>
+            Check the authentication token matches what was displayed when
+            starting the proxy
           </li>
           <li>
             If using a remote server, ensure it's accessible from your network

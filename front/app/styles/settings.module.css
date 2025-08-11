@@ -16,6 +16,35 @@
   margin-bottom: 1rem;
 }
 
+.tokenInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tokenInputWrapper input {
+  flex: 1;
+  padding-right: 3rem;
+}
+
+.toggleTokenButton {
+  position: absolute;
+  right: 0.5rem;
+  padding: 0.25rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pico-color-slate-500);
+}
+
+.toggleTokenButton:hover {
+  color: var(--pico-color-slate-700);
+}
+
 .statusIndicator {
   margin-bottom: 1rem;
 }

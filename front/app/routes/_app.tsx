@@ -5,28 +5,36 @@ import { libraryQueryOptions } from "~/api/library";
 import LibraryContext from "~/contexts/LibraryContext";
 import { getQueryClient } from "~/integrations/tanstack-query";
 import {
-  getProxyUrl,
-  hasStoredProxyUrl,
-  validateProxyUrl,
+  getProxyConfig,
+  hasStoredProxyConfig,
+  validateProxyConnection,
 } from "~/services/settings";
 
 export async function clientLoader() {
-  const proxyUrl = getProxyUrl();
+  const config = getProxyConfig();
 
   // Check if this is first-time setup (never validated)
-  if (!hasStoredProxyUrl()) {
+  if (!hasStoredProxyConfig()) {
     // First-time setup: redirect to settings
     throw redirect("/settings?initial=true");
   }
 
-  // Validate current proxy URL
-  const isValid = await validateProxyUrl(proxyUrl);
+  // Validate current proxy URL with token
+  const validationResult = await validateProxyConnection(
+    config.url,
+    config.token,
+  );
 
-  if (!isValid) {
-    // Previously validated URL is now invalid: show error
+  if (validationResult === "unauthorized") {
+    // Token is invalid or missing: redirect to settings
+    throw redirect("/settings?initial=true");
+  }
+
+  if (validationResult === "unreachable") {
+    // Previously validated URL is now unreachable: show error
     throw new Response("Proxy server connection failed", {
       status: 503,
-      statusText: `Cannot connect to proxy server at ${proxyUrl}. Please check if the Eagle proxy is running.`,
+      statusText: `Cannot connect to proxy server at ${config.url}. Please check if the Eagle proxy is running.`,
     });
   }
 
