@@ -72,7 +72,7 @@ describe("Authentication", () => {
 
       expect(response.statusCode).toBe(401);
       expect(response.json()).toEqual({
-        error: "Missing authorization header",
+        error: "Missing authorization",
       });
     });
 
@@ -183,7 +183,7 @@ describe("Authentication", () => {
       expect(response.statusCode).toBe(401);
     });
 
-    it("should allow image requests with valid token", async () => {
+    it("should allow image requests with valid token in header", async () => {
       const response = await app.inject({
         method: "GET",
         url: "/item/thumbnail?id=test&libraryPath=/test",
@@ -194,6 +194,46 @@ describe("Authentication", () => {
 
       // Will fail due to invalid path, but not due to auth
       expect(response.statusCode).not.toBe(401);
+    });
+
+    it("should allow /item/thumbnail with token in query parameter", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: "/item/thumbnail?id=test&libraryPath=/test&token=test-token-1234567890123456",
+      });
+
+      // Will fail due to invalid path, but not due to auth
+      expect(response.statusCode).not.toBe(401);
+    });
+
+    it("should allow /item/image with token in query parameter", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: "/item/image?id=test&libraryPath=/test&token=test-token-1234567890123456",
+      });
+
+      // Will fail due to invalid path, but not due to auth
+      expect(response.statusCode).not.toBe(401);
+    });
+
+    it("should reject image requests with invalid token in query", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: "/item/thumbnail?id=test&libraryPath=/test&token=wrong-token",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.json()).toEqual({ error: "Invalid token" });
+    });
+
+    it("should NOT accept query token for non-image endpoints", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: "/library/info?token=test-token-1234567890123456",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.json()).toEqual({ error: "Missing authorization" });
     });
   });
 });

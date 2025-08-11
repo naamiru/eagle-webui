@@ -2,7 +2,7 @@
  * Utility functions for constructing image URLs
  */
 
-import { getProxyUrl } from "~/services/settings";
+import { getProxyToken, getProxyUrl } from "~/services/settings";
 
 /**
  * Builds an image URL with the given endpoint and parameters
@@ -17,10 +17,17 @@ function buildImageUrl(
   libraryPath: string,
 ): string {
   const baseUrl = getProxyUrl();
+  const token = getProxyToken();
   const params = new URLSearchParams({
     id: itemId,
     libraryPath: libraryPath,
   });
+  
+  // Add token to query parameters for image URLs
+  if (token) {
+    params.append("token", token);
+  }
+  
   return `${baseUrl}${endpoint}?${params.toString()}`;
 }
 

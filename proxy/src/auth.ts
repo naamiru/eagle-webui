@@ -75,7 +75,7 @@ async function authPlugin(fastify: FastifyInstance, opts: AuthOptions) {
 
   fastify.addHook(
     "onRequest",
-    async (request: FastifyRequest, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Querystring: { token?: string } }>, reply: FastifyReply) => {
       // Skip authentication for OPTIONS requests (CORS preflight)
       if (request.method === "OPTIONS") {
         return;
@@ -86,22 +86,37 @@ async function authPlugin(fastify: FastifyInstance, opts: AuthOptions) {
         return;
       }
 
-      const authHeader = request.headers.authorization;
+      // Check if this is an image endpoint
+      const isImageEndpoint = 
+        request.url.startsWith("/item/thumbnail") || 
+        request.url.startsWith("/item/image");
 
-      if (!authHeader) {
-        reply.code(401).send({ error: "Missing authorization header" });
-        return;
+      let providedToken: string | undefined;
+
+      // For image endpoints, accept token from query parameter
+      if (isImageEndpoint && request.query.token) {
+        providedToken = request.query.token;
       }
 
-      const bearerMatch = authHeader.match(/^Bearer (.+)$/);
-      if (!bearerMatch) {
-        reply.code(401).send({ error: "Invalid authorization format" });
-        return;
+      // For all endpoints, also check Authorization header
+      if (!providedToken) {
+        const authHeader = request.headers.authorization;
+        
+        if (!authHeader) {
+          reply.code(401).send({ error: "Missing authorization" });
+          return;
+        }
+
+        const bearerMatch = authHeader.match(/^Bearer (.+)$/);
+        if (!bearerMatch) {
+          reply.code(401).send({ error: "Invalid authorization format" });
+          return;
+        }
+
+        providedToken = bearerMatch[1];
       }
 
-      const providedToken = bearerMatch[1];
-
-      if (!constantTimeCompare(providedToken, token)) {
+      if (!providedToken || !constantTimeCompare(providedToken, token)) {
         fastify.log.warn(`Authentication failed from ${request.ip}`);
         reply.code(401).send({ error: "Invalid token" });
         return;
