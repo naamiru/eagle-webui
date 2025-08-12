@@ -9,8 +9,6 @@ export interface Item {
   ext: string;
   star: number;
   duration: number;
-  manualOrder: number;
-  globalOrder: number;
 }
 
 export interface Folder {

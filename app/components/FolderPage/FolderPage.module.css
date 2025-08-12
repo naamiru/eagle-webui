@@ -1,0 +1,26 @@
+.container {
+  min-height: 100vh;
+  position: relative;
+}
+
+.container h6 {
+  margin: 1rem 1.5rem 0.5rem;
+}
+
+.header {
+  position: sticky;
+  padding: 0 1rem;
+  top: 0;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.8);
+  transition: box-shadow 0.5s ease;
+  clip-path: inset(0 0 -10rem 0);
+}
+
+.header.stuck {
+  box-shadow: var(--pico-card-box-shadow);
+}
+
+.header + h6 {
+  margin-top: 0;
+}
