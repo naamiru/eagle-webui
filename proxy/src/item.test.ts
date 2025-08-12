@@ -463,6 +463,7 @@ describe("transformEagleItem", () => {
       height: 1080,
       btime: 1640995200000,
       mtime: 1640995300000,
+      modificationTime: 1640995250000,
       star: 3,
       duration: 120,
     };
@@ -480,7 +481,7 @@ describe("transformEagleItem", () => {
       ext: "jpg",
       star: 3,
       duration: 120,
-      manualOrder: 1640995200000, // fallback to btime
+      manualOrder: 1640995250000, // fallback to modificationTime
     });
   });
 
@@ -511,7 +512,7 @@ describe("transformEagleItem", () => {
       ext: "jpg",
       star: 0,
       duration: 0,
-      manualOrder: 0, // fallback to btime (0)
+      manualOrder: 0, // fallback to modificationTime (0)
     });
   });
 
@@ -527,6 +528,7 @@ describe("transformEagleItem", () => {
       width: 1920,
       height: 1080,
       btime: 1640995200000,
+      modificationTime: 1640995250000,
       order: {
         folder1: "123.456",
         folder2: "789.012",
@@ -538,7 +540,7 @@ describe("transformEagleItem", () => {
     expect(result.manualOrder).toBe(123.456);
   });
 
-  test("falls back to btime when folder order not available", () => {
+  test("falls back to modificationTime when folder order not available", () => {
     const eagleItem = {
       id: "item1",
       name: "Test Image",
@@ -550,6 +552,7 @@ describe("transformEagleItem", () => {
       width: 1920,
       height: 1080,
       btime: 1640995200000,
+      modificationTime: 1640995250000,
       order: {
         folder2: "123.456", // different folder
       },
@@ -557,10 +560,10 @@ describe("transformEagleItem", () => {
 
     const result = transformEagleItem(eagleItem, "folder1");
 
-    expect(result.manualOrder).toBe(1640995200000); // btime
+    expect(result.manualOrder).toBe(1640995250000); // modificationTime
   });
 
-  test("falls back to btime when order object is missing", () => {
+  test("falls back to modificationTime when order object is missing", () => {
     const eagleItem = {
       id: "item1",
       name: "Test Image",
@@ -572,12 +575,13 @@ describe("transformEagleItem", () => {
       width: 1920,
       height: 1080,
       btime: 1640995200000,
+      modificationTime: 1640995250000,
       // No order object
     };
 
     const result = transformEagleItem(eagleItem, "folder1");
 
-    expect(result.manualOrder).toBe(1640995200000); // btime
+    expect(result.manualOrder).toBe(1640995250000); // modificationTime
   });
 
   test("handles zero values correctly", () => {
@@ -626,6 +630,7 @@ describe("transformEagleItem", () => {
       width: 1920,
       height: 1080,
       btime: 1640995200000,
+      modificationTime: 1640995250000,
       order: {
         folder1: "999.999",
       },

@@ -28,6 +28,7 @@ export interface EagleItem {
   width: number;
   btime?: number;
   mtime?: number;
+  modificationTime?: number;
   star?: number;
   duration?: number;
   order?: Record<string, string>;
@@ -43,7 +44,8 @@ export function transformEagleItem(
   folderId?: string,
 ): Item {
   // Calculate manualOrder based on the specification
-  let manualOrder = eagleItem.btime || 0;
+  // For MANUAL sorting: use order[folderId] if available, otherwise modificationTime
+  let manualOrder = eagleItem.modificationTime || 0;
   if (folderId && eagleItem.order?.[folderId]) {
     manualOrder = parseFloat(eagleItem.order[folderId]);
   }

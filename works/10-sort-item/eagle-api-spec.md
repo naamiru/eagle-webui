@@ -120,7 +120,7 @@ Folders can specify `orderBy` to determine item display order:
 | Method | Sort By | Field Used | Notes |
 |--------|---------|------------|-------|
 | `GLOBAL` | Default order | Response order | Default when `orderBy` absent |
-| `MANUAL` | User arrangement | `order[folderId]` or `btime` | Compound sort |
+| `MANUAL` | User arrangement | `order[folderId]` or `modificationTime` | Compound sort |
 | `IMPORT` | Import time | `btime` | When added to Eagle |
 | `MTIME` | Modification time | `mtime` | File modification |
 | `BTIME` | Creation time | `btime` | Same as IMPORT |
@@ -142,7 +142,7 @@ Folders can specify `orderBy` to determine item display order:
 ### Manual Ordering Logic
 MANUAL uses compound sorting:
 1. If item has `order[folderId]`: Use that timestamp value
-2. Otherwise: Use `btime` as fallback
+2. Otherwise: Use `modificationTime` as fallback
 3. Both are timestamps and directly comparable
 
 ### Offset Parameter Issues
