@@ -26,10 +26,10 @@ export const fetchItems = async (
   const items = await response.json();
 
   // Add globalOrder to preserve Eagle API response order
-  // Response order is GLOBAL DESC, so reverse index
+  // Response order is GLOBAL ASC, so use direct index + 1
   return items.map((item: Omit<Item, "globalOrder">, index: number) => ({
     ...item,
-    globalOrder: items.length - index,
+    globalOrder: index + 1,
   }));
 };
 

@@ -134,7 +134,7 @@ Folders can specify `orderBy` to determine item display order:
 ## Important API Behaviors
 
 ### Item List Ordering
-- **Default behavior**: Returns items in GLOBAL descending order
+- **Default behavior**: Returns items in GLOBAL ascending order
 - **orderBy parameter**: Accepted but **NOT FUNCTIONAL**
 - **Client-side sorting required**: All sorting must be implemented client-side
 - **Preserve response order**: Required for GLOBAL sorting
@@ -156,6 +156,13 @@ Not all items have all fields:
 - `star`: Only present if item has been rated
 - `duration`: Only present for video files
 - `order`: Only present if item was manually positioned in folders
+
+## Eagle Application Sorting Behavior
+The Eagle desktop application implements folder-specific sorting using the following logic:
+- **Primary Sort**: Compare items by the specified field (`name`, `size`, `star`, etc.)
+- **Sort Direction**: Apply ascending/descending based on `sortIncrease` setting
+- **Secondary Sort**: Use global position as tiebreaker, following same direction as primary sort
+- **GLOBAL Exception**: GLOBAL sorting uses only the API response order without secondary keys
 
 ## Example API Calls
 

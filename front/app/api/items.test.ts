@@ -52,8 +52,8 @@ describe("fetchItems", () => {
       "/item/list?limit=100&folder=folder123",
     );
     expect(result).toEqual([
-      { ...mockItems[0], globalOrder: 2 },
-      { ...mockItems[1], globalOrder: 1 },
+      { ...mockItems[0], globalOrder: 1 },
+      { ...mockItems[1], globalOrder: 2 },
     ]);
   });
 
@@ -104,9 +104,9 @@ describe("folderItemsQueryOptions", () => {
       "/item/list?limit=1000&folder=folder123",
     );
     expect(result).toEqual([
-      { ...mockItems[0], globalOrder: 3 },
+      { ...mockItems[0], globalOrder: 1 },
       { ...mockItems[1], globalOrder: 2 },
-      { ...mockItems[2], globalOrder: 1 },
+      { ...mockItems[2], globalOrder: 3 },
     ]);
   });
 
@@ -137,13 +137,13 @@ describe("folderItemsQueryOptions", () => {
   });
 
   test("preserves Eagle API response order with globalOrder", async () => {
-    // Simulate Eagle API returning items in GLOBAL DESC order
+    // Simulate Eagle API returning items in GLOBAL ASC order
     const mockItems = [
-      createMockItem("newest", "newest.jpg"), // Most recent -> globalOrder 5
-      createMockItem("recent", "recent.jpg"), // -> globalOrder 4
-      createMockItem("middle", "middle.jpg"), // -> globalOrder 3
-      createMockItem("older", "older.jpg"), // -> globalOrder 2
       createMockItem("oldest", "oldest.jpg"), // Oldest -> globalOrder 1
+      createMockItem("older", "older.jpg"), // -> globalOrder 2
+      createMockItem("middle", "middle.jpg"), // -> globalOrder 3
+      createMockItem("recent", "recent.jpg"), // -> globalOrder 4
+      createMockItem("newest", "newest.jpg"), // Most recent -> globalOrder 5
     ];
 
     vi.mocked(fetchWithAuth).mockResolvedValue({
@@ -154,14 +154,14 @@ describe("folderItemsQueryOptions", () => {
     const queryOptions = folderItemsQueryOptions("folder123");
     const result = await queryOptions.queryFn();
 
-    // Verify globalOrder preserves the reverse of API response order
-    expect(result[0].globalOrder).toBe(5); // First in response gets highest globalOrder
-    expect(result[1].globalOrder).toBe(4);
+    // Verify globalOrder matches API response order (ASC)
+    expect(result[0].globalOrder).toBe(1); // First in response gets globalOrder 1
+    expect(result[1].globalOrder).toBe(2);
     expect(result[2].globalOrder).toBe(3);
-    expect(result[3].globalOrder).toBe(2);
-    expect(result[4].globalOrder).toBe(1); // Last in response gets lowest globalOrder
+    expect(result[3].globalOrder).toBe(4);
+    expect(result[4].globalOrder).toBe(5); // Last in response gets globalOrder 5
 
-    // When sorted by globalOrder ASC, should restore original Eagle order
+    // When sorted by globalOrder ASC, should match Eagle API response order
     const sortedByGlobal = [...result].sort(
       (a, b) => a.globalOrder - b.globalOrder,
     );
@@ -173,7 +173,7 @@ describe("folderItemsQueryOptions", () => {
       "newest",
     ]);
 
-    // When sorted by globalOrder DESC, should match Eagle API response order
+    // When sorted by globalOrder DESC, should reverse the Eagle API response order
     const sortedByGlobalDesc = [...result].sort(
       (a, b) => b.globalOrder - a.globalOrder,
     );
@@ -200,12 +200,12 @@ describe("folderItemsQueryOptions", () => {
     const queryOptions = folderItemsQueryOptions("folder123");
     const result = await queryOptions.queryFn();
 
-    // First item should have globalOrder = 100
-    expect(result[0].globalOrder).toBe(100);
-    // Last item should have globalOrder = 1
-    expect(result[99].globalOrder).toBe(1);
+    // First item should have globalOrder = 1
+    expect(result[0].globalOrder).toBe(1);
+    // Last item should have globalOrder = 100
+    expect(result[99].globalOrder).toBe(100);
     // Middle item should have globalOrder = 50
-    expect(result[49].globalOrder).toBe(51);
+    expect(result[49].globalOrder).toBe(50);
   });
 
   test("uses correct query parameters", () => {

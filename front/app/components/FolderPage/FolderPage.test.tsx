@@ -474,4 +474,63 @@ describe("FolderPage sorting", async () => {
       .filter((img) => (img as HTMLImageElement).alt && (img as HTMLImageElement).alt !== "");
     expect(imageElements).toHaveLength(0);
   });
+
+  it("uses globalOrder as secondary sort key when primary values are equal", async () => {
+    const folder = createMockFolder("folder1", "Test Folder", "FILESIZE", true);
+    const items = [
+      createMockItem("1", "file1.jpg", { size: 1000, globalOrder: 3 }),
+      createMockItem("2", "file2.jpg", { size: 1000, globalOrder: 1 }), // Same size, different globalOrder
+      createMockItem("3", "file3.jpg", { size: 1000, globalOrder: 2 }), // Same size, different globalOrder
+      createMockItem("4", "file4.jpg", { size: 2000, globalOrder: 4 }),
+    ];
+
+    (useQuery as ReturnType<typeof vi.fn>).mockReturnValue({
+      data: items,
+      error: null,
+      isLoading: false,
+    } as unknown as UseQueryResult<Item[], Error>);
+
+    const screen = await render(
+      <TestWrapper>
+        <FolderPage folders={[folder]} folderId="folder1" />
+      </TestWrapper>,
+    );
+
+    // Should sort by size (ASC), then by globalOrder (ASC) for items with same size
+    const itemNames = screen
+      .getByRole("img")
+      .elements()
+      .filter((img) => (img as HTMLImageElement).alt && (img as HTMLImageElement).alt !== "")
+      .map((img) => (img as HTMLImageElement).alt);
+    expect(itemNames).toEqual(["2", "3", "1", "4"]); // Secondary sort by globalOrder: 1, 2, 3, then size 2000
+  });
+
+  it("uses globalOrder as secondary sort key with descending order", async () => {
+    const folder = createMockFolder("folder1", "Test Folder", "RATING", false);
+    const items = [
+      createMockItem("1", "rated1.jpg", { star: 3, globalOrder: 2 }),
+      createMockItem("2", "rated2.jpg", { star: 3, globalOrder: 1 }), // Same rating, different globalOrder
+      createMockItem("3", "rated3.jpg", { star: 5, globalOrder: 3 }),
+    ];
+
+    (useQuery as ReturnType<typeof vi.fn>).mockReturnValue({
+      data: items,
+      error: null,
+      isLoading: false,
+    } as unknown as UseQueryResult<Item[], Error>);
+
+    const screen = await render(
+      <TestWrapper>
+        <FolderPage folders={[folder]} folderId="folder1" />
+      </TestWrapper>,
+    );
+
+    // Should sort by rating (DESC), then by globalOrder (DESC) for items with same rating
+    const itemNames = screen
+      .getByRole("img")
+      .elements()
+      .filter((img) => (img as HTMLImageElement).alt && (img as HTMLImageElement).alt !== "")
+      .map((img) => (img as HTMLImageElement).alt);
+    expect(itemNames).toEqual(["3", "1", "2"]); // 5-star first, then 3-star sorted by globalOrder DESC: 2, 1
+  });
 });

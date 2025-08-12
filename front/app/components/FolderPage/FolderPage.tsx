@@ -36,49 +36,43 @@ export function FolderPage({ folders, folderId }: FolderPageProps) {
 
     // Get comparison function based on sort method
     const getCompareFunction = (): ((a: Item, b: Item) => number) => {
-      switch (orderBy) {
-        case "MANUAL":
-          return sortIncrease
-            ? (a, b) => a.manualOrder - b.manualOrder
-            : (a, b) => b.manualOrder - a.manualOrder;
-        case "NAME":
-          return sortIncrease
-            ? (a, b) => a.name.localeCompare(b.name)
-            : (a, b) => b.name.localeCompare(a.name);
-        case "FILESIZE":
-          return sortIncrease
-            ? (a, b) => a.size - b.size
-            : (a, b) => b.size - a.size;
-        case "RESOLUTION":
-          return sortIncrease
-            ? (a, b) => a.width * a.height - b.width * b.height
-            : (a, b) => b.width * b.height - a.width * a.height;
-        case "RATING":
-          return sortIncrease
-            ? (a, b) => a.star - b.star
-            : (a, b) => b.star - a.star;
-        case "DURATION":
-          return sortIncrease
-            ? (a, b) => a.duration - b.duration
-            : (a, b) => b.duration - a.duration;
-        case "EXT":
-          return sortIncrease
-            ? (a, b) => a.ext.localeCompare(b.ext)
-            : (a, b) => b.ext.localeCompare(a.ext);
-        case "IMPORT":
-        case "BTIME":
-          return sortIncrease
-            ? (a, b) => a.btime - b.btime
-            : (a, b) => b.btime - a.btime;
-        case "MTIME":
-          return sortIncrease
-            ? (a, b) => a.mtime - b.mtime
-            : (a, b) => b.mtime - a.mtime;
-        default:
-          return sortIncrease
-            ? (a, b) => a.globalOrder - b.globalOrder
-            : (a, b) => b.globalOrder - a.globalOrder;
-      }
+      // Get the primary comparison function for each sort method
+      const primaryCompare = (() => {
+        switch (orderBy) {
+          case "MANUAL":
+            return (a: Item, b: Item) => a.manualOrder - b.manualOrder;
+          case "NAME":
+            return (a: Item, b: Item) => a.name.localeCompare(b.name);
+          case "FILESIZE":
+            return (a: Item, b: Item) => a.size - b.size;
+          case "RESOLUTION":
+            return (a: Item, b: Item) => a.width * a.height - b.width * b.height;
+          case "RATING":
+            return (a: Item, b: Item) => a.star - b.star;
+          case "DURATION":
+            return (a: Item, b: Item) => a.duration - b.duration;
+          case "EXT":
+            return (a: Item, b: Item) => a.ext.localeCompare(b.ext);
+          case "IMPORT":
+          case "BTIME":
+            return (a: Item, b: Item) => a.btime - b.btime;
+          case "MTIME":
+            return (a: Item, b: Item) => a.mtime - b.mtime;
+          default:
+            return (a: Item, b: Item) => a.globalOrder - b.globalOrder;
+        }
+      })();
+
+      // Use globalOrder as secondary sort for all methods
+      return (a: Item, b: Item) => {
+        const primary = primaryCompare(a, b);
+        if (primary !== 0) {
+          return sortIncrease ? primary : -primary;
+        }
+        // Secondary sort by globalOrder
+        const secondary = a.globalOrder - b.globalOrder;
+        return sortIncrease ? secondary : -secondary;
+      };
     };
 
     return [...items].sort(getCompareFunction());
