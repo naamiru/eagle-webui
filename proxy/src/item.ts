@@ -7,6 +7,13 @@ export interface Item {
   name: string;
   width: number;
   height: number;
+  size: number;
+  btime: number;
+  mtime: number;
+  ext: string;
+  star: number;
+  duration: number;
+  manualOrder: number;
 }
 
 export interface EagleItem {
@@ -19,6 +26,11 @@ export interface EagleItem {
   url: string;
   height: number;
   width: number;
+  btime?: number;
+  mtime?: number;
+  star?: number;
+  duration?: number;
+  order?: Record<string, string>;
 }
 
 interface ItemListQuery {
@@ -26,12 +38,28 @@ interface ItemListQuery {
   folder?: string;
 }
 
-export function transformEagleItem(eagleItem: EagleItem): Item {
+export function transformEagleItem(
+  eagleItem: EagleItem,
+  folderId?: string,
+): Item {
+  // Calculate manualOrder based on the specification
+  let manualOrder = eagleItem.btime || 0;
+  if (folderId && eagleItem.order?.[folderId]) {
+    manualOrder = parseFloat(eagleItem.order[folderId]);
+  }
+
   return {
     id: eagleItem.id,
     name: eagleItem.name,
     width: eagleItem.width,
     height: eagleItem.height,
+    size: eagleItem.size,
+    btime: eagleItem.btime || 0,
+    mtime: eagleItem.mtime || 0,
+    ext: eagleItem.ext,
+    star: eagleItem.star || 0,
+    duration: eagleItem.duration || 0,
+    manualOrder,
   };
 }
 
@@ -64,7 +92,7 @@ const routes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       `/api/item/list?${queryParams.toString()}`,
     );
 
-    const items = response.map(transformEagleItem);
+    const items = response.map((item) => transformEagleItem(item, folder));
 
     fastify.log.info(
       { itemCount: items.length },

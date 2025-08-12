@@ -92,6 +92,8 @@ describe("FolderItem", () => {
         name: "Custom Test Folder",
         children: [],
         items: [],
+        orderBy: "GLOBAL",
+        sortIncrease: true,
       };
 
       const screen = await render(
@@ -138,9 +140,9 @@ describe("FolderItem", () => {
 
     it("renders folder name correctly for different folder names", async () => {
       const foldersWithDifferentNames = [
-        { id: "folder-1", name: "My Photos", children: [], items: [] },
-        { id: "folder-2", name: "Work Documents", children: [], items: [] },
-        { id: "folder-3", name: "Travel 2024", children: [], items: [] },
+        { id: "folder-1", name: "My Photos", children: [], items: [], orderBy: "GLOBAL", sortIncrease: true },
+        { id: "folder-2", name: "Work Documents", children: [], items: [], orderBy: "GLOBAL", sortIncrease: true },
+        { id: "folder-3", name: "Travel 2024", children: [], items: [], orderBy: "GLOBAL", sortIncrease: true },
       ];
 
       for (const folder of foldersWithDifferentNames) {
@@ -159,6 +161,8 @@ describe("FolderItem", () => {
         name: "",
         children: [],
         items: [],
+        orderBy: "GLOBAL",
+        sortIncrease: true,
       };
       const screen = await render(
         <TestWrapper>

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 import * as eagleApi from "./eagle-api";
+import { transformEagleItem } from "./item";
 import { build } from "./test-helper";
 
 afterEach(() => {
@@ -54,6 +55,13 @@ describe("/item/list", () => {
       name: "Test Image 1",
       width: 1920,
       height: 1080,
+      size: 1024,
+      btime: 0,
+      mtime: 0,
+      ext: "jpg",
+      star: 0,
+      duration: 0,
+      manualOrder: 0,
     });
 
     expect(items[1]).toEqual({
@@ -61,6 +69,13 @@ describe("/item/list", () => {
       name: "Test Image 2",
       width: 1280,
       height: 720,
+      size: 2048,
+      btime: 0,
+      mtime: 0,
+      ext: "png",
+      star: 0,
+      duration: 0,
+      manualOrder: 0,
     });
 
     expect(mockFn).toHaveBeenCalledWith("/api/item/list?limit=1000");
@@ -147,17 +162,23 @@ describe("/item/list", () => {
       name: "Test Image",
       width: 3840,
       height: 2160,
+      size: 1024,
+      btime: 1234567890,
+      mtime: 0,
+      ext: "jpg",
+      star: 0,
+      duration: 0,
+      manualOrder: 1234567890,
     });
 
-    // Verify no extra fields are included
+    // Verify extra fields from Eagle API are not included
     // biome-ignore lint/suspicious/noExplicitAny: Need to verify absence of properties
     const item = items[0] as any;
-    expect(item.size).toBeUndefined();
-    expect(item.ext).toBeUndefined();
     expect(item.tags).toBeUndefined();
     expect(item.folders).toBeUndefined();
     expect(item.url).toBeUndefined();
     expect(item.modificationTime).toBeUndefined();
+    expect(item.palettes).toBeUndefined();
   });
 
   test("handles empty item list from Eagle", async () => {
@@ -403,13 +424,215 @@ describe("/item/list", () => {
         name: "Folder Image 1",
         width: 1920,
         height: 1080,
+        size: 1024,
+        btime: 0,
+        mtime: 0,
+        ext: "jpg",
+        star: 0,
+        duration: 0,
+        manualOrder: 0,
       });
       expect(items[1]).toEqual({
         id: "item2",
         name: "Folder Image 2",
         width: 1280,
         height: 720,
+        size: 2048,
+        btime: 0,
+        mtime: 0,
+        ext: "png",
+        star: 0,
+        duration: 0,
+        manualOrder: 0,
       });
     });
+  });
+});
+
+describe("transformEagleItem", () => {
+  test("transforms basic Eagle item with all required fields", () => {
+    const eagleItem = {
+      id: "item1",
+      name: "Test Image",
+      size: 1024000,
+      ext: "jpg",
+      tags: ["test"],
+      folders: ["folder1"],
+      url: "file:///path/to/image.jpg",
+      width: 1920,
+      height: 1080,
+      btime: 1640995200000,
+      mtime: 1640995300000,
+      star: 3,
+      duration: 120,
+    };
+
+    const result = transformEagleItem(eagleItem);
+
+    expect(result).toEqual({
+      id: "item1",
+      name: "Test Image",
+      width: 1920,
+      height: 1080,
+      size: 1024000,
+      btime: 1640995200000,
+      mtime: 1640995300000,
+      ext: "jpg",
+      star: 3,
+      duration: 120,
+      manualOrder: 1640995200000, // fallback to btime
+    });
+  });
+
+  test("uses default values for missing optional fields", () => {
+    const eagleItem = {
+      id: "item1",
+      name: "Test Image",
+      size: 1024,
+      ext: "jpg",
+      tags: [],
+      folders: [],
+      url: "file:///path/to/image.jpg",
+      width: 1920,
+      height: 1080,
+      // Missing: btime, mtime, star, duration
+    };
+
+    const result = transformEagleItem(eagleItem);
+
+    expect(result).toEqual({
+      id: "item1",
+      name: "Test Image",
+      width: 1920,
+      height: 1080,
+      size: 1024,
+      btime: 0,
+      mtime: 0,
+      ext: "jpg",
+      star: 0,
+      duration: 0,
+      manualOrder: 0, // fallback to btime (0)
+    });
+  });
+
+  test("calculates manualOrder from folder-specific order when available", () => {
+    const eagleItem = {
+      id: "item1",
+      name: "Test Image",
+      size: 1024,
+      ext: "jpg",
+      tags: [],
+      folders: ["folder1"],
+      url: "file:///path/to/image.jpg",
+      width: 1920,
+      height: 1080,
+      btime: 1640995200000,
+      order: {
+        folder1: "123.456",
+        folder2: "789.012",
+      },
+    };
+
+    const result = transformEagleItem(eagleItem, "folder1");
+
+    expect(result.manualOrder).toBe(123.456);
+  });
+
+  test("falls back to btime when folder order not available", () => {
+    const eagleItem = {
+      id: "item1",
+      name: "Test Image",
+      size: 1024,
+      ext: "jpg",
+      tags: [],
+      folders: ["folder1"],
+      url: "file:///path/to/image.jpg",
+      width: 1920,
+      height: 1080,
+      btime: 1640995200000,
+      order: {
+        folder2: "123.456", // different folder
+      },
+    };
+
+    const result = transformEagleItem(eagleItem, "folder1");
+
+    expect(result.manualOrder).toBe(1640995200000); // btime
+  });
+
+  test("falls back to btime when order object is missing", () => {
+    const eagleItem = {
+      id: "item1",
+      name: "Test Image",
+      size: 1024,
+      ext: "jpg",
+      tags: [],
+      folders: ["folder1"],
+      url: "file:///path/to/image.jpg",
+      width: 1920,
+      height: 1080,
+      btime: 1640995200000,
+      // No order object
+    };
+
+    const result = transformEagleItem(eagleItem, "folder1");
+
+    expect(result.manualOrder).toBe(1640995200000); // btime
+  });
+
+  test("handles zero values correctly", () => {
+    const eagleItem = {
+      id: "item1",
+      name: "Test Image",
+      size: 0,
+      ext: "jpg",
+      tags: [],
+      folders: [],
+      url: "file:///path/to/image.jpg",
+      width: 1920,
+      height: 1080,
+      btime: 0,
+      mtime: 0,
+      star: 0,
+      duration: 0,
+    };
+
+    const result = transformEagleItem(eagleItem);
+
+    expect(result).toEqual({
+      id: "item1",
+      name: "Test Image",
+      width: 1920,
+      height: 1080,
+      size: 0,
+      btime: 0,
+      mtime: 0,
+      ext: "jpg",
+      star: 0,
+      duration: 0,
+      manualOrder: 0,
+    });
+  });
+
+  test("handles string order values correctly", () => {
+    const eagleItem = {
+      id: "item1",
+      name: "Test Image",
+      size: 1024,
+      ext: "jpg",
+      tags: [],
+      folders: ["folder1"],
+      url: "file:///path/to/image.jpg",
+      width: 1920,
+      height: 1080,
+      btime: 1640995200000,
+      order: {
+        folder1: "999.999",
+      },
+    };
+
+    const result = transformEagleItem(eagleItem, "folder1");
+
+    expect(result.manualOrder).toBe(999.999);
   });
 });

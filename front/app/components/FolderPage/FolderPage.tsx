@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { folderItemsQueryOptions } from "~/api/items";
 import { FolderList } from "~/components/FolderList/FolderList";
 import Icon from "~/components/Icon/Icon";
 import { ItemList } from "~/components/ItemList/ItemList";
 import styles from "~/styles/_index.module.css";
-import type { Folder } from "~/types/item";
+import type { Folder, Item } from "~/types/item";
 import pageStyles from "./FolderPage.module.css";
 
 interface FolderPageProps {
@@ -29,6 +29,61 @@ export function FolderPage({ folders, folderId }: FolderPageProps) {
 
   const { data: items, error } = useQuery(folderItemsQueryOptions(folderId));
 
+  const sortedItems = useMemo(() => {
+    if (!items || !currentFolder) return items;
+
+    const { orderBy, sortIncrease } = currentFolder;
+
+    // Get comparison function based on sort method
+    const getCompareFunction = (): ((a: Item, b: Item) => number) => {
+      switch (orderBy) {
+        case "MANUAL":
+          return sortIncrease
+            ? (a, b) => a.manualOrder - b.manualOrder
+            : (a, b) => b.manualOrder - a.manualOrder;
+        case "NAME":
+          return sortIncrease
+            ? (a, b) => a.name.localeCompare(b.name)
+            : (a, b) => b.name.localeCompare(a.name);
+        case "FILESIZE":
+          return sortIncrease
+            ? (a, b) => a.size - b.size
+            : (a, b) => b.size - a.size;
+        case "RESOLUTION":
+          return sortIncrease
+            ? (a, b) => a.width * a.height - b.width * b.height
+            : (a, b) => b.width * b.height - a.width * a.height;
+        case "RATING":
+          return sortIncrease
+            ? (a, b) => a.star - b.star
+            : (a, b) => b.star - a.star;
+        case "DURATION":
+          return sortIncrease
+            ? (a, b) => a.duration - b.duration
+            : (a, b) => b.duration - a.duration;
+        case "EXT":
+          return sortIncrease
+            ? (a, b) => a.ext.localeCompare(b.ext)
+            : (a, b) => b.ext.localeCompare(a.ext);
+        case "IMPORT":
+        case "BTIME":
+          return sortIncrease
+            ? (a, b) => a.btime - b.btime
+            : (a, b) => b.btime - a.btime;
+        case "MTIME":
+          return sortIncrease
+            ? (a, b) => a.mtime - b.mtime
+            : (a, b) => b.mtime - a.mtime;
+        default:
+          return sortIncrease
+            ? (a, b) => a.globalOrder - b.globalOrder
+            : (a, b) => b.globalOrder - a.globalOrder;
+      }
+    };
+
+    return [...items].sort(getCompareFunction());
+  }, [items, currentFolder]);
+
   if (error) throw error;
 
   return (
@@ -45,7 +100,7 @@ export function FolderPage({ folders, folderId }: FolderPageProps) {
             <h6 className={styles.itemListTitle}>内容</h6>
           </>
         )}
-        {items && <ItemList items={items} />}
+        {sortedItems && <ItemList items={sortedItems} />}
       </div>
     </>
   );

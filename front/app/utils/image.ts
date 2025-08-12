@@ -22,12 +22,12 @@ function buildImageUrl(
     id: itemId,
     libraryPath: libraryPath,
   });
-  
+
   // Add token to query parameters for image URLs
   if (token) {
     params.append("token", token);
   }
-  
+
   return `${baseUrl}${endpoint}?${params.toString()}`;
 }
 

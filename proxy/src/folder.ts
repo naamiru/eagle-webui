@@ -9,12 +9,16 @@ interface Folder {
   children: Folder[];
   items: Item[];
   coverImage?: Item;
+  orderBy: string;
+  sortIncrease: boolean;
 }
 
 interface EagleFolder {
   id: string;
   name: string;
   children?: EagleFolder[];
+  orderBy?: string;
+  sortIncrease?: boolean;
 }
 
 function collectDescendantIds(folder: EagleFolder): string[] {
@@ -43,7 +47,7 @@ async function fetchCoverImage(folder: EagleFolder): Promise<Item | undefined> {
     );
 
     if (items.length > 0) {
-      return transformEagleItem(items[0]);
+      return transformEagleItem(items[0], folder.id);
     }
 
     // Priority 2: Try descendants if current folder is empty
@@ -94,6 +98,8 @@ function transformEagleFolderSync(
       : [],
     items: [],
     coverImage: coverImageMap.get(eagleFolder.id),
+    orderBy: eagleFolder.orderBy ?? "GLOBAL",
+    sortIncrease: eagleFolder.sortIncrease ?? true,
   };
 }
 

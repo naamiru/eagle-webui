@@ -3,6 +3,14 @@ export interface Item {
   name: string;
   width: number;
   height: number;
+  size: number;
+  btime: number;
+  mtime: number;
+  ext: string;
+  star: number;
+  duration: number;
+  manualOrder: number;
+  globalOrder: number;
 }
 
 export interface Folder {
@@ -11,6 +19,8 @@ export interface Folder {
   children: Folder[];
   items: Item[];
   coverImage?: Item;
+  orderBy: string;
+  sortIncrease: boolean;
 }
 
 export interface Library {

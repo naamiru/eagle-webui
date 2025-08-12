@@ -5,6 +5,14 @@ export const mockImage1: Item = {
   name: "Mock Image 1",
   width: 800,
   height: 600,
+  size: 1024000,
+  btime: 1640995200000,
+  mtime: 1640995300000,
+  ext: "jpg",
+  star: 0,
+  duration: 0,
+  manualOrder: 1640995200000,
+  globalOrder: 1,
 };
 
 export const mockImage2: Item = {
@@ -12,6 +20,14 @@ export const mockImage2: Item = {
   name: "Mock Image 2",
   width: 1200,
   height: 800,
+  size: 2048000,
+  btime: 1640995400000,
+  mtime: 1640995500000,
+  ext: "jpg",
+  star: 0,
+  duration: 0,
+  manualOrder: 1640995400000,
+  globalOrder: 2,
 };
 
 export const mockEmptyFolder: Folder = {
@@ -19,6 +35,8 @@ export const mockEmptyFolder: Folder = {
   name: "Empty Folder",
   children: [],
   items: [],
+  orderBy: "GLOBAL",
+  sortIncrease: true,
 };
 
 export const mockFolderWithImages: Folder = {
@@ -27,6 +45,8 @@ export const mockFolderWithImages: Folder = {
   children: [],
   items: [],
   coverImage: mockImage1,
+  orderBy: "GLOBAL",
+  sortIncrease: true,
 };
 
 export const mockFolderWithoutCoverImage: Folder = {
@@ -35,6 +55,8 @@ export const mockFolderWithoutCoverImage: Folder = {
   children: [],
   items: [],
   coverImage: undefined,
+  orderBy: "GLOBAL",
+  sortIncrease: true,
 };
 
 export const mockLegacyFolder: Folder = {
@@ -42,4 +64,6 @@ export const mockLegacyFolder: Folder = {
   name: "Legacy Folder",
   children: [],
   items: [],
+  orderBy: "GLOBAL",
+  sortIncrease: true,
 };

@@ -61,9 +61,9 @@ async function authPlugin(fastify: FastifyInstance, opts: AuthOptions) {
     url: `http://${localIp}:57821`,
     token: token,
   });
-  
+
   const isProduction = process.env.NODE_ENV === "production";
-  const frontendUrl = isProduction 
+  const frontendUrl = isProduction
     ? "https://naamiru.github.io/eagle-webui/settings"
     : `http://${localIp}:5173/settings`;
   const setupUrl = `${frontendUrl}?${params.toString()}`;
@@ -75,7 +75,10 @@ async function authPlugin(fastify: FastifyInstance, opts: AuthOptions) {
 
   fastify.addHook(
     "onRequest",
-    async (request: FastifyRequest<{ Querystring: { token?: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Querystring: { token?: string } }>,
+      reply: FastifyReply,
+    ) => {
       // Skip authentication for OPTIONS requests (CORS preflight)
       if (request.method === "OPTIONS") {
         return;
@@ -87,8 +90,8 @@ async function authPlugin(fastify: FastifyInstance, opts: AuthOptions) {
       }
 
       // Check if this is an image endpoint
-      const isImageEndpoint = 
-        request.url.startsWith("/item/thumbnail") || 
+      const isImageEndpoint =
+        request.url.startsWith("/item/thumbnail") ||
         request.url.startsWith("/item/image");
 
       let providedToken: string | undefined;
@@ -101,7 +104,7 @@ async function authPlugin(fastify: FastifyInstance, opts: AuthOptions) {
       // For all endpoints, also check Authorization header
       if (!providedToken) {
         const authHeader = request.headers.authorization;
-        
+
         if (!authHeader) {
           reply.code(401).send({ error: "Missing authorization" });
           return;
