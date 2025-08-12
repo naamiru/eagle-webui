@@ -40,7 +40,8 @@ export function FolderPage({ folders, folderId }: FolderPageProps) {
       const primaryCompare = (() => {
         switch (orderBy) {
           case "MANUAL":
-            return (a: Item, b: Item) => a.manualOrder - b.manualOrder;
+            // Reversed: Eagle shows newest manual order first when sortIncrease=true
+            return (a: Item, b: Item) => b.manualOrder - a.manualOrder;
           case "NAME":
             return (a: Item, b: Item) => a.name.localeCompare(b.name);
           case "FILESIZE":
@@ -55,9 +56,11 @@ export function FolderPage({ folders, folderId }: FolderPageProps) {
             return (a: Item, b: Item) => a.ext.localeCompare(b.ext);
           case "IMPORT":
           case "BTIME":
-            return (a: Item, b: Item) => a.btime - b.btime;
+            // Reversed: Eagle shows newest imports first when sortIncrease=true
+            return (a: Item, b: Item) => b.btime - a.btime;
           case "MTIME":
-            return (a: Item, b: Item) => a.mtime - b.mtime;
+            // Reversed: Eagle shows newest modifications first when sortIncrease=true
+            return (a: Item, b: Item) => b.mtime - a.mtime;
           default:
             return (a: Item, b: Item) => a.globalOrder - b.globalOrder;
         }

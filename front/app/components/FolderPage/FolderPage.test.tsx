@@ -284,7 +284,7 @@ describe("FolderPage sorting", async () => {
       .elements()
       .filter((img) => (img as HTMLImageElement).alt && (img as HTMLImageElement).alt !== "")
       .map((img) => (img as HTMLImageElement).alt);
-    expect(itemNames).toEqual(["2", "3", "1"]); // oldest.jpg, middle.jpg, newest.jpg
+    expect(itemNames).toEqual(["1", "3", "2"]); // newest.jpg, middle.jpg, oldest.jpg (reversed)
   });
 
   it("sorts items by IMPORT (same as BTIME)", async () => {
@@ -311,7 +311,7 @@ describe("FolderPage sorting", async () => {
       .elements()
       .filter((img) => (img as HTMLImageElement).alt && (img as HTMLImageElement).alt !== "")
       .map((img) => (img as HTMLImageElement).alt);
-    expect(itemNames).toEqual(["2", "1"]); // oldest.jpg, newest.jpg
+    expect(itemNames).toEqual(["1", "2"]); // newest.jpg, oldest.jpg (reversed)
   });
 
   it("sorts items by MTIME descending", async () => {
@@ -339,7 +339,7 @@ describe("FolderPage sorting", async () => {
       .elements()
       .filter((img) => (img as HTMLImageElement).alt && (img as HTMLImageElement).alt !== "")
       .map((img) => (img as HTMLImageElement).alt);
-    expect(itemNames).toEqual(["2", "3", "1"]); // new-mod.jpg, mid-mod.jpg, old-mod.jpg
+    expect(itemNames).toEqual(["1", "3", "2"]); // old-mod.jpg, mid-mod.jpg, new-mod.jpg (reversed DESC)
   });
 
   it("sorts items by MANUAL ascending", async () => {
@@ -367,7 +367,7 @@ describe("FolderPage sorting", async () => {
       .elements()
       .filter((img) => (img as HTMLImageElement).alt && (img as HTMLImageElement).alt !== "")
       .map((img) => (img as HTMLImageElement).alt);
-    expect(itemNames).toEqual(["2", "3", "1"]); // first.jpg, second.jpg, third.jpg
+    expect(itemNames).toEqual(["1", "3", "2"]); // third.jpg, second.jpg, first.jpg (reversed)
   });
 
   it("sorts items by GLOBAL using globalOrder", async () => {

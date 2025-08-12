@@ -163,6 +163,9 @@ The Eagle desktop application implements folder-specific sorting using the follo
 - **Sort Direction**: Apply ascending/descending based on `sortIncrease` setting
 - **Secondary Sort**: Use global position as tiebreaker, following same direction as primary sort
 - **GLOBAL Exception**: GLOBAL sorting uses only the API response order without secondary keys
+- **Reversed Sort Methods**: MANUAL, IMPORT, BTIME, MTIME use reverse order by default
+  - When `sortIncrease=true`: Shows newest/highest values first (descending)
+  - When `sortIncrease=false`: Shows oldest/lowest values first (ascending)
 
 ## Example API Calls
 
