@@ -10,11 +10,7 @@ interface FolderItemProps {
 
 export function FolderItem({ folder }: FolderItemProps) {
   const library = useLibrary();
-  const firstImage = folder.coverImage;
-
-  const thumbnailUrl = firstImage
-    ? getThumbnailUrl(firstImage.id, library.path)
-    : undefined;
+  const image = folder.coverImage;
 
   return (
     <Link
@@ -23,11 +19,13 @@ export function FolderItem({ folder }: FolderItemProps) {
       prefetch="intent"
     >
       <div className={styles.item}>
-        {thumbnailUrl ? (
+        {image ? (
           <img
-            src={thumbnailUrl}
+            src={getThumbnailUrl(image.id, library.path)}
             alt={`Folder: ${folder.name}`}
             className={styles.thumbnail}
+            width={image.width}
+            height={image.height}
             loading="lazy"
           />
         ) : (

@@ -30,6 +30,8 @@ export function ImageItem({ image }: ImageItemProps) {
           src={thumbnailUrl}
           alt={`${image.id}`}
           className={styles.thumbnail}
+          width={image.width}
+          height={image.height}
           loading="lazy"
         />
       )}
