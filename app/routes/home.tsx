@@ -1,11 +1,14 @@
+import { fetchFolders } from "~/api/folder-list";
+import { HomePage } from "~/components/HomePage/HomePage";
 import type { Route } from "./+types/home";
 
-export function loader({ context }: Route.LoaderArgs) {
-  return { message: context.VALUE_FROM_EXPRESS };
+export async function loader() {
+  const folders = await fetchFolders();
+  return { folders };
 }
 
 export default function Home({
-  loaderData: { message },
+  loaderData: { folders },
 }: Route.ComponentProps) {
-  return <div>{message}</div>;
+  return <HomePage folders={folders} />;
 }
