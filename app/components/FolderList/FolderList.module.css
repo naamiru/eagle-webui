@@ -6,21 +6,18 @@
   margin: 0 1rem;
 }
 
-/* 5 columns for medium-large screens */
 @media (max-width: 1200px) {
   .list {
     grid-template-columns: repeat(5, 1fr);
   }
 }
 
-/* 4 columns for medium screens */
 @media (max-width: 900px) {
   .list {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-/* 3 columns for small screens */
 @media (max-width: 600px) {
   .list {
     grid-template-columns: repeat(3, 1fr);

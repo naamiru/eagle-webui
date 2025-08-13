@@ -1,4 +1,5 @@
-import type { Item } from "~/types/models";
+import type { Item } from '@/app/types/models';
+import { EAGLE_API_URL } from '@/app/constants';
 
 interface EagleItemResponse {
   id: string;
@@ -22,27 +23,27 @@ interface EagleItemResponse {
   palettes?: unknown[];
 }
 
-interface EagleApiResponse {
+interface EagleItemApiResponse {
   status: string;
   data: EagleItemResponse[];
 }
 
 export async function fetchFolderItems(
   folderId: string,
-  limit = 2000,
+  limit = 2000
 ): Promise<Item[]> {
   const response = await fetch(
-    `http://localhost:41595/api/item/list?folders=${folderId}&limit=${limit}`,
+    `${EAGLE_API_URL}/api/item/list?folders=${folderId}&limit=${limit}`
   );
 
   if (!response.ok) {
     throw new Error(`Failed to fetch items: ${response.statusText}`);
   }
 
-  const json: EagleApiResponse = await response.json();
+  const json: EagleItemApiResponse = await response.json();
 
-  if (json.status !== "success") {
-    throw new Error("Eagle API returned error status");
+  if (json.status !== 'success') {
+    throw new Error('Eagle API returned error status');
   }
 
   return json.data.map((item, index) => {

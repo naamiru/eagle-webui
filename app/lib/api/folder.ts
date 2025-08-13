@@ -1,5 +1,6 @@
-import { fetchFolderItems } from "~/api/item-list";
-import type { Folder } from "~/types/models";
+import type { Folder } from '@/app/types/models';
+import { EAGLE_API_URL } from '@/app/constants';
+import { fetchFolderItems } from './item';
 
 interface EagleFolder {
   id: string;
@@ -31,28 +32,25 @@ async function transformFolder(eagleFolder: EagleFolder): Promise<Folder> {
     id: eagleFolder.id,
     name: eagleFolder.name,
     children,
-    orderBy: eagleFolder.orderBy || "GLOBAL",
+    orderBy: eagleFolder.orderBy || 'GLOBAL',
     sortIncrease: eagleFolder.sortIncrease ?? true,
     coverItem: coverItems[0],
   };
 }
 
 export async function fetchFolders(): Promise<Folder[]> {
-  const response = await fetch("http://localhost:41595/api/folder/list");
+  const response = await fetch(`${EAGLE_API_URL}/api/folder/list`);
 
   if (!response.ok) {
-    throw new Response(`Failed to fetch folders from Eagle API`, {
-      status: response.status,
-      statusText: response.statusText,
-    });
+    throw new Error(
+      `Failed to fetch folders from Eagle API: ${response.status} ${response.statusText}`
+    );
   }
 
   const data: EagleApiResponse = await response.json();
 
-  if (data.status !== "success") {
-    throw new Response(`Eagle API returned error status: ${data.status}`, {
-      status: 500,
-    });
+  if (data.status !== 'success') {
+    throw new Error(`Eagle API returned error status: ${data.status}`);
   }
 
   return Promise.all(data.data.map(transformFolder));

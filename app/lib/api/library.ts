@@ -1,37 +1,37 @@
-const EAGLE_API_BASE = "http://localhost:41595";
+import { EAGLE_API_URL } from '@/app/constants';
 
 export async function fetchLibraryPath(): Promise<string> {
   try {
-    const listResponse = await fetch(`${EAGLE_API_BASE}/api/item/list?limit=1`);
+    const listResponse = await fetch(`${EAGLE_API_URL}/api/item/list?limit=1`);
     if (!listResponse.ok) {
       throw new Error(
-        `Failed to fetch items: ${listResponse.status} ${listResponse.statusText}`,
+        `Failed to fetch items: ${listResponse.status} ${listResponse.statusText}`
       );
     }
 
     const listData = await listResponse.json();
     if (
-      listData.status !== "success" ||
+      listData.status !== 'success' ||
       !listData.data ||
       listData.data.length === 0
     ) {
-      throw new Error("No items found in Eagle library");
+      throw new Error('No items found in Eagle library');
     }
 
     const itemId = listData.data[0].id;
 
     const thumbnailResponse = await fetch(
-      `${EAGLE_API_BASE}/api/item/thumbnail?id=${itemId}`,
+      `${EAGLE_API_URL}/api/item/thumbnail?id=${itemId}`
     );
     if (!thumbnailResponse.ok) {
       throw new Error(
-        `Failed to fetch thumbnail: ${thumbnailResponse.status} ${thumbnailResponse.statusText}`,
+        `Failed to fetch thumbnail: ${thumbnailResponse.status} ${thumbnailResponse.statusText}`
       );
     }
 
     const thumbnailData = await thumbnailResponse.json();
-    if (thumbnailData.status !== "success" || !thumbnailData.data) {
-      throw new Error("Failed to get thumbnail path");
+    if (thumbnailData.status !== 'success' || !thumbnailData.data) {
+      throw new Error('Failed to get thumbnail path');
     }
 
     const thumbnailPath = thumbnailData.data;
@@ -46,6 +46,6 @@ export async function fetchLibraryPath(): Promise<string> {
     if (error instanceof Error) {
       throw error;
     }
-    throw new Error("Unknown error occurred while fetching library path");
+    throw new Error('Unknown error occurred while fetching library path');
   }
 }

@@ -1,5 +1,7 @@
+"use client";
+
 import { Gallery } from "react-photoswipe-gallery";
-import type { Item } from "~/types/models";
+import type { Item } from "@/app/types/models";
 import { ItemItem } from "./ItemItem";
 import styles from "./ItemList.module.css";
 import "photoswipe/dist/photoswipe.css";

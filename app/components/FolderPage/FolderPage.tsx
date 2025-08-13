@@ -1,9 +1,10 @@
-import clsx from "clsx";
-import { useEffect, useMemo, useState } from "react";
+"use client";
+
+import { useMemo, useState } from "react";
 import { ChevronLeft, SortDown } from "react-bootstrap-icons";
-import { Link } from "react-router";
-import type { Folder, Item } from "~/types/models";
-import { sortItems } from "~/utils/folder";
+import Link from "next/link";
+import type { Folder, Item } from "@/app/types/models";
+import { sortItems } from "@/app/utils/folder";
 import { FolderList } from "../FolderList/FolderList";
 import { ItemList } from "../ItemList/ItemList";
 import styles from "./FolderPage.module.css";
@@ -33,7 +34,7 @@ export function FolderPage({
 
   const sortedItems = useMemo(
     () => sortItems(items, order.orderBy, order.sortIncrease),
-    [items, order],
+    [items, order]
   );
 
   return (
@@ -84,17 +85,6 @@ function FolderPageHeader({
   order,
   onChangeOrder,
 }: FolderPageHeaderProps) {
-  const [isStuck, setIsStuck] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsStuck(window.scrollY > 0);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   function onClickOrder(orderBy: string) {
     onChangeOrder({
       orderBy,
@@ -104,12 +94,12 @@ function FolderPageHeader({
   }
 
   return (
-    <header className={`${styles.header} ${isStuck ? styles.stuck : ""}`}>
+    <header className={styles.header}>
       <nav>
         <ul>
           <li>
             <Link
-              to={parentFolderId ? `/folders/${parentFolderId}` : "/"}
+              href={parentFolderId ? `/folders/${parentFolderId}` : "/"}
               aria-label="戻る"
             >
               <ChevronLeft size={20} />
@@ -134,7 +124,7 @@ function FolderPageHeader({
                 {SORTS.map(([value, label]) => (
                   <li
                     key={value}
-                    className={clsx(value === order.orderBy && styles.active)}
+                    className={value === order.orderBy ? styles.active : ""}
                     dir="ltr"
                   >
                     <a

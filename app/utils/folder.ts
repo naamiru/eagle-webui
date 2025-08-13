@@ -1,4 +1,4 @@
-import type { Folder, Item } from "~/types/models";
+import type { Folder, Item } from '@/app/types/models';
 
 export function findFolderById(
   folders: Folder[],
@@ -49,6 +49,10 @@ export function sortItems(
         : b.globalOrder - a.globalOrder,
     );
     return sorted;
+  }
+
+  if (orderBy === "RANDOM") {
+    return sorted.sort(() => Math.random() - 0.5);
   }
 
   const getCompareFunction = (): ((a: Item, b: Item) => number) => {

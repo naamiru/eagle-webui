@@ -1,6 +1,6 @@
-import { Link } from "react-router";
-import type { Folder } from "~/types/models";
-import { getThumbnailUrl } from "~/utils/image";
+import Link from "next/link";
+import type { Folder } from "@/app/types/models";
+import { getThumbnailUrl } from "@/app/utils/image";
 import styles from "./FolderItem.module.css";
 
 interface FolderItemProps {
@@ -12,7 +12,7 @@ export function FolderItem({ folder, libraryPath }: FolderItemProps) {
   const item = folder.coverItem;
 
   return (
-    <Link to={`/folders/${folder.id}`} className={styles.link}>
+    <Link href={`/folders/${folder.id}`} className={styles.link}>
       <div className={styles.item}>
         {item ? (
           <img
