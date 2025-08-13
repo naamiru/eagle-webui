@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Folder } from '@/app/types/models';
+import { getThumbnailUrl } from '@/app/utils/image';
 import styles from './FolderItem.module.css';
 
 interface FolderItemProps {
@@ -7,22 +8,7 @@ interface FolderItemProps {
   libraryPath: string;
 }
 
-function getStubThumbnailUrl(itemId: string): string {
-  const images = [
-    'https://picsum.photos/seed/folder1/400/400',
-    'https://picsum.photos/seed/folder2/400/400',
-    'https://picsum.photos/seed/folder3/400/400',
-    'https://picsum.photos/seed/folder4/400/400',
-    'https://picsum.photos/seed/folder5/400/400',
-    'https://picsum.photos/seed/folder6/400/400',
-    'https://picsum.photos/seed/folder7/400/400',
-    'https://picsum.photos/seed/folder8/400/400',
-  ];
-  const index = parseInt(itemId.split('-')[1]) % images.length;
-  return images[index];
-}
-
-export function FolderItem({ folder }: FolderItemProps) {
+export function FolderItem({ folder, libraryPath }: FolderItemProps) {
   const item = folder.coverItem;
 
   return (
@@ -31,7 +17,7 @@ export function FolderItem({ folder }: FolderItemProps) {
         {item ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={getStubThumbnailUrl(item.id)}
+            src={getThumbnailUrl(item.id, libraryPath)}
             alt={folder.name}
             className={styles.thumbnail}
             width={item.width}
