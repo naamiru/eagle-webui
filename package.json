@@ -12,6 +12,7 @@
     "mime": "^4.0.7",
     "next": "15.4.6",
     "react": "19.1.0",
+    "react-bootstrap-icons": "^1.11.6",
     "react-dom": "19.1.0"
   },
   "devDependencies": {

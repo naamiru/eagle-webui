@@ -1,0 +1,86 @@
+.container {
+  min-height: 100vh;
+  position: relative;
+}
+
+.container h6 {
+  margin: 1rem 1.5rem 0.5rem;
+}
+
+.header {
+  position: sticky;
+  padding: 0 1rem;
+  top: 0;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.8);
+  transition: box-shadow 0.5s ease;
+  clip-path: inset(0 0 -100vh 0);
+}
+
+.header.stuck {
+  box-shadow: var(--pico-card-box-shadow);
+}
+
+.header + h6 {
+  margin-top: 0;
+}
+
+.sort {
+  /* Safari RTL Dropdown Bug https://github.com/picocss/pico/issues/671#issue-2965051220 */
+  display: inline-block !important;
+}
+
+.sort > summary {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--pico-primary) !important;
+}
+
+.sort > summary:hover,
+.sort[open] > summary {
+  color: var(--pico-primary-hover) !important;
+}
+
+.sort > summary:after {
+  display: none !important;
+}
+
+.sort > summary + ul li a {
+  cursor: pointer;
+  display: flex !important;
+}
+
+.sort > summary + ul li.active a {
+  color: var(--pico-primary);
+  user-select: none;
+}
+
+.sort > summary + ul li a:after {
+  display: block;
+  flex-grow: 2;
+  justify-self: flex-end;
+  width: 36px;
+  height: calc(1rem * var(--pico-line-height, 1.5));
+  margin-inline-start: 0.25rem;
+  content: "";
+}
+
+.sort > summary + ul li.active a:after {
+  /* --pico-icon-chevron with --pico-primary color */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgb(1, 114, 173)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+
+  background-position: right center;
+  background-size: 1rem auto;
+  background-repeat: no-repeat;
+  transform-origin: calc(100% - 10px) center;
+  content: "";
+}
+
+.sort > summary + ul.asc li.active a:after {
+  transform: rotate(180deg);
+}
+
+.sort > summary + ul.desc li.active a:after {
+  transform: rotate(0deg);
+}

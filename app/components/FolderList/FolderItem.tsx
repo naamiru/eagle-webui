@@ -15,7 +15,6 @@ export function FolderItem({ folder, libraryPath }: FolderItemProps) {
     <Link href={`/folders/${folder.id}`} className={styles.link}>
       <div className={styles.item}>
         {item ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={getThumbnailUrl(item.id, libraryPath)}
             alt={folder.name}
