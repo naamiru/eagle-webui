@@ -1,0 +1,1 @@
+export const EAGLE_API_URL = 'http://localhost:41595';

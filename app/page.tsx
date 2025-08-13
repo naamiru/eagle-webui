@@ -1,5 +1,6 @@
 import { FolderList } from "@/app/components/FolderList/FolderList";
-import { fetchFolders, fetchLibraryPath } from "@/app/lib/api";
+import { fetchFolders } from "@/app/lib/api/folder";
+import { fetchLibraryPath } from "@/app/lib/api/library";
 import styles from "./page.module.css";
 
 export default async function Home() {
