@@ -51,6 +51,10 @@ export function sortItems(
     return sorted;
   }
 
+  if (orderBy === "RANDOM") {
+    return sorted.sort(() => Math.random() - 0.5);
+  }
+
   const getCompareFunction = (): ((a: Item, b: Item) => number) => {
     const primaryCompare = (() => {
       switch (orderBy) {
