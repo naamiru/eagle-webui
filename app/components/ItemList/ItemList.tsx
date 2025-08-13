@@ -20,6 +20,7 @@ export function ItemList({ items, libraryPath }: ItemListProps) {
         easing: "ease-out",
         counter: false,
         zoom: false,
+        loop: false,
       }}
       onOpen={(pswp) => {
         // for touch device, hide controls on open

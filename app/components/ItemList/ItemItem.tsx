@@ -28,8 +28,8 @@ export function ItemItem({ image, libraryPath }: ImageItemProps) {
           src={thumbnailUrl}
           alt={image.name}
           className={styles.thumbnail}
-          width="300"
-          height="200"
+          width={image.width}
+          height={image.height}
           loading="lazy"
         />
       )}
