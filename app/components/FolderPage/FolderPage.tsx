@@ -10,9 +10,10 @@ interface FolderPageProps {
   folder: Folder;
   parentFolder?: Folder;
   items: Item[];
+  libraryPath: string;
 }
 
-export function FolderPage({ folder, parentFolder, items }: FolderPageProps) {
+export function FolderPage({ folder, parentFolder, items, libraryPath }: FolderPageProps) {
   return (
     <div className={styles.container}>
       <FolderPageHeader
@@ -26,7 +27,7 @@ export function FolderPage({ folder, parentFolder, items }: FolderPageProps) {
           <h6>内容</h6>
         </>
       )}
-      <ItemList items={items} />
+      <ItemList items={items} libraryPath={libraryPath} />
     </div>
   );
 }

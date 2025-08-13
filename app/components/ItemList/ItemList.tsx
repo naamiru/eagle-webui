@@ -6,9 +6,10 @@ import "photoswipe/dist/photoswipe.css";
 
 interface ItemListProps {
   items: Item[];
+  libraryPath: string;
 }
 
-export function ItemList({ items }: ItemListProps) {
+export function ItemList({ items, libraryPath }: ItemListProps) {
   return (
     <Gallery
       withCaption
@@ -35,7 +36,7 @@ export function ItemList({ items }: ItemListProps) {
     >
       <div className={styles.list}>
         {items.map((item) => (
-          <ItemItem key={item.id} image={item} />
+          <ItemItem key={item.id} image={item} libraryPath={libraryPath} />
         ))}
       </div>
     </Gallery>

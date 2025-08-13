@@ -1,23 +1,23 @@
 import { Item as GalleryItem } from "react-photoswipe-gallery";
 import type { Item } from "~/types/models";
+import { getImageUrl, getThumbnailUrl } from "~/utils/image";
 import styles from "./ItemItem.module.css";
 
 interface ImageItemProps {
   image: Item;
+  libraryPath: string;
 }
 
-export function ItemItem({ image }: ImageItemProps) {
-  const thumbnailUrl =
-    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300";
-  const originalUrl =
-    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200";
+export function ItemItem({ image, libraryPath }: ImageItemProps) {
+  const thumbnailUrl = getThumbnailUrl(image.id, libraryPath);
+  const originalUrl = getImageUrl(image.id, libraryPath);
 
   return (
     <GalleryItem
       original={originalUrl}
       thumbnail={thumbnailUrl}
-      width={1200}
-      height={800}
+      width={image.width}
+      height={image.height}
       caption={image.name}
       cropped
     >
@@ -26,7 +26,7 @@ export function ItemItem({ image }: ImageItemProps) {
           ref={ref}
           onClick={open}
           src={thumbnailUrl}
-          alt={`${image.id}`}
+          alt={image.name}
           className={styles.thumbnail}
           width="300"
           height="200"

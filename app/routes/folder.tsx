@@ -28,6 +28,11 @@ export default function Folder({
   const parentFolder = findParentFolder(appData.folders, folderId);
 
   return (
-    <FolderPage folder={folder} parentFolder={parentFolder} items={items} />
+    <FolderPage
+      folder={folder}
+      parentFolder={parentFolder}
+      items={items}
+      libraryPath={appData.libraryPath}
+    />
   );
 }
