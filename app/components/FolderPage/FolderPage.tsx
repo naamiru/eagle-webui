@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
-import { ChevronLeft, SortDown } from 'react-bootstrap-icons';
-import Link from 'next/link';
-import type { Folder, Item } from '@/app/types/models';
-import { sortItems } from '@/app/utils/folder';
-import { FolderList } from '../FolderList/FolderList';
-import { ItemList } from '../ItemList/ItemList';
-import styles from './FolderPage.module.css';
+import { useMemo, useState } from "react";
+import { ChevronLeft, SortDown } from "react-bootstrap-icons";
+import Link from "next/link";
+import type { Folder, Item } from "@/app/types/models";
+import { sortItems } from "@/app/utils/folder";
+import { FolderList } from "../FolderList/FolderList";
+import { ItemList } from "../ItemList/ItemList";
+import styles from "./FolderPage.module.css";
 
 interface FolderPageProps {
   folder: Folder;
@@ -34,7 +34,7 @@ export function FolderPage({
 
   const sortedItems = useMemo(
     () => sortItems(items, order.orderBy, order.sortIncrease),
-    [items, order],
+    [items, order]
   );
 
   return (
@@ -124,7 +124,7 @@ function FolderPageHeader({
                 {SORTS.map(([value, label]) => (
                   <li
                     key={value}
-                    className={value === order.orderBy ? styles.active : ''}
+                    className={value === order.orderBy ? styles.active : ""}
                     dir="ltr"
                   >
                     <a

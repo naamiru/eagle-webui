@@ -1,6 +1,9 @@
-import type { Item } from '@/app/types/models';
-import { getThumbnailUrl } from '@/app/utils/image';
-import styles from './ItemItem.module.css';
+"use client";
+
+import { Item as GalleryItem } from "react-photoswipe-gallery";
+import type { Item } from "@/app/types/models";
+import { getImageUrl, getThumbnailUrl } from "@/app/utils/image";
+import styles from "./ItemItem.module.css";
 
 interface ImageItemProps {
   image: Item;
@@ -9,15 +12,29 @@ interface ImageItemProps {
 
 export function ItemItem({ image, libraryPath }: ImageItemProps) {
   const thumbnailUrl = getThumbnailUrl(image.id, libraryPath);
+  const originalUrl = getImageUrl(image.id, libraryPath);
 
   return (
-    <img
-      src={thumbnailUrl}
-      alt={image.name}
-      className={styles.thumbnail}
+    <GalleryItem
+      original={originalUrl}
+      thumbnail={thumbnailUrl}
       width={image.width}
       height={image.height}
-      loading="lazy"
-    />
+      caption={image.name}
+      cropped
+    >
+      {({ ref, open }) => (
+        <img
+          ref={ref}
+          onClick={open}
+          src={thumbnailUrl}
+          alt={image.name}
+          className={styles.thumbnail}
+          width={image.width}
+          height={image.height}
+          loading="lazy"
+        />
+      )}
+    </GalleryItem>
   );
 }
