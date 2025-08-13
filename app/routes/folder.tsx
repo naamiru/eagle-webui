@@ -14,7 +14,7 @@ export default function Folder({
   params: { folderId },
   loaderData: { items },
 }: Route.ComponentProps) {
-  const appData = useRouteLoaderData<typeof appLoader>("routes/app");
+  const appData = useRouteLoaderData<typeof appLoader>("app");
 
   if (!appData) {
     throw new Error("App layout data not available");

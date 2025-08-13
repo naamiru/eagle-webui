@@ -3,7 +3,7 @@ import { HomePage } from "~/components/HomePage/HomePage";
 import type { loader as appLoader } from "./app";
 
 export default function Home() {
-  const data = useRouteLoaderData<typeof appLoader>("routes/app");
+  const data = useRouteLoaderData<typeof appLoader>("app");
 
   if (!data) {
     throw new Error("App layout data not available");
