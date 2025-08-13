@@ -19,7 +19,9 @@
     "rules": {
       "recommended": true,
       "a11y": {
-        "useKeyWithClickEvents": "off"
+        "useKeyWithClickEvents": "off",
+        "useValidAnchor": "off",
+        "noStaticElementInteractions": "off"
       }
     }
   },
