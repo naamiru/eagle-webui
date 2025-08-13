@@ -1,5 +1,63 @@
 import type { Folder, Item } from '@/app/types/models';
 
+type NameSegment = string | number;
+
+function parseNameForSorting(name: string): NameSegment[] {
+  const segments: NameSegment[] = [];
+  let current = '';
+  let isNumber = false;
+  
+  for (let i = 0; i < name.length; i++) {
+    const char = name[i];
+    const charIsNumber = /[0-9]/.test(char);
+    
+    if (charIsNumber !== isNumber) {
+      if (current) {
+        segments.push(isNumber ? parseInt(current, 10) : current);
+      }
+      current = char;
+      isNumber = charIsNumber;
+    } else {
+      current += char;
+    }
+  }
+  
+  if (current) {
+    segments.push(isNumber ? parseInt(current, 10) : current);
+  }
+  
+  return segments;
+}
+
+function compareNameSegments(a: NameSegment[], b: NameSegment[]): number {
+  const maxLength = Math.max(a.length, b.length);
+  
+  for (let i = 0; i < maxLength; i++) {
+    const segA = a[i];
+    const segB = b[i];
+    
+    if (segA === undefined) return -1;
+    if (segB === undefined) return 1;
+    
+    const aIsNumber = typeof segA === 'number';
+    const bIsNumber = typeof segB === 'number';
+    
+    if (aIsNumber && bIsNumber) {
+      const diff = segA - segB;
+      if (diff !== 0) return diff;
+    } else if (aIsNumber && !bIsNumber) {
+      return -1;
+    } else if (!aIsNumber && bIsNumber) {
+      return 1;
+    } else {
+      const diff = (segA as string).localeCompare(segB as string);
+      if (diff !== 0) return diff;
+    }
+  }
+  
+  return 0;
+}
+
 export function findFolderById(
   folders: Folder[],
   targetId: string,
@@ -61,7 +119,11 @@ export function sortItems(
         case "MANUAL":
           return (a: Item, b: Item) => b.manualOrder - a.manualOrder;
         case "NAME":
-          return (a: Item, b: Item) => a.name.localeCompare(b.name);
+          return (a: Item, b: Item) => {
+            const segmentsA = parseNameForSorting(a.name);
+            const segmentsB = parseNameForSorting(b.name);
+            return compareNameSegments(segmentsA, segmentsB);
+          };
         case "SIZE":
         case "FILESIZE":
           return (a: Item, b: Item) => a.size - b.size;

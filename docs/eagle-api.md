@@ -19,11 +19,13 @@ Returns all folders in the library with their hierarchy and sorting settings.
 **Official Documentation:** https://api.eagle.cool/folder/list
 
 **Request:**
+
 ```http
 GET /api/folder/list
 ```
 
 **Response:**
+
 ```json
 {
   "status": "success",
@@ -47,6 +49,7 @@ GET /api/folder/list
 ```
 
 **Fields:**
+
 - `id` (string): Unique folder identifier
 - `name` (string): Display name
 - `description` (string): Folder description
@@ -67,20 +70,23 @@ Returns items (images/videos) with optional filtering.
 **Official Documentation:** https://api.eagle.cool/item/list
 
 **Request:**
+
 ```http
 GET /api/item/list?folders=FOLDER_ID&limit=200
 ```
 
 **Query Parameters:**
+
 - `limit` (number): Number of items to return (default: 200)
 - `offset` (number): Starting position (**unreliable** - may skip items, use higher limit instead)
 - `folders` (string): Comma-separated folder IDs to filter
 - `tags` (string): Comma-separated tags to filter
 - `ext` (string): File extension filter
 - `keyword` (string): Search keyword
-- `orderBy` (string): **NOT FUNCTIONAL** - parameter is accepted but ignored by API
+- `orderBy` (string): **UNRELIABLE** - parameter changes order but not always as expected
 
 **Response:**
+
 ```json
 {
   "status": "success",
@@ -113,6 +119,7 @@ GET /api/item/list?folders=FOLDER_ID&limit=200
 ```
 
 **Fields:**
+
 - `id` (string): Unique item identifier
 - `name` (string): Filename without path
 - `size` (number): File size in bytes
@@ -136,8 +143,9 @@ GET /api/item/list?folders=FOLDER_ID&limit=200
 - `palettes` (array): Color palette data
 
 **Important Notes:**
-- Items are always returned in GLOBAL ascending order regardless of `orderBy` parameter
-- All sorting must be implemented client-side
+
+- Without `orderBy` parameter, items are returned in GLOBAL ascending order
+- The `orderBy` parameter may change order but behavior is inconsistent
 - The `offset` parameter is unreliable and may skip items
 - Optional fields (`star`, `duration`, `order`) may not be present on all items
 
@@ -148,14 +156,17 @@ Returns the file path of the specified item's thumbnail.
 **Official Documentation:** https://api.eagle.cool/item/thumbnail
 
 **Request:**
+
 ```http
 GET /api/item/thumbnail?id=ITEM_ID
 ```
 
 **Query Parameters:**
+
 - `id` (string, required): Item ID to get thumbnail path for
 
 **Response:**
+
 ```json
 {
   "status": "success",
@@ -164,6 +175,7 @@ GET /api/item/thumbnail?id=ITEM_ID
 ```
 
 **Fields:**
+
 - `status` (string): Request status - `success` or `error`
 - `data` (string): Full filesystem path to the thumbnail or original image file (falls back to original if thumbnail doesn't exist)
 
@@ -181,6 +193,7 @@ LIBRARY_PATH/
 ```
 
 To access files directly:
+
 1. Get the library path from Eagle
 2. Navigate to `images/ITEM_ID.info/`
 3. Access the original file or thumbnail (if available)
@@ -194,10 +207,10 @@ Since the API's `orderBy` parameter is non-functional, sorting must be implement
 | Method       | Sort By           | Field Used                              | Default Direction |
 | ------------ | ----------------- | --------------------------------------- | ----------------- |
 | `GLOBAL`     | Default order     | API response order                      | Ascending         |
-| `MANUAL`     | User arrangement  | `order[folderId]` or `modificationTime` | Newest first*     |
-| `IMPORT`     | Import time       | `btime`                                 | Newest first*     |
-| `MTIME`      | Modification time | `mtime`                                 | Newest first*     |
-| `BTIME`      | Creation time     | `btime`                                 | Newest first*     |
+| `MANUAL`     | User arrangement  | `order[folderId]` or `modificationTime` | Newest first\*    |
+| `IMPORT`     | Import time       | `btime`                                 | Newest first\*    |
+| `MTIME`      | Modification time | `mtime`                                 | Newest first\*    |
+| `BTIME`      | Creation time     | `btime`                                 | Newest first\*    |
 | `NAME`       | Filename          | `name`                                  | A-Z               |
 | `EXT`        | Extension         | `ext`                                   | A-Z               |
 | `FILESIZE`   | Size              | `size`                                  | Smallest first    |
@@ -206,12 +219,23 @@ Since the API's `orderBy` parameter is non-functional, sorting must be implement
 | `DURATION`   | Length            | `duration`                              | Shortest first    |
 | `RANDOM`     | Random order      | Random shuffle                          | N/A               |
 
-*These methods use reversed logic where `sortIncrease=true` shows newest/highest first
+\*These methods use reversed logic where `sortIncrease=true` shows newest/highest first
 
 ### Manual Ordering Logic
 
 For `MANUAL` sorting:
+
 1. Check if item has `order[folderId]` value
 2. If not present, use `modificationTime` as fallback
 3. Both values are timestamps and directly comparable
 
+### Name Sorting Logic (Eagle Custom)
+
+For `NAME` sorting, Eagle uses a custom algorithm:
+
+1. Split filename into segments of numbers ([0-9]) and non-numbers
+2. Parse number segments as base 10 integers (e.g., "00-23c045" becomes [0, "-", 23, "c", 45])
+3. Compare arrays element by element:
+   - Numbers are compared numerically
+   - Strings are compared lexicographically
+   - Numbers sort before strings at the same position

@@ -24,7 +24,11 @@ interface EagleApiResponse {
 
 async function transformFolder(eagleFolder: EagleFolder): Promise<Folder> {
   const [coverItems, children] = await Promise.all([
-    fetchFolderItems(eagleFolder.id, 1).catch(() => []),
+    fetchFolderItems(eagleFolder.id, { 
+      limit: 1, 
+      orderBy: eagleFolder.orderBy,
+      sortIncrease: eagleFolder.sortIncrease
+    }).catch(() => []),
     Promise.all(eagleFolder.children.map(transformFolder)),
   ]);
 

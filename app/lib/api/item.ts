@@ -30,10 +30,26 @@ interface EagleItemApiResponse {
 
 export async function fetchFolderItems(
   folderId: string,
-  limit = 2000
+  options: { limit?: number; orderBy?: string; sortIncrease?: boolean } = {}
 ): Promise<Item[]> {
+  const { limit = 2000, orderBy, sortIncrease } = options;
+  const params = new URLSearchParams({
+    folders: folderId,
+    limit: limit.toString(),
+  });
+  
+  if (orderBy || sortIncrease !== undefined) {
+    let orderByParam = orderBy || 'GLOBAL';
+    if (sortIncrease === false && !orderByParam.startsWith('-')) {
+      orderByParam = `-${orderByParam}`;
+    } else if (sortIncrease === true && orderByParam.startsWith('-')) {
+      orderByParam = orderByParam.slice(1);
+    }
+    params.append('orderBy', orderByParam);
+  }
+  
   const response = await fetch(
-    `${EAGLE_API_URL}/api/item/list?folders=${folderId}&limit=${limit}`
+    `${EAGLE_API_URL}/api/item/list?${params.toString()}`
   );
 
   if (!response.ok) {
