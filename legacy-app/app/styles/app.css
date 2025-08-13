@@ -1,0 +1,16 @@
+@import "./pico.css";
+
+/* PhotoSwipe caption positioning */
+.pswp__default-caption {
+  bottom: auto !important;
+  top: 20px !important;
+  pointer-events: none !important;
+  font-weight: bold !important;
+  color: var(--pswp-icon-color) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* hide PhotoSwipe controls during opening for touch device */
+.pswp.pswp--opening.pswp--touch .pswp__hide-on-close {
+  display: none !important;
+}

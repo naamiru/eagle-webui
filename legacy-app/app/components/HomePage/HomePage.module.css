@@ -1,0 +1,8 @@
+.container {
+  min-height: 100vh;
+  position: relative;
+}
+
+.container h6 {
+  margin: 1rem 1.5rem 0.5rem;
+}
