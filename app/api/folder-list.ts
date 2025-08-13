@@ -1,3 +1,4 @@
+import { fetchFolderItems } from "~/api/item-list";
 import type { Folder } from "~/types/models";
 
 interface EagleFolder {
@@ -20,13 +21,19 @@ interface EagleApiResponse {
   data: EagleFolder[];
 }
 
-function transformFolder(eagleFolder: EagleFolder): Folder {
+async function transformFolder(eagleFolder: EagleFolder): Promise<Folder> {
+  const [coverItems, children] = await Promise.all([
+    fetchFolderItems(eagleFolder.id, 1).catch(() => []),
+    Promise.all(eagleFolder.children.map(transformFolder)),
+  ]);
+
   return {
     id: eagleFolder.id,
     name: eagleFolder.name,
-    children: eagleFolder.children.map(transformFolder),
+    children,
     orderBy: eagleFolder.orderBy || "GLOBAL",
     sortIncrease: eagleFolder.sortIncrease ?? true,
+    coverItem: coverItems[0],
   };
 }
 
@@ -48,5 +55,5 @@ export async function fetchFolders(): Promise<Folder[]> {
     });
   }
 
-  return data.data.map(transformFolder);
+  return Promise.all(data.data.map(transformFolder));
 }

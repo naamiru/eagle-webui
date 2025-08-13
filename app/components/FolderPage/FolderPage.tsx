@@ -13,7 +13,12 @@ interface FolderPageProps {
   libraryPath: string;
 }
 
-export function FolderPage({ folder, parentFolder, items, libraryPath }: FolderPageProps) {
+export function FolderPage({
+  folder,
+  parentFolder,
+  items,
+  libraryPath,
+}: FolderPageProps) {
   return (
     <div className={styles.container}>
       <FolderPageHeader
@@ -23,7 +28,7 @@ export function FolderPage({ folder, parentFolder, items, libraryPath }: FolderP
       {folder.children.length > 0 && (
         <>
           <h6>サブフォルダー</h6>
-          <FolderList folders={folder.children} />
+          <FolderList folders={folder.children} libraryPath={libraryPath} />
           <h6>内容</h6>
         </>
       )}

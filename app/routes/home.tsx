@@ -9,5 +9,5 @@ export default function Home() {
     throw new Error("App layout data not available");
   }
 
-  return <HomePage folders={data.folders} />;
+  return <HomePage folders={data.folders} libraryPath={data.libraryPath} />;
 }

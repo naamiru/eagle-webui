@@ -27,9 +27,12 @@ interface EagleApiResponse {
   data: EagleItemResponse[];
 }
 
-export async function fetchFolderItems(folderId: string): Promise<Item[]> {
+export async function fetchFolderItems(
+  folderId: string,
+  limit = 2000,
+): Promise<Item[]> {
   const response = await fetch(
-    `http://localhost:41595/api/item/list?folders=${folderId}&limit=2000`,
+    `http://localhost:41595/api/item/list?folders=${folderId}&limit=${limit}`,
   );
 
   if (!response.ok) {

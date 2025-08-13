@@ -17,6 +17,7 @@ export interface Folder {
   children: Folder[];
   orderBy: string;
   sortIncrease: boolean;
+  coverItem?: Item;
 }
 
 export interface Library {

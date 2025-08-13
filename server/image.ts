@@ -7,18 +7,18 @@ async function findImageFile(
   preferThumbnail: boolean,
 ): Promise<string | null> {
   const files = await fs.readdir(itemDir);
-  
+
   if (preferThumbnail) {
     const thumbnailFile = files.find((file) => file.includes("_thumbnail."));
     if (thumbnailFile) {
       return path.join(itemDir, thumbnailFile);
     }
   }
-  
+
   const originalFile = files.find(
     (file) => !file.includes("_thumbnail.") && file !== "metadata.json",
   );
-  
+
   return originalFile ? path.join(itemDir, originalFile) : null;
 }
 
@@ -37,11 +37,11 @@ async function handleImageRequest(
 
   try {
     const imagePath = await findImageFile(itemDir, preferThumbnail);
-    
+
     if (!imagePath) {
       return res.status(404).json({ error: "Image not found" });
     }
-    
+
     res.sendFile(imagePath);
   } catch (_error) {
     res.status(404).json({ error: "Item not found" });
