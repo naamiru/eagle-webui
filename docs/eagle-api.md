@@ -2,6 +2,8 @@
 
 Eagle provides a local HTTP API running on port 41595 for accessing library data and images.
 
+**Tested with:** Eagle 4.0.0 Build7 (20241127)
+
 ## Base URL
 
 ```
@@ -163,7 +165,7 @@ GET /api/item/thumbnail?id=ITEM_ID
 
 **Fields:**
 - `status` (string): Request status - `success` or `error`
-- `data` (string): Full filesystem path to the thumbnail image file
+- `data` (string): Full filesystem path to the thumbnail or original image file (falls back to original if thumbnail doesn't exist)
 
 ## File Access
 
