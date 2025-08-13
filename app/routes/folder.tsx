@@ -1,26 +1,31 @@
-import { Navigate } from "react-router";
-import { fetchFolders } from "~/api/folder-list";
+import { Navigate, useRouteLoaderData } from "react-router";
 import { fetchFolderItems } from "~/api/item-list";
 import { FolderPage } from "~/components/FolderPage/FolderPage";
 import { findFolderById, findParentFolder } from "~/utils/folder";
 import type { Route } from "./+types/folder";
+import type { loader as appLoader } from "./app";
 
 export async function loader({ params: { folderId } }: Route.LoaderArgs) {
-  const folders = await fetchFolders();
   const items = await fetchFolderItems(folderId);
-  return { folders, items };
+  return { items };
 }
 
-export default function Home({
+export default function Folder({
   params: { folderId },
-  loaderData: { folders, items },
+  loaderData: { items },
 }: Route.ComponentProps) {
-  const folder = findFolderById(folders, folderId);
+  const appData = useRouteLoaderData<typeof appLoader>("routes/app");
+
+  if (!appData) {
+    throw new Error("App layout data not available");
+  }
+
+  const folder = findFolderById(appData.folders, folderId);
   if (!folder) {
     return <Navigate to="/" />;
   }
 
-  const parentFolder = findParentFolder(folders, folderId);
+  const parentFolder = findParentFolder(appData.folders, folderId);
 
   return (
     <FolderPage folder={folder} parentFolder={parentFolder} items={items} />

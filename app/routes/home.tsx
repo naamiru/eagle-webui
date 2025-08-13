@@ -1,14 +1,13 @@
-import { fetchFolders } from "~/api/folder-list";
+import { useRouteLoaderData } from "react-router";
 import { HomePage } from "~/components/HomePage/HomePage";
-import type { Route } from "./+types/home";
+import type { loader as appLoader } from "./app";
 
-export async function loader() {
-  const folders = await fetchFolders();
-  return { folders };
-}
+export default function Home() {
+  const data = useRouteLoaderData<typeof appLoader>("routes/app");
 
-export default function Home({
-  loaderData: { folders },
-}: Route.ComponentProps) {
-  return <HomePage folders={folders} />;
+  if (!data) {
+    throw new Error("App layout data not available");
+  }
+
+  return <HomePage folders={data.folders} />;
 }
