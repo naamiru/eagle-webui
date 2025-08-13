@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Eagle WebUI - A web interface for the Eagle image viewer application. This is a Next.js 15.4.6 application with TypeScript and React 19.
+Eagle WebUI - A web interface for the Eagle image viewer application. This is a Next.js 15.4.6 application with TypeScript and React 19 that connects to the Eagle API running locally on port 41595.
 
 ## Development Commands
 
@@ -27,18 +27,44 @@ npm run lint
 - **Framework**: Next.js 15.4.6 with App Router
 - **Language**: TypeScript with strict mode enabled
 - **React**: Version 19.1.0
-- **Styling**: CSS Modules
+- **Styling**: Pico CSS framework with CSS Modules
+- **Gallery**: PhotoSwipe via react-photoswipe-gallery
+- **Icons**: React Bootstrap Icons
 - **Font**: Geist fonts (Sans and Mono variants)
 
-## Architecture Notes
+## Architecture Overview
 
-The application uses Next.js App Router with the following structure:
-- `/app` - Main application directory using App Router conventions
-- Path alias `@/*` maps to root directory for cleaner imports
+### API Integration
+The app connects to Eagle's local API server at `http://localhost:41595` (defined in `/app/constants.ts`). The API provides:
+- Folder structure and metadata
+- Item (image/video) listings and metadata
+- Direct file access through library paths
 
-## Legacy Reference
+### Data Flow Architecture
+1. **API Layer** (`/app/lib/api/`)
+   - `folder.ts`: Fetches and transforms Eagle folder data, includes recursive child folder transformation
+   - `item.ts`: Fetches items with support for folder-specific ordering and metadata
+   - `library.ts`: Retrieves library configuration including file paths
 
-The `/legacy-app/` directory contains the previous implementation built with React Router v7 and Express. This serves as reference for implementing similar functionalities in the Next.js application. Key components from legacy app include folder navigation, item lists, and image rendering capabilities.
+2. **Image Serving** (`/app/api/items/`)
+   - `/api/items/image`: Serves full resolution images directly from Eagle's library
+   - `/api/items/thumbnail`: Serves thumbnails for faster gallery loading
+   - Both endpoints require `id` and `libraryPath` query parameters
+
+3. **Component Architecture**
+   - Server Components fetch data (folders, items) at request time
+   - Client Components (`"use client"`) handle interactive features like sorting
+   - Gallery components integrate PhotoSwipe for image viewing
+
+### Type System
+Core types are defined in `/app/types/models.ts`:
+- `Item`: Image/video metadata including dimensions, timestamps, ratings
+- `Folder`: Hierarchical folder structure with sorting preferences
+- `Library`: Library configuration and paths
+
+## Eagle API Reference
+
+For detailed Eagle API documentation including endpoints, sorting methods, and implementation details, see `/docs/eagle-api.md`
 
 ## Important Instructions
 
