@@ -4,68 +4,48 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Eagle WebUI - A web interface for the Eagle image viewer application. This is a monorepo using npm workspaces with two main services.
+Eagle WebUI - A web interface for the Eagle image viewer application built with React Router v7 and Express.
+
+## Commands
+
+### Development
+
+```bash
+npm run dev              # Start development server with HMR on port 3000
+npm run build           # Build for production
+npm start               # Start production server
+npm run typecheck       # Generate types and run TypeScript checking
+npm run lint.           # Run Biome linter
+npm run lint:fix        # Auto-fix linting issues
+```
 
 ## Architecture
 
-### Frontend (`/front`)
+### Stack
 
-- **Stack**: React 19 + TypeScript + Vite
-- **Routing**: React Router v7 with framework mode (file-based routing)
-- **State Management**: TanStack Query for server state
-- **Styling**: CSS Modules + Pico CSS framework
-- **Image Gallery**: react-photoswipe-gallery for image viewing
-- **Key Components**:
-  - `FolderList`: Displays hierarchical folder structure
-  - `ItemList`: Grid view of image items
-  - Routes are defined in `/app/routes/` with file-based routing conventions
+- **Frontend**: React Router v7 with SSR enabled
+- **Backend**: Express server with compression and logging
+- **Build**: Vite with React Router plugin
+- **Styling**: Pico CSS framework (app/styles/pico.css)
+- **Code Quality**: Biome for linting/formatting (2-space indentation, double quotes)
 
-### Backend Proxy (`/proxy`)
+### Key Files
 
-- **Stack**: Fastify + TypeScript (using tsx for runtime)
-- **Purpose**: Proxy server that runs on the same machine as Eagle to bypass CORS and serve Eagle API requests and image files
-- **Structure**: Manual route registration in `/src/app.ts`
+- `server.js`: Main Express server, handles both development (with Vite HMR) and production modes
+- `server/app.ts`: React Router request handler with Express integration and load context
+- `react-router.config.ts`: React Router configuration (SSR enabled)
+- `vite.config.ts`: Vite configuration with React Router plugin
+- `app/routes.ts`: Route definitions using React Router's file-based routing
+- `app/root.tsx`: Root application component
 
-## Development Commands
+### Development vs Production
 
-### Root level (both services)
+- **Development**: Uses Vite dev server middleware for HMR, loads `server/app.ts` directly
+- **Production**: Serves static assets from `build/client`, uses compiled server bundle from `build/server`
 
-```bash
-npm install              # Install dependencies for all workspaces
-npm run dev              # Start both frontend and proxy concurrently
-```
+### Server Configuration
 
-### Frontend (`/front`)
-
-```bash
-npm install -w front     # Install frontend dependencies
-npm run dev -w front     # Start Vite dev server with HMR (host mode)
-npm run build -w front   # TypeScript check + production build
-npm run lint -w front    # Run Biome linter
-npm run lint:fix -w front # Auto-fix linting issues
-npm run test -w front    # Run Vitest tests
-npm run test:coverage -w front # Run tests with coverage report
-```
-
-### Proxy (`/proxy`)
-
-```bash
-npm install -w proxy     # Install proxy dependencies
-npm run dev -w proxy     # Start with auto-reload
-npm run start -w proxy   # Production mode
-npm run lint -w proxy    # Run Biome linter
-npm run lint:fix -w proxy # Auto-fix linting issues
-npm run test -w proxy    # Run tests
-```
-
-## Code Standards
-
-- **Linting/Formatting**: Biome with 2-space indentation, double quotes
-- **CSS Modules**: Enabled for `.module.css` files
-- **TypeScript**: Strict mode with project references
-- **Testing**: Vitest for frontend with browser mode support
-
-## Data Models
-
-- `ItemData`: Image item with id, original/thumbnail paths, dimensions
-- `FolderData`: Hierarchical folder structure containing items and child folders
+- Port: 3000 (configurable via PORT env variable)
+- Compression enabled
+- Morgan logging in production
+- Static asset caching: 1 year for versioned assets, 1 hour for client files

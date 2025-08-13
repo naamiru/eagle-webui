@@ -1,9 +1,0 @@
-{
-  "extends": "fastify-tsconfig",
-  "compilerOptions": {
-    "paths": {
-      "~/*": ["./src/*"]
-    }
-  },
-  "include": ["src/**/*.ts"]
-}

@@ -1,7 +1,7 @@
-node_modules
-
-# Editor directories and files
 .DS_Store
+/node_modules/
+*.tsbuildinfo
 
-# Local environment configuration
-.mise.toml
+# React Router
+/.react-router/
+/build/

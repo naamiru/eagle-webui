@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!front/app/styles/pico.css"]
+    "includes": ["**", "!app/styles/pico.css"]
   },
   "formatter": {
     "enabled": true,
@@ -19,7 +19,9 @@
     "rules": {
       "recommended": true,
       "a11y": {
-        "useKeyWithClickEvents": "off"
+        "useKeyWithClickEvents": "off",
+        "useValidAnchor": "off",
+        "noStaticElementInteractions": "off"
       }
     }
   },
