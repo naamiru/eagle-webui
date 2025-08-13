@@ -45,16 +45,28 @@ export async function fetchFolderItems(
     throw new Error("Eagle API returned error status");
   }
 
-  return json.data.map((item) => ({
-    id: item.id,
-    name: item.name,
-    width: item.width,
-    height: item.height,
-    size: item.size,
-    btime: item.btime,
-    mtime: item.mtime,
-    ext: item.ext,
-    star: item.star || 0,
-    duration: item.duration || 0,
-  }));
+  return json.data.map((item, index) => {
+    let manualOrder = item.modificationTime || item.mtime;
+    if (item.order?.[folderId]) {
+      const parsed = parseFloat(item.order[folderId]);
+      if (!Number.isNaN(parsed)) {
+        manualOrder = parsed;
+      }
+    }
+
+    return {
+      id: item.id,
+      name: item.name,
+      width: item.width,
+      height: item.height,
+      size: item.size,
+      btime: item.btime,
+      mtime: item.mtime,
+      ext: item.ext,
+      star: item.star || 0,
+      duration: item.duration || 0,
+      globalOrder: index + 1,
+      manualOrder,
+    };
+  });
 }

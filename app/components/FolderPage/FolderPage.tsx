@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ChevronLeft } from "react-bootstrap-icons";
 import { Link } from "react-router";
 import type { Folder, Item } from "~/types/models";
+import { sortItems } from "~/utils/folder";
 import { FolderList } from "../FolderList/FolderList";
 import { ItemList } from "../ItemList/ItemList";
 import styles from "./FolderPage.module.css";
@@ -19,6 +20,8 @@ export function FolderPage({
   items,
   libraryPath,
 }: FolderPageProps) {
+  const sortedItems = sortItems(items, folder.orderBy, folder.sortIncrease);
+
   return (
     <div className={styles.container}>
       <FolderPageHeader
@@ -32,7 +35,7 @@ export function FolderPage({
           <h6>内容</h6>
         </>
       )}
-      <ItemList items={items} libraryPath={libraryPath} />
+      <ItemList items={sortedItems} libraryPath={libraryPath} />
     </div>
   );
 }

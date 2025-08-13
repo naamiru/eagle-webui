@@ -1,2 +1,5 @@
 [tools]
 node = "22.18.0"
+
+[env]
+_.path = './node_modules/.bin'
