@@ -26,9 +26,7 @@ export function FolderItem({ folder, libraryPath }: FolderItemProps) {
         ) : (
           <div className={styles.empty} />
         )}
-        <div className={styles.overlay}>
-          <div className={styles.name}>{folder.name}</div>
-        </div>
+        <div className={styles.name}>{folder.name}</div>
       </div>
     </Link>
   );
