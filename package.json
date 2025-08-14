@@ -1,18 +1,27 @@
 {
   "name": "eagle-webui",
   "version": "0.1.0",
-  "private": true,
+  "description": "web interface for the Eagle image viewer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/naamiru/eagle-webui.git"
+  },
+  "license": "The Unlicense",
+  "author": "naamiru",
+  "bin": {
+    "eagle-webui": "start.js"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
+    "lint": "next lint",
     "build": "next build && cp -r .next/static .next/standalone/.next/",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "node .next/standalone/server.js",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "mime": "^4.0.7",
     "next": "15.4.6",
     "next-intl": "^4.3.4",
-    "os-locale": "^6.0.2",
     "react": "19.1.0",
     "react-bootstrap-icons": "^1.11.6",
     "react-dom": "19.1.0",
