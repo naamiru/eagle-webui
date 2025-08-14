@@ -4,6 +4,7 @@ import { fetchLibraryPath } from "@/app/lib/api/library";
 import { FolderPage } from "@/app/components/FolderPage/FolderPage";
 import { findFolderById, findParentFolder } from "@/app/utils/folder";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 
 interface FolderPageProps {
   params: Promise<{ folderId: string }>;
@@ -33,4 +34,19 @@ export default async function Page({ params }: FolderPageProps) {
       libraryPath={libraryPath}
     />
   );
+}
+
+export async function generateMetadata({
+  params,
+}: FolderPageProps): Promise<Metadata> {
+  const { folderId } = await params;
+  const folders = await fetchFolders();
+  const folder = findFolderById(folders, folderId);
+  if (!folder) {
+    notFound();
+  }
+
+  return {
+    title: `${folder.name} | Eagle WebUI`,
+  };
 }
