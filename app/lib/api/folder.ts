@@ -1,6 +1,6 @@
-import type { Folder } from '@/app/types/models';
-import { EAGLE_API_URL } from '@/app/constants';
-import { fetchFolderItems } from './item';
+import type { Folder } from "@/app/types/models";
+import { EAGLE_API_URL } from "@/app/env";
+import { fetchFolderItems } from "./item";
 
 interface EagleFolder {
   id: string;
@@ -24,10 +24,10 @@ interface EagleApiResponse {
 
 async function transformFolder(eagleFolder: EagleFolder): Promise<Folder> {
   const [coverItems, children] = await Promise.all([
-    fetchFolderItems(eagleFolder.id, { 
-      limit: 1, 
+    fetchFolderItems(eagleFolder.id, {
+      limit: 1,
       orderBy: eagleFolder.orderBy,
-      sortIncrease: eagleFolder.sortIncrease
+      sortIncrease: eagleFolder.sortIncrease,
     }).catch(() => []),
     Promise.all(eagleFolder.children.map(transformFolder)),
   ]);
@@ -36,7 +36,7 @@ async function transformFolder(eagleFolder: EagleFolder): Promise<Folder> {
     id: eagleFolder.id,
     name: eagleFolder.name,
     children,
-    orderBy: eagleFolder.orderBy || 'GLOBAL',
+    orderBy: eagleFolder.orderBy || "GLOBAL",
     sortIncrease: eagleFolder.sortIncrease ?? true,
     coverItem: coverItems[0],
   };
@@ -53,7 +53,7 @@ export async function fetchFolders(): Promise<Folder[]> {
 
   const data: EagleApiResponse = await response.json();
 
-  if (data.status !== 'success') {
+  if (data.status !== "success") {
     throw new Error(`Eagle API returned error status: ${data.status}`);
   }
 

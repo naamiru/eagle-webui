@@ -1,5 +1,5 @@
-import type { Item } from '@/app/types/models';
-import { EAGLE_API_URL } from '@/app/constants';
+import type { Item } from "@/app/types/models";
+import { EAGLE_API_URL } from "@/app/env";
 
 interface EagleItemResponse {
   id: string;
@@ -37,17 +37,17 @@ export async function fetchFolderItems(
     folders: folderId,
     limit: limit.toString(),
   });
-  
+
   if (orderBy || sortIncrease !== undefined) {
-    let orderByParam = orderBy || 'GLOBAL';
-    if (sortIncrease === false && !orderByParam.startsWith('-')) {
+    let orderByParam = orderBy || "GLOBAL";
+    if (sortIncrease === false && !orderByParam.startsWith("-")) {
       orderByParam = `-${orderByParam}`;
-    } else if (sortIncrease === true && orderByParam.startsWith('-')) {
+    } else if (sortIncrease === true && orderByParam.startsWith("-")) {
       orderByParam = orderByParam.slice(1);
     }
-    params.append('orderBy', orderByParam);
+    params.append("orderBy", orderByParam);
   }
-  
+
   const response = await fetch(
     `${EAGLE_API_URL}/api/item/list?${params.toString()}`
   );
@@ -58,8 +58,8 @@ export async function fetchFolderItems(
 
   const json: EagleItemApiResponse = await response.json();
 
-  if (json.status !== 'success') {
-    throw new Error('Eagle API returned error status');
+  if (json.status !== "success") {
+    throw new Error("Eagle API returned error status");
   }
 
   return json.data.map((item, index) => {

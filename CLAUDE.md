@@ -12,7 +12,7 @@ Eagle WebUI - A web interface for the Eagle image viewer application. This is a 
 # Development (with Turbopack)
 npm run dev
 
-# Build for production  
+# Build for production
 npm run build
 
 # Start production server
@@ -35,18 +35,23 @@ npm run lint
 ## Architecture Overview
 
 ### API Integration
-The app connects to Eagle's local API server at `http://localhost:41595` (defined in `/app/constants.ts`). The API provides:
+
+The app connects to Eagle's local API server at `http://localhost:41595` (defined in `/app/env.ts`). The API provides:
+
 - Folder structure and metadata
 - Item (image/video) listings and metadata
 - Direct file access through library paths
 
 ### Data Flow Architecture
+
 1. **API Layer** (`/app/lib/api/`)
+
    - `folder.ts`: Fetches and transforms Eagle folder data, includes recursive child folder transformation
    - `item.ts`: Fetches items with support for folder-specific ordering and metadata
    - `library.ts`: Retrieves library configuration including file paths
 
 2. **Image Serving** (`/app/api/items/`)
+
    - `/api/items/image`: Serves full resolution images directly from Eagle's library
    - `/api/items/thumbnail`: Serves thumbnails for faster gallery loading
    - Both endpoints require `id` and `libraryPath` query parameters
@@ -57,7 +62,9 @@ The app connects to Eagle's local API server at `http://localhost:41595` (define
    - Gallery components integrate PhotoSwipe for image viewing
 
 ### Type System
+
 Core types are defined in `/app/types/models.ts`:
+
 - `Item`: Image/video metadata including dimensions, timestamps, ratings
 - `Folder`: Hierarchical folder structure with sorting preferences
 - `Library`: Library configuration and paths
@@ -71,4 +78,4 @@ For detailed Eagle API documentation including endpoints, sorting methods, and i
 - Do what has been asked; nothing more, nothing less
 - NEVER create files unless absolutely necessary for achieving the goal
 - ALWAYS prefer editing existing files to creating new ones
-- NEVER proactively create documentation files (*.md) or README files unless explicitly requested
+- NEVER proactively create documentation files (\*.md) or README files unless explicitly requested

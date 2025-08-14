@@ -1,4 +1,4 @@
-import { EAGLE_API_URL } from '@/app/constants';
+import { EAGLE_API_URL } from "@/app/env";
 
 export async function fetchLibraryPath(): Promise<string> {
   try {
@@ -11,11 +11,11 @@ export async function fetchLibraryPath(): Promise<string> {
 
     const listData = await listResponse.json();
     if (
-      listData.status !== 'success' ||
+      listData.status !== "success" ||
       !listData.data ||
       listData.data.length === 0
     ) {
-      throw new Error('No items found in Eagle library');
+      throw new Error("No items found in Eagle library");
     }
 
     const itemId = listData.data[0].id;
@@ -30,8 +30,8 @@ export async function fetchLibraryPath(): Promise<string> {
     }
 
     const thumbnailData = await thumbnailResponse.json();
-    if (thumbnailData.status !== 'success' || !thumbnailData.data) {
-      throw new Error('Failed to get thumbnail path');
+    if (thumbnailData.status !== "success" || !thumbnailData.data) {
+      throw new Error("Failed to get thumbnail path");
     }
 
     const thumbnailPath = thumbnailData.data;
@@ -46,6 +46,6 @@ export async function fetchLibraryPath(): Promise<string> {
     if (error instanceof Error) {
       throw error;
     }
-    throw new Error('Unknown error occurred while fetching library path');
+    throw new Error("Unknown error occurred while fetching library path");
   }
 }

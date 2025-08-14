@@ -1,0 +1,32 @@
+{
+  "orderBy": {
+    "GLOBAL": "Global Settings",
+    "MANUAL": "Manual",
+    "IMPORT": "Date Added",
+    "MTIME": "Date Modified",
+    "BTIME": "Date Created",
+    "NAME": "Title",
+    "EXT": "Extension",
+    "FILESIZE": "File Size",
+    "RESOLUTION": "Dimensions",
+    "RATING": "Rating",
+    "DURATION": "Duration",
+    "RANDOM": "Random"
+  },
+  "navigation": {
+    "back": "Back",
+    "folders": "Folders",
+    "subfolders": "Subfolders",
+    "contents": "Contents",
+    "reload": "Reload"
+  },
+  "troubleshooting": {
+    "title": "Unable to retrieve image data",
+    "troubleshooting": "Troubleshooting",
+    "eagleRunning": "Is Eagle running?",
+    "checkApi": "Please confirm that you can access the Eagle API",
+    "urlDifferent": "If the Eagle API URL is different, please specify the URL with the server startup option.",
+    "sameMachine": "Please run the Eagle WebUI server on the same machine as Eagle",
+    "accessRequirement": "At least the server must be able to access the Eagle API and reference images via the paths returned by the API."
+  }
+}

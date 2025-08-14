@@ -5,6 +5,7 @@ import { ChevronLeft, SortDown } from "react-bootstrap-icons";
 import Link from "next/link";
 import type { Folder, Item } from "@/app/types/models";
 import { sortItems } from "@/app/utils/folder";
+import { useTranslations } from "next-intl";
 import { FolderList } from "../FolderList/FolderList";
 import { ItemList } from "../ItemList/ItemList";
 import styles from "./FolderPage.module.css";
@@ -37,6 +38,8 @@ export function FolderPage({
     [items, order]
   );
 
+  const t = useTranslations();
+
   return (
     <div className={styles.container}>
       <FolderPageHeader
@@ -47,9 +50,9 @@ export function FolderPage({
       />
       {folder.children.length > 0 && (
         <>
-          <h6>サブフォルダー</h6>
+          <h6>{t("navigation.subfolders")}</h6>
           <FolderList folders={folder.children} libraryPath={libraryPath} />
-          <h6>内容</h6>
+          <h6>{t("navigation.contents")}</h6>
         </>
       )}
       <ItemList items={sortedItems} libraryPath={libraryPath} />
@@ -64,19 +67,19 @@ interface FolderPageHeaderProps {
   onChangeOrder: (order: Order) => void;
 }
 
-const SORTS: [string, string][] = [
-  ["GLOBAL", "グローバル"],
-  ["MANUAL", "マニュアル"],
-  ["IMPORT", "追加日"],
-  ["MTIME", "変更日"],
-  ["BTIME", "作成日"],
-  ["NAME", "タイトル"],
-  ["EXT", "拡張子"],
-  ["FILESIZE", "ファイルサイズ"],
-  ["RESOLUTION", "解像度"],
-  ["RATING", "評価"],
-  ["DURATION", "再生時間"],
-  ["RANDOM", "ランダム"],
+const SORTS = [
+  "GLOBAL",
+  "MANUAL",
+  "IMPORT",
+  "MTIME",
+  "BTIME",
+  "NAME",
+  "EXT",
+  "FILESIZE",
+  "RESOLUTION",
+  "RATING",
+  "DURATION",
+  "RANDOM",
 ];
 
 function FolderPageHeader({
@@ -93,6 +96,8 @@ function FolderPageHeader({
     });
   }
 
+  const t = useTranslations();
+
   return (
     <header className={styles.header}>
       <nav>
@@ -100,7 +105,7 @@ function FolderPageHeader({
           <li>
             <Link
               href={parentFolderId ? `/folders/${parentFolderId}` : "/"}
-              aria-label="戻る"
+              aria-label={t("navigation.back")}
             >
               <ChevronLeft size={20} />
             </Link>
@@ -121,18 +126,18 @@ function FolderPageHeader({
                 dir="rtl"
                 className={order.sortIncrease ? styles.asc : styles.desc}
               >
-                {SORTS.map(([value, label]) => (
+                {SORTS.map((orderBy) => (
                   <li
-                    key={value}
-                    className={value === order.orderBy ? styles.active : ""}
+                    key={orderBy}
+                    className={orderBy === order.orderBy ? styles.active : ""}
                     dir="ltr"
                   >
                     <a
                       onClick={() => {
-                        onClickOrder(value);
+                        onClickOrder(orderBy);
                       }}
                     >
-                      {label}
+                      {t(`orderBy.${orderBy}`)}
                     </a>
                   </li>
                 ))}
