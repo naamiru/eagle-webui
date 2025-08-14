@@ -20,6 +20,9 @@
     "contents": "Contents",
     "reload": "Reload"
   },
+  "layout": {
+    "grid": "{count} Columns"
+  },
   "troubleshooting": {
     "title": "Unable to retrieve image data",
     "troubleshooting": "Troubleshooting",

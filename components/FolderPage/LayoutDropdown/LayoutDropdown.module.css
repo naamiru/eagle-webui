@@ -1,0 +1,36 @@
+.layout {
+  /* Safari RTL Dropdown Bug https://github.com/picocss/pico/issues/671#issue-2965051220 */
+  display: inline-block !important;
+}
+
+.layout > summary {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--pico-primary) !important;
+}
+
+.layout > summary:hover,
+.layout[open] > summary {
+  color: var(--pico-primary-hover) !important;
+}
+
+.layout > summary:after {
+  display: none !important;
+}
+
+.layout > summary + ul li a {
+  cursor: pointer;
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.layout > summary + ul li.active a {
+  color: var(--pico-primary);
+  user-select: none;
+}
+
+.icon {
+  flex-shrink: 0;
+}

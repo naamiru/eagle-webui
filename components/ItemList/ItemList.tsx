@@ -6,12 +6,16 @@ import { ItemItem } from "./ItemItem";
 import styles from "./ItemList.module.css";
 import "photoswipe/dist/photoswipe.css";
 
+const LAYOUTS = ["grid-3", "grid-4", "grid-6", "grid-8"] as const;
+export type Layout = (typeof LAYOUTS)[number];
+
 interface ItemListProps {
   items: Item[];
   libraryPath: string;
+  layout?: Layout;
 }
 
-export function ItemList({ items, libraryPath }: ItemListProps) {
+export function ItemList({ items, libraryPath, layout = "grid-3" }: ItemListProps) {
   return (
     <Gallery
       withCaption
@@ -37,7 +41,7 @@ export function ItemList({ items, libraryPath }: ItemListProps) {
         }
       }}
     >
-      <div className={styles.list}>
+      <div className={`${styles.list} ${styles[layout]}`}>
         {items.map((item) => (
           <ItemItem key={item.id} image={item} libraryPath={libraryPath} />
         ))}

@@ -20,6 +20,9 @@
     "contents": "内容",
     "reload": "リロード"
   },
+  "layout": {
+    "grid": "{count} 列"
+  },
   "troubleshooting": {
     "title": "画像データを取得できません",
     "troubleshooting": "トラブルシューティング",

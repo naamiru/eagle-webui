@@ -1,13 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronLeft, SortDown } from "react-bootstrap-icons";
+import { ChevronLeft } from "react-bootstrap-icons";
 import { Link } from "@/i18n/navigation";
 import type { Folder, Item } from "@/types/models";
 import { sortItems } from "@/utils/folder";
 import { useTranslations } from "next-intl";
 import { FolderList } from "../FolderList/FolderList";
 import { ItemList } from "../ItemList/ItemList";
+import { OrderDropdown, type Order } from "./OrderDropdown/OrderDropdown";
+import { LayoutDropdown } from "./LayoutDropdown/LayoutDropdown";
+import type { Layout } from "../ItemList/ItemList";
 import styles from "./FolderPage.module.css";
 
 interface FolderPageProps {
@@ -15,11 +18,6 @@ interface FolderPageProps {
   parentFolder?: Folder;
   items: Item[];
   libraryPath: string;
-}
-
-interface Order {
-  orderBy: string;
-  sortIncrease: boolean;
 }
 
 export function FolderPage({
@@ -32,6 +30,7 @@ export function FolderPage({
     orderBy: folder.orderBy,
     sortIncrease: folder.sortIncrease,
   });
+  const [layout, setLayout] = useState<Layout>("grid-3");
 
   const sortedItems = useMemo(
     () => sortItems(items, order.orderBy, order.sortIncrease),
@@ -47,6 +46,8 @@ export function FolderPage({
         parentFolderId={parentFolder?.id}
         order={order}
         onChangeOrder={setOrder}
+        layout={layout}
+        onChangeLayout={setLayout}
       />
       {folder.children.length > 0 && (
         <>
@@ -55,7 +56,7 @@ export function FolderPage({
           <h6>{t("navigation.contents")}</h6>
         </>
       )}
-      <ItemList items={sortedItems} libraryPath={libraryPath} />
+      <ItemList items={sortedItems} libraryPath={libraryPath} layout={layout} />
     </div>
   );
 }
@@ -65,37 +66,18 @@ interface FolderPageHeaderProps {
   parentFolderId?: string;
   order: Order;
   onChangeOrder: (order: Order) => void;
+  layout: Layout;
+  onChangeLayout: (layout: Layout) => void;
 }
-
-const SORTS = [
-  "GLOBAL",
-  "MANUAL",
-  "IMPORT",
-  "MTIME",
-  "BTIME",
-  "NAME",
-  "EXT",
-  "FILESIZE",
-  "RESOLUTION",
-  "RATING",
-  "DURATION",
-  "RANDOM",
-];
 
 function FolderPageHeader({
   folder,
   parentFolderId,
   order,
   onChangeOrder,
+  layout,
+  onChangeLayout,
 }: FolderPageHeaderProps) {
-  function onClickOrder(orderBy: string) {
-    onChangeOrder({
-      orderBy,
-      sortIncrease:
-        orderBy === order.orderBy ? !order.sortIncrease : order.sortIncrease,
-    });
-  }
-
   const t = useTranslations();
 
   return (
@@ -118,31 +100,10 @@ function FolderPageHeader({
         </ul>
         <ul>
           <li>
-            <details className={`dropdown ${styles.sort}`}>
-              <summary>
-                <SortDown size={20} />
-              </summary>
-              <ul
-                dir="rtl"
-                className={order.sortIncrease ? styles.asc : styles.desc}
-              >
-                {SORTS.map((orderBy) => (
-                  <li
-                    key={orderBy}
-                    className={orderBy === order.orderBy ? styles.active : ""}
-                    dir="ltr"
-                  >
-                    <a
-                      onClick={() => {
-                        onClickOrder(orderBy);
-                      }}
-                    >
-                      {t(`orderBy.${orderBy}`)}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </details>
+            <LayoutDropdown value={layout} onChange={onChangeLayout} />
+          </li>
+          <li>
+            <OrderDropdown value={order} onChange={onChangeOrder} />
           </li>
         </ul>
       </nav>
