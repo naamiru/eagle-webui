@@ -1,1 +1,1 @@
-export const EAGLE_API_URL = 'http://localhost:41595';
+export const EAGLE_API_URL = process.env.EAGLE_API_URL || 'http://localhost:41595';
