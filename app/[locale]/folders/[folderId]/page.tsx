@@ -1,8 +1,8 @@
-import { fetchFolders } from "@/app/lib/api/folder";
-import { fetchFolderItems } from "@/app/lib/api/item";
-import { fetchLibraryPath } from "@/app/lib/api/library";
-import { FolderPage } from "@/app/components/FolderPage/FolderPage";
-import { findFolderById, findParentFolder } from "@/app/utils/folder";
+import { fetchFolders } from "@/lib/api/folder";
+import { fetchFolderItems } from "@/lib/api/item";
+import { fetchLibraryPath } from "@/lib/api/library";
+import { FolderPage } from "@/components/FolderPage/FolderPage";
+import { findFolderById, findParentFolder } from "@/utils/folder";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 

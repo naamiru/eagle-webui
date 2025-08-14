@@ -16,10 +16,6 @@ function parseCliArgs() {
       short: "p",
       default: "3000",
     },
-    lang: {
-      type: "string",
-      short: "l",
-    },
     "eagle-api-url": {
       type: "string",
       default: "http://localhost:41595",
@@ -60,7 +56,6 @@ Usage: npx eagle-webui [options]
 Options:
   --host HOST, -H HOST         Bind server to specific hostname or IP address (default: localhost)
   --port PORT, -p PORT         Server port number (default: 3000)
-  --lang LANG, -l LANG         Application display language (en or ja)
   --eagle-api-url URL          Eagle API endpoint for image management (default: http://localhost:41595)
   --help, -h                   Display this help message
 
@@ -83,7 +78,6 @@ const startServer = () => {
       ...process.env,
       HOSTNAME: args.host,
       PORT: args.port,
-      APP_LANG: args.lang,
       EAGLE_API_URL: args["eagle-api-url"],
     },
   });

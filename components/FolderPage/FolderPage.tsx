@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { ChevronLeft, SortDown } from "react-bootstrap-icons";
-import Link from "next/link";
-import type { Folder, Item } from "@/app/types/models";
-import { sortItems } from "@/app/utils/folder";
+import { Link } from "@/i18n/navigation";
+import type { Folder, Item } from "@/types/models";
+import { sortItems } from "@/utils/folder";
 import { useTranslations } from "next-intl";
 import { FolderList } from "../FolderList/FolderList";
 import { ItemList } from "../ItemList/ItemList";

@@ -1,16 +1,16 @@
-import type { Folder, Item } from '@/app/types/models';
+import type { Folder, Item } from "@/types/models";
 
 type NameSegment = string | number;
 
 function parseNameForSorting(name: string): NameSegment[] {
   const segments: NameSegment[] = [];
-  let current = '';
+  let current = "";
   let isNumber = false;
-  
+
   for (let i = 0; i < name.length; i++) {
     const char = name[i];
     const charIsNumber = /[0-9]/.test(char);
-    
+
     if (charIsNumber !== isNumber) {
       if (current) {
         segments.push(isNumber ? parseInt(current, 10) : current);
@@ -21,27 +21,27 @@ function parseNameForSorting(name: string): NameSegment[] {
       current += char;
     }
   }
-  
+
   if (current) {
     segments.push(isNumber ? parseInt(current, 10) : current);
   }
-  
+
   return segments;
 }
 
 function compareNameSegments(a: NameSegment[], b: NameSegment[]): number {
   const maxLength = Math.max(a.length, b.length);
-  
+
   for (let i = 0; i < maxLength; i++) {
     const segA = a[i];
     const segB = b[i];
-    
+
     if (segA === undefined) return -1;
     if (segB === undefined) return 1;
-    
-    const aIsNumber = typeof segA === 'number';
-    const bIsNumber = typeof segB === 'number';
-    
+
+    const aIsNumber = typeof segA === "number";
+    const bIsNumber = typeof segB === "number";
+
     if (aIsNumber && bIsNumber) {
       const diff = segA - segB;
       if (diff !== 0) return diff;
@@ -54,13 +54,13 @@ function compareNameSegments(a: NameSegment[], b: NameSegment[]): number {
       if (diff !== 0) return diff;
     }
   }
-  
+
   return 0;
 }
 
 export function findFolderById(
   folders: Folder[],
-  targetId: string,
+  targetId: string
 ): Folder | undefined {
   for (const folder of folders) {
     if (folder.id === targetId) {
@@ -78,7 +78,7 @@ export function findFolderById(
 export function findParentFolder(
   folders: Folder[],
   targetId: string,
-  parent?: Folder,
+  parent?: Folder
 ): Folder | undefined {
   for (const folder of folders) {
     if (folder.id === targetId) {
@@ -96,7 +96,7 @@ export function findParentFolder(
 export function sortItems(
   items: Item[],
   orderBy: string,
-  sortIncrease: boolean,
+  sortIncrease: boolean
 ): Item[] {
   const sorted = [...items];
 
@@ -104,7 +104,7 @@ export function sortItems(
     sorted.sort((a, b) =>
       sortIncrease
         ? a.globalOrder - b.globalOrder
-        : b.globalOrder - a.globalOrder,
+        : b.globalOrder - a.globalOrder
     );
     return sorted;
   }

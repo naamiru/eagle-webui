@@ -1,4 +1,4 @@
-import { EAGLE_API_URL } from "@/app/env";
+import { EAGLE_API_URL } from "@/env";
 
 export async function fetchLibraryPath(): Promise<string> {
   try {

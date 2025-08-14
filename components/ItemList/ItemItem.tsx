@@ -1,8 +1,8 @@
 "use client";
 
 import { Item as GalleryItem } from "react-photoswipe-gallery";
-import type { Item } from "@/app/types/models";
-import { getImageUrl, getThumbnailUrl } from "@/app/utils/image";
+import type { Item } from "@/types/models";
+import { getImageUrl, getThumbnailUrl } from "@/utils/image";
 import styles from "./ItemItem.module.css";
 
 interface ImageItemProps {

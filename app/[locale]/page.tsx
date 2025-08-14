@@ -1,6 +1,6 @@
-import { FolderList } from "@/app/components/FolderList/FolderList";
-import { fetchFolders } from "@/app/lib/api/folder";
-import { fetchLibraryPath } from "@/app/lib/api/library";
+import { FolderList } from "@/components/FolderList/FolderList";
+import { fetchFolders } from "@/lib/api/folder";
+import { fetchLibraryPath } from "@/lib/api/library";
 import { getTranslations } from "next-intl/server";
 import styles from "./page.module.css";
 

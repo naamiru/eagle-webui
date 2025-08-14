@@ -1,4 +1,4 @@
-import type { Folder } from "@/app/types/models";
+import type { Folder } from "@/types/models";
 import { FolderItem } from "./FolderItem";
 import styles from "./FolderList.module.css";
 

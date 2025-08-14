@@ -1,5 +1,5 @@
-import type { Folder } from "@/app/types/models";
-import { EAGLE_API_URL } from "@/app/env";
+import type { Folder } from "@/types/models";
+import { EAGLE_API_URL } from "@/env";
 import { fetchFolderItems } from "./item";
 
 interface EagleFolder {

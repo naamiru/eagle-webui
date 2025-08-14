@@ -1,6 +1,6 @@
-import Link from "next/link";
-import type { Folder } from "@/app/types/models";
-import { getThumbnailUrl } from "@/app/utils/image";
+import { Link } from "@/i18n/navigation";
+import type { Folder } from "@/types/models";
+import { getThumbnailUrl } from "@/utils/image";
 import styles from "./FolderItem.module.css";
 
 interface FolderItemProps {

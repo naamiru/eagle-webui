@@ -1,5 +1,5 @@
-import type { Item } from "@/app/types/models";
-import { EAGLE_API_URL } from "@/app/env";
+import type { Item } from "@/types/models";
+import { EAGLE_API_URL } from "@/env";
 
 interface EagleItemResponse {
   id: string;
