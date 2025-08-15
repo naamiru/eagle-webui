@@ -33,7 +33,7 @@ export function FolderPage({
     sortIncrease: folder.sortIncrease,
   });
   const [layout, setLayout] = useState<Layout>(initialLayout);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const sortedItems = useMemo(
     () => sortItems(items, order.orderBy, order.sortIncrease),
