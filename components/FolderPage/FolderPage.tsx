@@ -62,7 +62,11 @@ export function FolderPage({
       {folder.children.length > 0 && (
         <>
           <h6>{t("navigation.subfolders")}</h6>
-          <FolderList folders={folder.children} libraryPath={libraryPath} />
+          <FolderList
+            folders={folder.children}
+            libraryPath={libraryPath}
+            layout={layout}
+          />
           <h6>{t("navigation.contents")}</h6>
         </>
       )}
@@ -110,10 +114,10 @@ function FolderPageHeader({
         </ul>
         <ul>
           <li>
-            <LayoutDropdown value={layout} onChange={onChangeLayout} />
+            <OrderDropdown value={order} onChange={onChangeOrder} />
           </li>
           <li>
-            <OrderDropdown value={order} onChange={onChangeOrder} />
+            <LayoutDropdown value={layout} onChange={onChangeLayout} />
           </li>
         </ul>
       </nav>

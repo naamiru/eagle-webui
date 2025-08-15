@@ -1,8 +1,6 @@
-import { FolderList } from "@/components/FolderList/FolderList";
+import { HomePage } from "@/components/HomePage/HomePage";
 import { fetchFolders } from "@/lib/api/folder";
 import { fetchLibraryPath } from "@/lib/api/library";
-import { getTranslations } from "next-intl/server";
-import styles from "./page.module.css";
 
 export default async function Home() {
   const [folders, libraryPath] = await Promise.all([
@@ -10,12 +8,5 @@ export default async function Home() {
     fetchLibraryPath(),
   ]);
 
-  const t = await getTranslations();
-
-  return (
-    <div className={styles.container}>
-      <h6>{t("navigation.folders")}</h6>
-      <FolderList folders={folders} libraryPath={libraryPath} />
-    </div>
-  );
+  return <HomePage folders={folders} libraryPath={libraryPath} />;
 }

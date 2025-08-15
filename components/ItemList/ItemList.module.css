@@ -22,7 +22,6 @@
   grid-template-columns: repeat(12, 1fr);
 }
 
-/* 5 columns for medium-large screens */
 @media (max-width: 1024px) {
   .list {
     grid-template-columns: repeat(5, 1fr);
@@ -45,7 +44,6 @@
   }
 }
 
-/* 4 columns for medium screens */
 @media (max-width: 768px) {
   .list {
     grid-template-columns: repeat(4, 1fr);

@@ -1,0 +1,28 @@
+.header {
+  padding: 0 1rem;
+  background: rgba(255, 255, 255, 0.8);
+  transition: box-shadow 0.5s ease;
+}
+
+.header > nav {
+  min-height: calc(20px + var(--pico-nav-element-spacing-vertical) * 2);
+}
+
+/* right dropdowns */
+.header > nav > ul:last-of-type > li {
+  padding: 0;
+}
+
+.header > nav > ul:last-of-type > li details summary {
+  height: 100%;
+  padding: var(--pico-nav-element-spacing-vertical)
+    calc(
+      var(--pico-nav-element-spacing-horizontal) +
+        var(--pico-nav-link-spacing-vertical) / 2
+    );
+}
+
+/* dropdown popup */
+.header > nav > ul:last-of-type > li details summary + ul {
+  margin-top: calc(-0.5 * var(--pico-nav-element-spacing-vertical));
+}
