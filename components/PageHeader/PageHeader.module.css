@@ -1,11 +1,32 @@
 .header {
+  position: sticky;
   padding: 0 1rem;
+  top: 0;
+  z-index: 2;
   background: rgba(255, 255, 255, 0.8);
   transition: box-shadow 0.5s ease;
+  clip-path: inset(0 0 -100vh 0);
 }
 
-.header > nav {
-  min-height: calc(20px + var(--pico-nav-element-spacing-vertical) * 2);
+.header.stuck {
+  box-shadow: var(--pico-card-box-shadow);
+}
+
+/* left button */
+.header > nav > ul:first-of-type > li {
+  padding: 0;
+  overflow: hidden;
+}
+
+.header > nav > ul:first-of-type > li > a {
+  padding: calc(
+      var(--pico-nav-element-spacing-vertical) +
+        var(--pico-nav-link-spacing-vertical)
+    )
+    calc(
+      var(--pico-nav-element-spacing-horizontal) +
+        var(--pico-nav-link-spacing-horizontal)
+    );
 }
 
 /* right dropdowns */
@@ -25,4 +46,8 @@
 /* dropdown popup */
 .header > nav > ul:last-of-type > li details summary + ul {
   margin-top: calc(-0.5 * var(--pico-nav-element-spacing-vertical));
+}
+
+.header + h6 {
+  margin-top: 0;
 }

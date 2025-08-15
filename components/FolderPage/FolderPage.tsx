@@ -1,17 +1,30 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { ChevronLeft } from "react-bootstrap-icons";
-import { Link } from "@/i18n/navigation";
 import type { Folder, Item, Layout } from "@/types/models";
 import { sortItems } from "@/utils/folder";
 import { useTranslations } from "next-intl";
 import { FolderList } from "../FolderList/FolderList";
 import { ItemList } from "../ItemList/ItemList";
-import { OrderDropdown, type Order } from "./OrderDropdown/OrderDropdown";
-import { LayoutDropdown } from "./LayoutDropdown/LayoutDropdown";
+import { type Order } from "../PageHeader/OrderDropdown/OrderDropdown";
 import { updateLayout } from "@/actions/settings";
 import styles from "./FolderPage.module.css";
+import PageHeader from "../PageHeader/PageHeader";
+
+const AVAILDABLE_ORDER_BYS = [
+  "GLOBAL",
+  "MANUAL",
+  "IMPORT",
+  "MTIME",
+  "BTIME",
+  "NAME",
+  "EXT",
+  "FILESIZE",
+  "RESOLUTION",
+  "RATING",
+  "DURATION",
+  "RANDOM",
+];
 
 interface FolderPageProps {
   folder: Folder;
@@ -51,11 +64,12 @@ export function FolderPage({
 
   return (
     <div className={styles.container}>
-      <FolderPageHeader
-        folder={folder}
-        parentFolderId={parentFolder?.id}
+      <PageHeader
+        title={folder.name}
+        backLink={parentFolder ? `/folders/${parentFolder.id}` : "/"}
         order={order}
         onChangeOrder={setOrder}
+        availableOrderBys={AVAILDABLE_ORDER_BYS}
         layout={layout}
         onChangeLayout={handleLayoutChange}
       />
@@ -72,55 +86,5 @@ export function FolderPage({
       )}
       <ItemList items={sortedItems} libraryPath={libraryPath} layout={layout} />
     </div>
-  );
-}
-
-interface FolderPageHeaderProps {
-  folder: Folder;
-  parentFolderId?: string;
-  order: Order;
-  onChangeOrder: (order: Order) => void;
-  layout: Layout;
-  onChangeLayout: (layout: Layout) => void;
-}
-
-function FolderPageHeader({
-  folder,
-  parentFolderId,
-  order,
-  onChangeOrder,
-  layout,
-  onChangeLayout,
-}: FolderPageHeaderProps) {
-  const t = useTranslations();
-
-  return (
-    <header className={styles.header}>
-      <nav>
-        <ul>
-          <li>
-            <Link
-              href={parentFolderId ? `/folders/${parentFolderId}` : "/"}
-              aria-label={t("navigation.back")}
-            >
-              <ChevronLeft size={20} />
-            </Link>
-          </li>
-        </ul>
-        <ul>
-          <li>
-            <strong>{folder.name}</strong>
-          </li>
-        </ul>
-        <ul>
-          <li>
-            <OrderDropdown value={order} onChange={onChangeOrder} />
-          </li>
-          <li>
-            <LayoutDropdown value={layout} onChange={onChangeLayout} />
-          </li>
-        </ul>
-      </nav>
-    </header>
   );
 }

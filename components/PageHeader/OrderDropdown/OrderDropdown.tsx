@@ -12,24 +12,14 @@ export interface Order {
 interface OrderDropdownProps {
   value: Order;
   onChange: (order: Order) => void;
+  availableValues: string[];
 }
 
-const SORTS = [
-  "GLOBAL",
-  "MANUAL",
-  "IMPORT",
-  "MTIME",
-  "BTIME",
-  "NAME",
-  "EXT",
-  "FILESIZE",
-  "RESOLUTION",
-  "RATING",
-  "DURATION",
-  "RANDOM",
-];
-
-export function OrderDropdown({ value, onChange }: OrderDropdownProps) {
+export function OrderDropdown({
+  value,
+  onChange,
+  availableValues,
+}: OrderDropdownProps) {
   const t = useTranslations();
 
   function onClickOrder(orderBy: string) {
@@ -45,11 +35,8 @@ export function OrderDropdown({ value, onChange }: OrderDropdownProps) {
       <summary>
         <SortDown size={20} />
       </summary>
-      <ul
-        dir="rtl"
-        className={value.sortIncrease ? styles.asc : styles.desc}
-      >
-        {SORTS.map((orderBy) => (
+      <ul dir="rtl" className={value.sortIncrease ? styles.asc : styles.desc}>
+        {availableValues.map((orderBy) => (
           <li
             key={orderBy}
             className={orderBy === value.orderBy ? styles.active : ""}

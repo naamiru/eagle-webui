@@ -1,20 +1,42 @@
+"use client";
+
 import { FolderList } from "@/components/FolderList/FolderList";
-import { Folder } from "@/types/models";
+import { Folder, Layout } from "@/types/models";
 import styles from "./HomePage.module.css";
-import { settingsService } from "@/lib/settings";
-import HomePageHeader from "./HomePageHeader";
+import { useState, useTransition } from "react";
+import { updateLayout } from "@/actions/settings";
+import PageHeader from "../PageHeader/PageHeader";
 
 interface HomePageProps {
   folders: Folder[];
   libraryPath: string;
+  initialLayout: Layout;
 }
 
-export async function HomePage({ folders, libraryPath }: HomePageProps) {
-  const layout = await settingsService.getLayout();
+export function HomePage({
+  folders,
+  libraryPath,
+  initialLayout,
+}: HomePageProps) {
+  const [layout, setLayout] = useState<Layout>(initialLayout);
+  const [, startTransition] = useTransition();
+
+  const handleLayoutChange = (newLayout: Layout) => {
+    setLayout(newLayout);
+    startTransition(() => {
+      updateLayout(newLayout);
+    });
+  };
 
   return (
     <div className={styles.container}>
-      <HomePageHeader initialLayout={layout} />
+      <PageHeader
+        order={{ orderBy: "MANUAL", sortIncrease: true }}
+        onChangeOrder={() => {}}
+        availableOrderBys={["MANUAL"]}
+        layout={layout}
+        onChangeLayout={handleLayoutChange}
+      />
       <FolderList folders={folders} libraryPath={libraryPath} layout={layout} />
     </div>
   );
