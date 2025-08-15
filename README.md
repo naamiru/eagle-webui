@@ -6,12 +6,12 @@ A web interface for the Eagle image viewer application
 <tr>
 <td width="50%">
 
-![Home View](screenshots/home.png)
+<img src="screenshots/home.png" alt="Home View" style="max-width: 300px;">
 
 </td>
 <td width="50%">
 
-![Folder View](screenshots/folder.png)
+<img src="screenshots/folder.png" alt="Folder View" style="max-width: 300px;">
 
 </td>
 </tr>
@@ -22,6 +22,7 @@ A web interface for the Eagle image viewer application
 - Optimized for comfortable mobile image viewing
 - Read-only viewer that won't modify your library, sync files, or consume storage
 - Simple one-command setup
+- Multi-language support - Available in English, Japanese, Chinese (Simplified & Traditional), Korean, Spanish, and German
 
 ## Requirements
 
@@ -29,7 +30,9 @@ Node.js >= 18.18.0
 
 ## Installation and Usage
 
-Run the following command:
+Make sure Eagle app is running.
+
+On the same machine, run the following command:
 
 ```bash
 npx eagle-webui
