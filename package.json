@@ -29,26 +29,15 @@
     "eagle-webui": "start.js"
   },
   "files": [
-    ".next/**/*"
+    ".next/standalone",
+    "start.js"
   ],
   "scripts": {
     "dev": "next dev --turbopack",
     "lint": "next lint",
-    "build": "next build",
+    "build": "next build && cp -r .next/static .next/standalone/.next/",
     "start": "next start",
     "prepublishOnly": "npm run build"
-  },
-  "dependencies": {
-    "env-paths": "^3.0.0",
-    "etag": "^1.8.1",
-    "lowdb": "^7.0.1",
-    "mime": "^4.0.7",
-    "next": "15.4.6",
-    "next-intl": "^4.3.4",
-    "react": "19.1.0",
-    "react-bootstrap-icons": "^1.11.6",
-    "react-dom": "19.1.0",
-    "react-photoswipe-gallery": "^3.1.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -57,8 +46,18 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "env-paths": "^3.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
+    "etag": "^1.8.1",
+    "lowdb": "^7.0.1",
+    "mime": "^4.0.7",
+    "next": "^15.4.6",
+    "next-intl": "^4.3.4",
+    "react": "^19.1.1",
+    "react-bootstrap-icons": "^1.11.6",
+    "react-dom": "^19.1.1",
+    "react-photoswipe-gallery": "^3.1.1",
     "typescript": "^5"
   }
 }

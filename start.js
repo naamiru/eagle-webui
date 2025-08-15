@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-const { spawn } = require("child_process");
 const { parseArgs } = require("node:util");
 const path = require("path");
 
@@ -38,7 +37,6 @@ function parseCliArgs() {
     process.exit(1);
   }
 
-  // ヘルプ表示
   if (parsed.values.help) {
     showHelp();
     process.exit(0);
@@ -68,32 +66,8 @@ Examples:
 
 const args = parseCliArgs();
 
-const startServer = () => {
-  const nodeExecutable = process.execPath;
-  
-  // Use require.resolve to find the correct next binary across platforms
-  const nextBinPath = require.resolve("next/dist/bin/next");
+process.env.HOSTNAME = args.hostname;
+process.env.PORT = args.port;
+process.env.EAGLE_API_URL = args["eagle-api-url"];
 
-  const nextArgs = ["start", "--port", args.port];
-  
-  // Only pass --hostname if it's not 0.0.0.0 (Next.js default shows local IP when 0.0.0.0)
-  if (args.hostname !== "0.0.0.0") {
-    nextArgs.push("--hostname", args.hostname);
-  }
-
-  const child = spawn(nodeExecutable, [nextBinPath, ...nextArgs], {
-    stdio: "inherit",
-    cwd: __dirname,
-    env: {
-      ...process.env,
-      EAGLE_API_URL: args["eagle-api-url"],
-    },
-  });
-
-  child.on("error", (error) => {
-    console.error("Failed to start server:", error);
-    process.exit(1);
-  });
-};
-
-startServer();
+require(path.join(__dirname, ".next/standalone/server.js"));
