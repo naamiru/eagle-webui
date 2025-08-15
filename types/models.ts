@@ -1,3 +1,6 @@
+export const LAYOUTS = ["grid-3", "grid-4", "grid-6", "grid-8"] as const;
+export type Layout = typeof LAYOUTS[number];
+
 export interface Item {
   id: string;
   name: string;

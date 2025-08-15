@@ -1,21 +1,18 @@
 "use client";
 
 import { Gallery } from "react-photoswipe-gallery";
-import type { Item } from "@/types/models";
+import type { Item, Layout } from "@/types/models";
 import { ItemItem } from "./ItemItem";
 import styles from "./ItemList.module.css";
 import "photoswipe/dist/photoswipe.css";
 
-const LAYOUTS = ["grid-3", "grid-4", "grid-6", "grid-8"] as const;
-export type Layout = (typeof LAYOUTS)[number];
-
 interface ItemListProps {
   items: Item[];
   libraryPath: string;
-  layout?: Layout;
+  layout: Layout;
 }
 
-export function ItemList({ items, libraryPath, layout = "grid-3" }: ItemListProps) {
+export function ItemList({ items, libraryPath, layout }: ItemListProps) {
   return (
     <Gallery
       withCaption

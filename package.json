@@ -20,6 +20,8 @@
   },
   "dependencies": {
     "@use-gesture/react": "^10.3.1",
+    "env-paths": "^3.0.0",
+    "lowdb": "^7.0.1",
     "mime": "^4.0.7",
     "next": "15.4.6",
     "next-intl": "^4.3.4",

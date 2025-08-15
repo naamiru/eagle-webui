@@ -3,10 +3,8 @@
 import { useRef, useState, useEffect } from "react";
 import { Grid } from "react-bootstrap-icons";
 import { useTranslations } from "next-intl";
-import type { Layout } from "@/components/ItemList/ItemList";
+import { LAYOUTS, type Layout } from "@/types/models";
 import styles from "./LayoutDropdown.module.css";
-
-const LAYOUTS: Layout[] = ["grid-3", "grid-4", "grid-6", "grid-8"];
 
 // Grid column counts based on layout and screen width
 const GRID_COLUMNS = {

@@ -1,16 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { ChevronLeft } from "react-bootstrap-icons";
 import { Link } from "@/i18n/navigation";
-import type { Folder, Item } from "@/types/models";
+import type { Folder, Item, Layout } from "@/types/models";
 import { sortItems } from "@/utils/folder";
 import { useTranslations } from "next-intl";
 import { FolderList } from "../FolderList/FolderList";
 import { ItemList } from "../ItemList/ItemList";
 import { OrderDropdown, type Order } from "./OrderDropdown/OrderDropdown";
 import { LayoutDropdown } from "./LayoutDropdown/LayoutDropdown";
-import type { Layout } from "../ItemList/ItemList";
+import { updateLayout } from "@/actions/settings";
 import styles from "./FolderPage.module.css";
 
 interface FolderPageProps {
@@ -18,6 +18,7 @@ interface FolderPageProps {
   parentFolder?: Folder;
   items: Item[];
   libraryPath: string;
+  initialLayout: Layout;
 }
 
 export function FolderPage({
@@ -25,12 +26,14 @@ export function FolderPage({
   parentFolder,
   items,
   libraryPath,
+  initialLayout,
 }: FolderPageProps) {
   const [order, setOrder] = useState<Order>({
     orderBy: folder.orderBy,
     sortIncrease: folder.sortIncrease,
   });
-  const [layout, setLayout] = useState<Layout>("grid-3");
+  const [layout, setLayout] = useState<Layout>(initialLayout);
+  const [isPending, startTransition] = useTransition();
 
   const sortedItems = useMemo(
     () => sortItems(items, order.orderBy, order.sortIncrease),
@@ -38,6 +41,13 @@ export function FolderPage({
   );
 
   const t = useTranslations();
+
+  const handleLayoutChange = (newLayout: Layout) => {
+    setLayout(newLayout);
+    startTransition(() => {
+      updateLayout(newLayout);
+    });
+  };
 
   return (
     <div className={styles.container}>
@@ -47,7 +57,7 @@ export function FolderPage({
         order={order}
         onChangeOrder={setOrder}
         layout={layout}
-        onChangeLayout={setLayout}
+        onChangeLayout={handleLayoutChange}
       />
       {folder.children.length > 0 && (
         <>
