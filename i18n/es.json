@@ -1,0 +1,36 @@
+{
+  "orderBy": {
+    "GLOBAL": "Configuración Global",
+    "MANUAL": "Manual",
+    "IMPORT": "Fecha de Adición",
+    "MTIME": "Fecha de Modificación",
+    "BTIME": "Fecha de Creación",
+    "NAME": "Título",
+    "EXT": "Extensión",
+    "FILESIZE": "Tamaño de Archivo",
+    "RESOLUTION": "Resolución",
+    "RATING": "Calificación",
+    "DURATION": "Duración",
+    "RANDOM": "Aleatorio",
+    "DEFAULT": "Predeterminado"
+  },
+  "navigation": {
+    "back": "Atrás",
+    "folders": "Carpetas",
+    "subfolders": "Subcarpetas",
+    "contents": "Contenidos",
+    "reload": "Recargar"
+  },
+  "layout": {
+    "grid": "{count} col"
+  },
+  "troubleshooting": {
+    "title": "No se pueden obtener los datos de imagen",
+    "troubleshooting": "Solución de problemas",
+    "eagleRunning": "¿Está Eagle en ejecución?",
+    "checkApi": "Por favor, confirme que puede acceder a la API de Eagle",
+    "urlDifferent": "Si la URL de la API de Eagle es diferente, especifique la URL con la opción de inicio del servidor.",
+    "sameMachine": "Ejecute el servidor Eagle WebUI en la misma máquina que Eagle",
+    "accessRequirement": "Al menos el servidor debe poder acceder a la API de Eagle y hacer referencia a las imágenes a través de las rutas devueltas por la API."
+  }
+}

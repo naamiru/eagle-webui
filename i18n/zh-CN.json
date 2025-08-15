@@ -1,0 +1,36 @@
+{
+  "orderBy": {
+    "GLOBAL": "全局设置",
+    "MANUAL": "手动",
+    "IMPORT": "添加日期",
+    "MTIME": "修改日期",
+    "BTIME": "创建日期",
+    "NAME": "标题",
+    "EXT": "扩展名",
+    "FILESIZE": "文件大小",
+    "RESOLUTION": "分辨率",
+    "RATING": "评分",
+    "DURATION": "时长",
+    "RANDOM": "随机",
+    "DEFAULT": "默认"
+  },
+  "navigation": {
+    "back": "返回",
+    "folders": "文件夹",
+    "subfolders": "子文件夹",
+    "contents": "内容",
+    "reload": "刷新"
+  },
+  "layout": {
+    "grid": "{count} 列"
+  },
+  "troubleshooting": {
+    "title": "无法获取图像数据",
+    "troubleshooting": "故障排除",
+    "eagleRunning": "Eagle 是否正在运行？",
+    "checkApi": "请确认您可以访问 Eagle API",
+    "urlDifferent": "如果 Eagle API URL 不同，请使用服务器启动选项指定 URL。",
+    "sameMachine": "请在与 Eagle 相同的机器上运行 Eagle WebUI 服务器",
+    "accessRequirement": "至少服务器必须能够访问 Eagle API 并通过 API 返回的路径引用图像。"
+  }
+}

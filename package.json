@@ -1,25 +1,44 @@
 {
   "name": "eagle-webui",
   "version": "0.1.0",
-  "description": "web interface for the Eagle image viewer",
+  "description": "A mobile-friendly web interface for Eagle image viewer - browse your Eagle library from any device",
+  "keywords": [
+    "eagle",
+    "eagle-app",
+    "image-viewer",
+    "photo-gallery",
+    "web-interface",
+    "mobile-viewer",
+    "image-browser",
+    "media-server"
+  ],
+  "homepage": "https://github.com/naamiru/eagle-webui#readme",
+  "bugs": {
+    "url": "https://github.com/naamiru/eagle-webui/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/naamiru/eagle-webui.git"
   },
   "license": "The Unlicense",
   "author": "naamiru",
+  "engines": {
+    "node": ">=18.18.0"
+  },
   "bin": {
     "eagle-webui": "start.js"
   },
+  "files": [
+    ".next/**/*"
+  ],
   "scripts": {
     "dev": "next dev --turbopack",
     "lint": "next lint",
-    "build": "next build && cp -r .next/static .next/standalone/.next/",
-    "start": "node .next/standalone/server.js",
+    "build": "next build",
+    "start": "next start",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@use-gesture/react": "^10.3.1",
     "env-paths": "^3.0.0",
     "etag": "^1.8.1",
     "lowdb": "^7.0.1",

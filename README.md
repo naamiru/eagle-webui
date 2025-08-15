@@ -24,18 +24,18 @@ Then open http://localhost:34917/ in your browser.
 
 ### Command-line Options
 
-| Option | Description |
-|--------|-------------|
-| `--host` | Bind server to a specific hostname or IP address (default: localhost) |
-| `--port` | Server port number (default: 34917) |
-| `--eagle-api-url` | Eagle API URL (default: http://localhost:41595) |
+| Option            | Description                                                           |
+| ----------------- | --------------------------------------------------------------------- |
+| `--hostname`      | Bind server to a specific hostname or IP address (default: localhost) |
+| `--port`          | Server port number (default: 34917)                                   |
+| `--eagle-api-url` | Eagle API URL (default: http://localhost:41595)                       |
 
 ### Accessing from Other Devices
 
 To access the interface from other devices on your network:
 
 ```bash
-npx eagle-webui --host 0.0.0.0
+npx eagle-webui --hostname 0.0.0.0
 ```
 
 **⚠️ Security Warning:** This application serves images without authentication. Do not expose it to public networks.
