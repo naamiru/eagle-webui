@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import mime from "mime";
+import etag from "etag";
+import { after } from "next/server";
 
 async function findImageFile(
   itemDir: string,
@@ -22,7 +24,6 @@ async function findImageFile(
 
   return originalFile ? path.join(itemDir, originalFile) : null;
 }
-
 
 export async function handleImageRequest(
   request: NextRequest,
@@ -48,12 +49,34 @@ export async function handleImageRequest(
       return NextResponse.json({ error: "Image not found" }, { status: 404 });
     }
 
-    const imageBuffer = await fs.readFile(imagePath);
+    const stats = await fs.stat(imagePath);
+    const etagValue = etag(stats);
+    
+    // Check If-None-Match header
+    const ifNoneMatch = request.headers.get("if-none-match");
+    if (ifNoneMatch && ifNoneMatch === etagValue) {
+      return new NextResponse(null, {
+        status: 304,
+        headers: {
+          "ETag": etagValue,
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
+      });
+    }
+
+    const fileHandle = await fs.open(imagePath);
+    const stream = fileHandle.readableWebStream({ type: "bytes" });
     const contentType = mime.getType(imagePath) || "application/octet-stream";
 
-    return new NextResponse(imageBuffer as unknown as BodyInit, {
+    after(() => {
+      fileHandle.close();
+    });
+
+    return new NextResponse(stream as BodyInit, {
       headers: {
         "Content-Type": contentType,
+        "Content-Length": stats.size.toString(),
+        "ETag": etagValue,
         "Cache-Control": "public, max-age=31536000, immutable",
       },
     });

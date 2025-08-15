@@ -31,12 +31,13 @@ npm run lint
 - **Gallery**: PhotoSwipe via react-photoswipe-gallery
 - **Icons**: React Bootstrap Icons
 - **Font**: Geist fonts (Sans and Mono variants)
+- **Internationalization**: next-intl for multi-language support
 
 ## Architecture Overview
 
 ### API Integration
 
-The app connects to Eagle's local API server at `http://localhost:41595` (defined in `/app/env.ts`). The API provides:
+The app connects to Eagle's local API server at `http://localhost:41595` (defined in `/env.ts`). The API provides:
 
 - Folder structure and metadata
 - Item (image/video) listings and metadata
@@ -44,8 +45,7 @@ The app connects to Eagle's local API server at `http://localhost:41595` (define
 
 ### Data Flow Architecture
 
-1. **API Layer** (`/app/lib/api/`)
-
+1. **API Layer** (`/lib/api/`)
    - `folder.ts`: Fetches and transforms Eagle folder data, includes recursive child folder transformation
    - `item.ts`: Fetches items with support for folder-specific ordering and metadata
    - `library.ts`: Retrieves library configuration including file paths
@@ -63,7 +63,7 @@ The app connects to Eagle's local API server at `http://localhost:41595` (define
 
 ### Type System
 
-Core types are defined in `/app/types/models.ts`:
+Core types are defined in `/types/models.ts`:
 
 - `Item`: Image/video metadata including dimensions, timestamps, ratings
 - `Folder`: Hierarchical folder structure with sorting preferences

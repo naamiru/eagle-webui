@@ -21,6 +21,7 @@
   "dependencies": {
     "@use-gesture/react": "^10.3.1",
     "env-paths": "^3.0.0",
+    "etag": "^1.8.1",
     "lowdb": "^7.0.1",
     "mime": "^4.0.7",
     "next": "15.4.6",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/etag": "^1.8.4",
     "@types/mime": "^3.0.4",
     "@types/node": "^20",
     "@types/react": "^19",
