@@ -11,5 +11,12 @@ export default async function Home() {
     settingsService.getFolderOrder(),
   ]);
 
-  return <HomePage folders={folders} libraryPath={libraryPath} initialLayout={layout} initialFolderOrder={folderOrder} />;
+  return (
+    <HomePage
+      folders={folders}
+      libraryPath={libraryPath}
+      initialLayout={layout}
+      initialFolderOrder={folderOrder}
+    />
+  );
 }

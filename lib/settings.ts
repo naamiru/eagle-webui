@@ -10,7 +10,9 @@ import {
   type FolderOrderBy,
   FOLDER_ORDER_BY,
 } from "@/types/models";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+
+const SETTINGS_CACHE_TAG = "settings";
 
 interface SettingsData {
   layout: Layout;
@@ -35,8 +37,6 @@ class SettingsService {
       folderOrder: { orderBy: "DEFAULT", sortIncrease: true },
     });
 
-    await this.db.read();
-
     return this.db;
   }
 
@@ -59,43 +59,59 @@ class SettingsService {
   }
 
   async getLayout(): Promise<Layout> {
-    const db = await this.getDB();
-    const layout = db.data.layout;
+    return unstable_cache(
+      async () => {
+        const db = await this.getDB();
+        await db.read();
+        const layout = db.data.layout;
 
-    // Validate and return default if invalid
-    if (!layout || !this.isValidLayout(layout)) {
-      return "grid-3";
-    }
+        // Validate and return default if invalid
+        if (!layout || !this.isValidLayout(layout)) {
+          return "grid-3";
+        }
 
-    return layout;
+        return layout;
+      },
+      undefined,
+      { tags: [SETTINGS_CACHE_TAG] }
+    )();
   }
 
   async setLayout(layout: Layout): Promise<void> {
     const db = await this.getDB();
-    db.data.layout = layout;
-    await db.write();
+    await db.update((data) => {
+      data.layout = layout;
+    });
 
-    revalidatePath("/[locale]", "layout");
+    revalidateTag(SETTINGS_CACHE_TAG);
   }
 
   async getFolderOrder(): Promise<Order<FolderOrderBy>> {
-    const db = await this.getDB();
-    const folderOrder = db.data.folderOrder;
+    return unstable_cache(
+      async () => {
+        const db = await this.getDB();
+        await db.read();
+        const folderOrder = db.data.folderOrder;
 
-    // Validate and return default if invalid
-    if (!this.isValidFolderOrder(folderOrder)) {
-      return { orderBy: "DEFAULT", sortIncrease: true };
-    }
+        // Validate and return default if invalid
+        if (!this.isValidFolderOrder(folderOrder)) {
+          return { orderBy: "DEFAULT" as const, sortIncrease: true };
+        }
 
-    return folderOrder;
+        return folderOrder;
+      },
+      undefined,
+      { tags: [SETTINGS_CACHE_TAG] }
+    )();
   }
 
   async setFolderOrder(folderOrder: Order<FolderOrderBy>): Promise<void> {
     const db = await this.getDB();
-    db.data.folderOrder = folderOrder;
-    await db.write();
+    db.update((data) => {
+      data.folderOrder = folderOrder;
+    });
 
-    revalidatePath("/[locale]", "layout");
+    revalidateTag(SETTINGS_CACHE_TAG);
   }
 }
 

@@ -13,7 +13,6 @@ import { useState, useTransition, useMemo } from "react";
 import { updateLayout, updateFolderOrder } from "@/actions/settings";
 import PageHeader from "../PageHeader/PageHeader";
 import { sortFolders } from "@/utils/folder";
-import useRefreshBFCache from "@/lib/hook/useRefreshBFCache";
 
 interface HomePageProps {
   folders: Folder[];
@@ -50,8 +49,6 @@ export function HomePage({
   const sortedFolders = useMemo(() => {
     return sortFolders(folders, folderOrder.orderBy, folderOrder.sortIncrease);
   }, [folders, folderOrder]);
-
-  useRefreshBFCache();
 
   return (
     <div className={styles.container}>
