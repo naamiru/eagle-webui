@@ -1,4 +1,4 @@
-import type { Folder, Item } from "@/types/models";
+import type { Folder, Item, FolderOrderBy } from "@/types/models";
 
 type NameSegment = string | number;
 
@@ -151,6 +151,49 @@ export function sortItems(
         return sortIncrease ? primary : -primary;
       }
       const secondary = a.globalOrder - b.globalOrder;
+      return sortIncrease ? secondary : -secondary;
+    };
+  };
+
+  sorted.sort(getCompareFunction());
+  return sorted;
+}
+
+export function sortFolders(
+  folders: Folder[],
+  orderBy: FolderOrderBy,
+  sortIncrease: boolean
+): Folder[] {
+  const sorted = [...folders];
+
+  if (orderBy === "RANDOM") {
+    return sorted.sort(() => Math.random() - 0.5);
+  }
+
+  const getCompareFunction = (): ((a: Folder, b: Folder) => number) => {
+    const primaryCompare = (() => {
+      switch (orderBy) {
+        case "NAME":
+          return (a: Folder, b: Folder) => {
+            const segmentsA = parseNameForSorting(a.name);
+            const segmentsB = parseNameForSorting(b.name);
+            return compareNameSegments(segmentsA, segmentsB);
+          };
+        case "IMPORT":
+          return (a: Folder, b: Folder) => b.modificationTime - a.modificationTime;
+        case "DEFAULT":
+        default:
+          return (a: Folder, b: Folder) => a.defaultOrder - b.defaultOrder;
+      }
+    })();
+
+    return (a: Folder, b: Folder) => {
+      const primary = primaryCompare(a, b);
+      if (primary !== 0) {
+        return sortIncrease ? primary : -primary;
+      }
+      // Secondary sort by defaultOrder if primary is equal
+      const secondary = a.defaultOrder - b.defaultOrder;
       return sortIncrease ? secondary : -secondary;
     };
   };

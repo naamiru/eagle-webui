@@ -27,14 +27,16 @@ function isItemOrderBy(value: unknown): value is ItemOrderBy {
   return typeof value === "string" && ITEM_ORDER_BY.includes(value as ItemOrderBy);
 }
 
-async function transformFolder(eagleFolder: EagleFolder): Promise<Folder> {
+async function transformFolder(eagleFolder: EagleFolder, defaultOrder: number): Promise<Folder> {
   const [coverItems, children] = await Promise.all([
     fetchFolderItems(eagleFolder.id, {
       limit: 1,
       orderBy: eagleFolder.orderBy,
       sortIncrease: eagleFolder.sortIncrease,
     }).catch(() => []),
-    Promise.all(eagleFolder.children.map(transformFolder)),
+    Promise.all(eagleFolder.children.map((child, index) => 
+      transformFolder(child, index + 1)
+    )),
   ]);
 
   return {
@@ -44,6 +46,8 @@ async function transformFolder(eagleFolder: EagleFolder): Promise<Folder> {
     orderBy: isItemOrderBy(eagleFolder.orderBy) ? eagleFolder.orderBy : "GLOBAL",
     sortIncrease: eagleFolder.sortIncrease ?? true,
     coverItem: coverItems[0],
+    defaultOrder,
+    modificationTime: eagleFolder.modificationTime,
   };
 }
 
@@ -62,5 +66,5 @@ export async function fetchFolders(): Promise<Folder[]> {
     throw new Error(`Eagle API returned error status: ${data.status}`);
   }
 
-  return Promise.all(data.data.map(transformFolder));
+  return Promise.all(data.data.map((folder, index) => transformFolder(folder, index + 1)));
 }

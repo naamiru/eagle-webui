@@ -4,11 +4,12 @@ import { fetchLibraryPath } from "@/lib/api/library";
 import { settingsService } from "@/lib/settings";
 
 export default async function Home() {
-  const [folders, libraryPath, layout] = await Promise.all([
+  const [folders, libraryPath, layout, folderOrder] = await Promise.all([
     fetchFolders(),
     fetchLibraryPath(),
     settingsService.getLayout(),
+    settingsService.getFolderOrder(),
   ]);
 
-  return <HomePage folders={folders} libraryPath={libraryPath} initialLayout={layout} />;
+  return <HomePage folders={folders} libraryPath={libraryPath} initialLayout={layout} initialFolderOrder={folderOrder} />;
 }

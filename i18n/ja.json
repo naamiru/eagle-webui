@@ -11,7 +11,8 @@
     "RESOLUTION": "解像度",
     "RATING": "評価",
     "DURATION": "再生時間",
-    "RANDOM": "ランダム"
+    "RANDOM": "ランダム",
+    "DEFAULT": "デフォルト"
   },
   "navigation": {
     "back": "戻る",

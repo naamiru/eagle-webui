@@ -11,7 +11,8 @@
     "RESOLUTION": "Dimensions",
     "RATING": "Rating",
     "DURATION": "Duration",
-    "RANDOM": "Random"
+    "RANDOM": "Random",
+    "DEFAULT": "Default"
   },
   "navigation": {
     "back": "Back",

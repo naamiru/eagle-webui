@@ -3,10 +3,11 @@ import { JSONFile } from "lowdb/node";
 import envPaths from "env-paths";
 import path from "path";
 import { mkdir } from "node:fs/promises";
-import { LAYOUTS, type Layout } from "@/types/models";
+import { LAYOUTS, type Layout, type Order, type FolderOrderBy, FOLDER_ORDER_BY } from "@/types/models";
 
 interface SettingsData {
   layout: Layout;
+  folderOrder: Order<FolderOrderBy>;
 }
 
 class SettingsService {
@@ -22,7 +23,10 @@ class SettingsService {
 
     const dbPath = path.join(paths.config, "settings.json");
     const adapter = new JSONFile<SettingsData>(dbPath);
-    this.db = new Low<SettingsData>(adapter, { layout: "grid-3" });
+    this.db = new Low<SettingsData>(adapter, { 
+      layout: "grid-3",
+      folderOrder: { orderBy: "DEFAULT", sortIncrease: true }
+    });
 
     await this.db.read();
 
@@ -31,6 +35,20 @@ class SettingsService {
 
   private isValidLayout(layout: unknown): layout is Layout {
     return LAYOUTS.includes(layout as Layout);
+  }
+
+  private isValidFolderOrderBy(orderBy: unknown): orderBy is FolderOrderBy {
+    return FOLDER_ORDER_BY.includes(orderBy as FolderOrderBy);
+  }
+
+  private isValidFolderOrder(order: unknown): order is Order<FolderOrderBy> {
+    if (!order || typeof order !== 'object') return false;
+    const obj = order as Record<string, unknown>;
+    return (
+      typeof obj.orderBy === 'string' &&
+      this.isValidFolderOrderBy(obj.orderBy) &&
+      typeof obj.sortIncrease === 'boolean'
+    );
   }
 
   async getLayout(): Promise<Layout> {
@@ -48,6 +66,24 @@ class SettingsService {
   async setLayout(layout: Layout): Promise<void> {
     const db = await this.getDB();
     db.data.layout = layout;
+    await db.write();
+  }
+
+  async getFolderOrder(): Promise<Order<FolderOrderBy>> {
+    const db = await this.getDB();
+    const folderOrder = db.data.folderOrder;
+
+    // Validate and return default if invalid
+    if (!this.isValidFolderOrder(folderOrder)) {
+      return { orderBy: "DEFAULT", sortIncrease: true };
+    }
+
+    return folderOrder;
+  }
+
+  async setFolderOrder(folderOrder: Order<FolderOrderBy>): Promise<void> {
+    const db = await this.getDB();
+    db.data.folderOrder = folderOrder;
     await db.write();
   }
 }
