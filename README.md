@@ -6,12 +6,12 @@ A web interface for the Eagle image viewer application
 <tr>
 <td width="50%">
 
-<img src="screenshots/home.png" alt="Home View" style="max-width: 300px;">
+![Home View](screenshots/home.png)
 
 </td>
 <td width="50%">
 
-<img src="screenshots/folder.png" alt="Folder View" style="max-width: 300px;">
+![Folder View](screenshots/folder.png)
 
 </td>
 </tr>
