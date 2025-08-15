@@ -58,14 +58,14 @@ export default function PageHeader<OrderBy extends string>({
         </ul>
         <ul>
           <li>
+            <LayoutDropdown value={layout} onChange={onChangeLayout} />
+          </li>
+          <li>
             <OrderDropdown
               value={order}
               onChange={onChangeOrder}
               availableValues={availableOrderBys}
             />
-          </li>
-          <li>
-            <LayoutDropdown value={layout} onChange={onChangeLayout} />
           </li>
         </ul>
       </nav>
