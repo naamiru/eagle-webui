@@ -2,6 +2,21 @@
 
 A web interface for the Eagle image viewer application
 
+<table>
+<tr>
+<td width="50%">
+
+![Home View](screenshots/home.png)
+
+</td>
+<td width="50%">
+
+![Folder View](screenshots/folder.png)
+
+</td>
+</tr>
+</table>
+
 ## Features
 
 - Optimized for comfortable mobile image viewing
