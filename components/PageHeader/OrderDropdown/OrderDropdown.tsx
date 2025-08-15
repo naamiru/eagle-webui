@@ -3,26 +3,22 @@
 import { SortDown } from "react-bootstrap-icons";
 import { useTranslations } from "next-intl";
 import styles from "./OrderDropdown.module.css";
+import { Order } from "@/types/models";
 
-export interface Order {
-  orderBy: string;
-  sortIncrease: boolean;
+interface OrderDropdownProps<OrderBy extends string> {
+  value: Order<OrderBy>;
+  onChange: (order: Order<OrderBy>) => void;
+  availableValues: readonly OrderBy[];
 }
 
-interface OrderDropdownProps {
-  value: Order;
-  onChange: (order: Order) => void;
-  availableValues: string[];
-}
-
-export function OrderDropdown({
+export function OrderDropdown<OrderBy extends string>({
   value,
   onChange,
   availableValues,
-}: OrderDropdownProps) {
+}: OrderDropdownProps<OrderBy>) {
   const t = useTranslations();
 
-  function onClickOrder(orderBy: string) {
+  function onClickOrder(orderBy: OrderBy) {
     onChange({
       orderBy,
       sortIncrease:
@@ -47,7 +43,7 @@ export function OrderDropdown({
                 onClickOrder(orderBy);
               }}
             >
-              {t(`orderBy.${orderBy}`)}
+              {t(`orderBy.${orderBy as string}`)}
             </a>
           </li>
         ))}

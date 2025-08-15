@@ -1,30 +1,21 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import type { Folder, Item, Layout } from "@/types/models";
+import {
+  ITEM_ORDER_BY,
+  ItemOrderBy,
+  Order,
+  type Folder,
+  type Item,
+  type Layout,
+} from "@/types/models";
 import { sortItems } from "@/utils/folder";
 import { useTranslations } from "next-intl";
 import { FolderList } from "../FolderList/FolderList";
 import { ItemList } from "../ItemList/ItemList";
-import { type Order } from "../PageHeader/OrderDropdown/OrderDropdown";
 import { updateLayout } from "@/actions/settings";
 import styles from "./FolderPage.module.css";
 import PageHeader from "../PageHeader/PageHeader";
-
-const AVAILDABLE_ORDER_BYS = [
-  "GLOBAL",
-  "MANUAL",
-  "IMPORT",
-  "MTIME",
-  "BTIME",
-  "NAME",
-  "EXT",
-  "FILESIZE",
-  "RESOLUTION",
-  "RATING",
-  "DURATION",
-  "RANDOM",
-];
 
 interface FolderPageProps {
   folder: Folder;
@@ -41,7 +32,7 @@ export function FolderPage({
   libraryPath,
   initialLayout,
 }: FolderPageProps) {
-  const [order, setOrder] = useState<Order>({
+  const [order, setOrder] = useState<Order<ItemOrderBy>>({
     orderBy: folder.orderBy,
     sortIncrease: folder.sortIncrease,
   });
@@ -69,7 +60,7 @@ export function FolderPage({
         backLink={parentFolder ? `/folders/${parentFolder.id}` : "/"}
         order={order}
         onChangeOrder={setOrder}
-        availableOrderBys={AVAILDABLE_ORDER_BYS}
+        availableOrderBys={ITEM_ORDER_BY}
         layout={layout}
         onChangeLayout={handleLayoutChange}
       />

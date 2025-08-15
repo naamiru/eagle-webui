@@ -1,4 +1,5 @@
-import type { Folder } from "@/types/models";
+import type { Folder, ItemOrderBy } from "@/types/models";
+import { ITEM_ORDER_BY } from "@/types/models";
 import { EAGLE_API_URL } from "@/env";
 import { fetchFolderItems } from "./item";
 
@@ -22,6 +23,10 @@ interface EagleApiResponse {
   data: EagleFolder[];
 }
 
+function isItemOrderBy(value: unknown): value is ItemOrderBy {
+  return typeof value === "string" && ITEM_ORDER_BY.includes(value as ItemOrderBy);
+}
+
 async function transformFolder(eagleFolder: EagleFolder): Promise<Folder> {
   const [coverItems, children] = await Promise.all([
     fetchFolderItems(eagleFolder.id, {
@@ -36,7 +41,7 @@ async function transformFolder(eagleFolder: EagleFolder): Promise<Folder> {
     id: eagleFolder.id,
     name: eagleFolder.name,
     children,
-    orderBy: eagleFolder.orderBy || "GLOBAL",
+    orderBy: isItemOrderBy(eagleFolder.orderBy) ? eagleFolder.orderBy : "GLOBAL",
     sortIncrease: eagleFolder.sortIncrease ?? true,
     coverItem: coverItems[0],
   };

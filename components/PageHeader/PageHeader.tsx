@@ -2,24 +2,24 @@
 
 import { ChevronLeft } from "react-bootstrap-icons";
 import { Link } from "@/i18n/navigation";
-import type { Layout } from "@/types/models";
+import type { Layout, Order } from "@/types/models";
 import { useTranslations } from "next-intl";
-import { Order, OrderDropdown } from "./OrderDropdown/OrderDropdown";
+import { OrderDropdown } from "./OrderDropdown/OrderDropdown";
 import { LayoutDropdown } from "./LayoutDropdown/LayoutDropdown";
 import styles from "./PageHeader.module.css";
 import { useEffect, useState } from "react";
 
-interface PageHeaderProps {
+interface PageHeaderProps<OrderBy extends string> {
   title?: string;
   backLink?: string;
-  order: Order;
-  onChangeOrder: (order: Order) => void;
-  availableOrderBys: string[];
+  order: Order<OrderBy>;
+  onChangeOrder: (order: Order<OrderBy>) => void;
+  availableOrderBys: readonly OrderBy[];
   layout: Layout;
   onChangeLayout: (layout: Layout) => void;
 }
 
-export default function PageHeader({
+export default function PageHeader<OrderBy extends string>({
   title,
   backLink,
   order,
@@ -27,7 +27,7 @@ export default function PageHeader({
   availableOrderBys,
   layout,
   onChangeLayout,
-}: PageHeaderProps) {
+}: PageHeaderProps<OrderBy>) {
   const [isStuck, setIsStuck] = useState(false);
 
   useEffect(() => {
