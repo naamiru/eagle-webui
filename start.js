@@ -49,7 +49,7 @@ function showHelp() {
   console.log(`
 Eagle WebUI Server
 
-Usage: npx eagle-webui [options]
+Usage: npx @naamiru/eagle-webui [options]
 
 Options:
   --hostname HOST, -H HOST     Bind server to specific hostname or IP address (default: localhost)
@@ -58,9 +58,9 @@ Options:
   --help, -h                   Display this help message
 
 Examples:
-  npx eagle-webui                                             # Default settings
-  npx eagle-webui --hostname 0.0.0.0                          # Allow external access
-  npx eagle-webui --eagle-api-url http://192.168.1.200:41595  # Custom Eagle API endpoint
+  npx @naamiru/eagle-webui                                             # Default settings
+  npx @naamiru/eagle-webui --hostname 0.0.0.0                          # Allow external access
+  npx @naamiru/eagle-webui --eagle-api-url http://192.168.1.200:41595  # Custom Eagle API endpoint
   `);
 }
 

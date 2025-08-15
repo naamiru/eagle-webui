@@ -53,7 +53,7 @@ Then open http://localhost:34917/ in your browser.
 To access the interface from other devices on your network:
 
 ```bash
-npx eagle-webui --hostname 0.0.0.0
+npx @naamiru/eagle-webui --hostname 0.0.0.0
 ```
 
 **⚠️ Security Warning:** This application serves images without authentication. Do not expose it to public networks.
