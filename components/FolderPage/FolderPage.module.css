@@ -21,6 +21,23 @@
   box-shadow: var(--pico-card-box-shadow);
 }
 
+/* left button */
+.header > nav > ul:first-of-type > li {
+  padding: 0;
+  overflow: hidden;
+}
+
+.header > nav > ul:first-of-type > li > a {
+  padding: calc(
+      var(--pico-nav-element-spacing-vertical) +
+        var(--pico-nav-link-spacing-vertical)
+    )
+    calc(
+      var(--pico-nav-element-spacing-horizontal) +
+        var(--pico-nav-link-spacing-horizontal)
+    );
+}
+
 .header + h6 {
   margin-top: 0;
 }
