@@ -38,6 +38,20 @@
     );
 }
 
+/* right dropdowns */
+.header > nav > ul:last-of-type > li {
+  padding: 0;
+}
+
+.header > nav > ul:last-of-type > li details summary {
+  height: 100%;
+  padding: var(--pico-nav-element-spacing-vertical)
+    calc(
+      var(--pico-nav-element-spacing-horizontal) +
+        var(--pico-nav-link-spacing-vertical) / 2
+    );
+}
+
 .header + h6 {
   margin-top: 0;
 }
