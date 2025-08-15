@@ -14,7 +14,7 @@ function parseCliArgs() {
     port: {
       type: "string",
       short: "p",
-      default: "3000",
+      default: "34917",
     },
     "eagle-api-url": {
       type: "string",
@@ -55,7 +55,7 @@ Usage: npx eagle-webui [options]
 
 Options:
   --host HOST, -H HOST         Bind server to specific hostname or IP address (default: localhost)
-  --port PORT, -p PORT         Server port number (default: 3000)
+  --port PORT, -p PORT         Server port number (default: 34917)
   --eagle-api-url URL          Eagle API endpoint for image management (default: http://localhost:41595)
   --help, -h                   Display this help message
 

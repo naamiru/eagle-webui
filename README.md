@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Eagle WebUI
 
-## Getting Started
+A web interface for the Eagle image viewer application
 
-First, run the development server:
+## Features
+
+- Optimized for comfortable mobile image viewing
+- Read-only viewer that won't modify your library, sync files, or consume storage
+- Simple one-command setup
+
+## Requirements
+
+Node.js >= 18.18.0
+
+## Installation and Usage
+
+Run the following command:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx eagle-webui
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:34917/ in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Command-line Options
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Option | Description |
+|--------|-------------|
+| `--host` | Bind server to a specific hostname or IP address (default: localhost) |
+| `--port` | Server port number (default: 34917) |
+| `--eagle-api-url` | Eagle API URL (default: http://localhost:41595) |
 
-## Learn More
+### Accessing from Other Devices
 
-To learn more about Next.js, take a look at the following resources:
+To access the interface from other devices on your network:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npx eagle-webui --host 0.0.0.0
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**⚠️ Security Warning:** This application serves images without authentication. Do not expose it to public networks.

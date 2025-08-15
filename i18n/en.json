@@ -22,7 +22,7 @@
     "reload": "Reload"
   },
   "layout": {
-    "grid": "{count} Columns"
+    "grid": "{count} col"
   },
   "troubleshooting": {
     "title": "Unable to retrieve image data",
