@@ -52,6 +52,11 @@
     );
 }
 
+/* dropdown popup */
+.header > nav > ul:last-of-type > li details summary + ul {
+  margin-top: calc(-0.5 * var(--pico-nav-element-spacing-vertical));
+}
+
 .header + h6 {
   margin-top: 0;
 }
