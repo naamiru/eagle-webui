@@ -14,11 +14,12 @@ interface FolderPageProps {
 export default async function Page({ params }: FolderPageProps) {
   const { folderId } = await params;
 
-  const [folders, items, libraryPath, layout] = await Promise.all([
+  const [folders, items, libraryPath, layout, folderOrder] = await Promise.all([
     fetchFolders(),
     fetchFolderItems(folderId),
     fetchLibraryPath(),
     settingsService.getLayout(),
+    settingsService.getFolderOrder(),
   ]);
 
   const folder = findFolderById(folders, folderId);
@@ -35,6 +36,7 @@ export default async function Page({ params }: FolderPageProps) {
       items={items}
       libraryPath={libraryPath}
       initialLayout={layout}
+      initialFolderOrder={folderOrder}
     />
   );
 }

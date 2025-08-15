@@ -93,6 +93,18 @@ export function findParentFolder(
   }
 }
 
+export function collectDescendantFolderIds(folder: Folder): string[] {
+  const ids = [folder.id];
+  
+  if (folder.children && folder.children.length > 0) {
+    for (const child of folder.children) {
+      ids.push(...collectDescendantFolderIds(child));
+    }
+  }
+  
+  return ids;
+}
+
 export function sortItems(
   items: Item[],
   orderBy: string,

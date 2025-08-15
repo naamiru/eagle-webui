@@ -39,13 +39,24 @@ async function transformFolder(eagleFolder: EagleFolder, defaultOrder: number): 
     )),
   ]);
 
+  let coverItem = coverItems[0];
+  
+  if (!coverItem) {
+    for (const child of children) {
+      if (child.coverItem) {
+        coverItem = child.coverItem;
+        break;
+      }
+    }
+  }
+
   return {
     id: eagleFolder.id,
     name: eagleFolder.name,
     children,
     orderBy: isItemOrderBy(eagleFolder.orderBy) ? eagleFolder.orderBy : "GLOBAL",
     sortIncrease: eagleFolder.sortIncrease ?? true,
-    coverItem: coverItems[0],
+    coverItem,
     defaultOrder,
     modificationTime: eagleFolder.modificationTime,
   };
