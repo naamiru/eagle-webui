@@ -1,8 +1,15 @@
 import { EAGLE_API_URL } from "@/env";
 
-export async function fetchLibraryPath(): Promise<string> {
+export async function fetchLibraryPath({
+  fetchOptions,
+}: {
+  fetchOptions: RequestInit;
+}): Promise<string> {
   try {
-    const listResponse = await fetch(`${EAGLE_API_URL}/api/item/list?limit=1`);
+    const listResponse = await fetch(
+      `${EAGLE_API_URL}/api/item/list?limit=1`,
+      fetchOptions
+    );
     if (!listResponse.ok) {
       throw new Error(
         `Failed to fetch items: ${listResponse.status} ${listResponse.statusText}`
@@ -21,7 +28,8 @@ export async function fetchLibraryPath(): Promise<string> {
     const itemId = listData.data[0].id;
 
     const thumbnailResponse = await fetch(
-      `${EAGLE_API_URL}/api/item/thumbnail?id=${itemId}`
+      `${EAGLE_API_URL}/api/item/thumbnail?id=${itemId}`,
+      fetchOptions
     );
     if (!thumbnailResponse.ok) {
       throw new Error(

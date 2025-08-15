@@ -30,7 +30,12 @@ interface EagleItemApiResponse {
 
 export async function fetchFolderItems(
   folderId: string,
-  options: { limit?: number; orderBy?: string; sortIncrease?: boolean } = {}
+  options: {
+    limit?: number;
+    orderBy?: string;
+    sortIncrease?: boolean;
+    fetchOptions: RequestInit;
+  }
 ): Promise<Item[]> {
   const { limit = 2000, orderBy, sortIncrease } = options;
   const params = new URLSearchParams({
@@ -49,7 +54,8 @@ export async function fetchFolderItems(
   }
 
   const response = await fetch(
-    `${EAGLE_API_URL}/api/item/list?${params.toString()}`
+    `${EAGLE_API_URL}/api/item/list?${params.toString()}`,
+    options.fetchOptions
   );
 
   if (!response.ok) {

@@ -24,23 +24,36 @@ interface EagleApiResponse {
 }
 
 function isItemOrderBy(value: unknown): value is ItemOrderBy {
-  return typeof value === "string" && ITEM_ORDER_BY.includes(value as ItemOrderBy);
+  return (
+    typeof value === "string" && ITEM_ORDER_BY.includes(value as ItemOrderBy)
+  );
 }
 
-async function transformFolder(eagleFolder: EagleFolder, defaultOrder: number): Promise<Folder> {
+async function transformFolder(
+  eagleFolder: EagleFolder,
+  defaultOrder: number,
+  {
+    fetchOptions,
+  }: {
+    fetchOptions: RequestInit;
+  }
+): Promise<Folder> {
   const [coverItems, children] = await Promise.all([
     fetchFolderItems(eagleFolder.id, {
       limit: 1,
       orderBy: eagleFolder.orderBy,
       sortIncrease: eagleFolder.sortIncrease,
+      fetchOptions,
     }).catch(() => []),
-    Promise.all(eagleFolder.children.map((child, index) => 
-      transformFolder(child, index + 1)
-    )),
+    Promise.all(
+      eagleFolder.children.map((child, index) =>
+        transformFolder(child, index + 1, { fetchOptions })
+      )
+    ),
   ]);
 
   let coverItem = coverItems[0];
-  
+
   if (!coverItem) {
     for (const child of children) {
       if (child.coverItem) {
@@ -54,7 +67,9 @@ async function transformFolder(eagleFolder: EagleFolder, defaultOrder: number): 
     id: eagleFolder.id,
     name: eagleFolder.name,
     children,
-    orderBy: isItemOrderBy(eagleFolder.orderBy) ? eagleFolder.orderBy : "GLOBAL",
+    orderBy: isItemOrderBy(eagleFolder.orderBy)
+      ? eagleFolder.orderBy
+      : "GLOBAL",
     sortIncrease: eagleFolder.sortIncrease ?? true,
     coverItem,
     defaultOrder,
@@ -62,8 +77,15 @@ async function transformFolder(eagleFolder: EagleFolder, defaultOrder: number): 
   };
 }
 
-export async function fetchFolders(): Promise<Folder[]> {
-  const response = await fetch(`${EAGLE_API_URL}/api/folder/list`);
+export async function fetchFolders({
+  fetchOptions,
+}: {
+  fetchOptions: RequestInit;
+}): Promise<Folder[]> {
+  const response = await fetch(
+    `${EAGLE_API_URL}/api/folder/list`,
+    fetchOptions
+  );
 
   if (!response.ok) {
     throw new Error(
@@ -77,5 +99,9 @@ export async function fetchFolders(): Promise<Folder[]> {
     throw new Error(`Eagle API returned error status: ${data.status}`);
   }
 
-  return Promise.all(data.data.map((folder, index) => transformFolder(folder, index + 1)));
+  return Promise.all(
+    data.data.map((folder, index) =>
+      transformFolder(folder, index + 1, { fetchOptions })
+    )
+  );
 }
