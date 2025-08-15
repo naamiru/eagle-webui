@@ -35,7 +35,7 @@ Make sure Eagle app is running.
 On the same machine, run the following command:
 
 ```bash
-npx eagle-webui
+npx @naamiru/eagle-webui
 ```
 
 Then open http://localhost:34917/ in your browser.
@@ -57,3 +57,8 @@ npx eagle-webui --hostname 0.0.0.0
 ```
 
 **⚠️ Security Warning:** This application serves images without authentication. Do not expose it to public networks.
+
+## Current Limitations
+
+- Images that are not in any folder cannot be viewed
+- Maximum of 2000 images are displayed per folder
