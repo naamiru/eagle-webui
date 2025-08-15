@@ -3,7 +3,14 @@ import { JSONFile } from "lowdb/node";
 import envPaths from "env-paths";
 import path from "path";
 import { mkdir } from "node:fs/promises";
-import { LAYOUTS, type Layout, type Order, type FolderOrderBy, FOLDER_ORDER_BY } from "@/types/models";
+import {
+  LAYOUTS,
+  type Layout,
+  type Order,
+  type FolderOrderBy,
+  FOLDER_ORDER_BY,
+} from "@/types/models";
+import { revalidatePath } from "next/cache";
 
 interface SettingsData {
   layout: Layout;
@@ -23,9 +30,9 @@ class SettingsService {
 
     const dbPath = path.join(paths.config, "settings.json");
     const adapter = new JSONFile<SettingsData>(dbPath);
-    this.db = new Low<SettingsData>(adapter, { 
+    this.db = new Low<SettingsData>(adapter, {
       layout: "grid-3",
-      folderOrder: { orderBy: "DEFAULT", sortIncrease: true }
+      folderOrder: { orderBy: "DEFAULT", sortIncrease: true },
     });
 
     await this.db.read();
@@ -42,12 +49,12 @@ class SettingsService {
   }
 
   private isValidFolderOrder(order: unknown): order is Order<FolderOrderBy> {
-    if (!order || typeof order !== 'object') return false;
+    if (!order || typeof order !== "object") return false;
     const obj = order as Record<string, unknown>;
     return (
-      typeof obj.orderBy === 'string' &&
+      typeof obj.orderBy === "string" &&
       this.isValidFolderOrderBy(obj.orderBy) &&
-      typeof obj.sortIncrease === 'boolean'
+      typeof obj.sortIncrease === "boolean"
     );
   }
 
@@ -67,6 +74,8 @@ class SettingsService {
     const db = await this.getDB();
     db.data.layout = layout;
     await db.write();
+
+    revalidatePath("/[locale]", "layout");
   }
 
   async getFolderOrder(): Promise<Order<FolderOrderBy>> {
@@ -85,6 +94,8 @@ class SettingsService {
     const db = await this.getDB();
     db.data.folderOrder = folderOrder;
     await db.write();
+
+    revalidatePath("/[locale]", "layout");
   }
 }
 

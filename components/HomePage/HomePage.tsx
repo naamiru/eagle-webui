@@ -1,12 +1,19 @@
 "use client";
 
 import { FolderList } from "@/components/FolderList/FolderList";
-import { Folder, Layout, Order, FolderOrderBy, FOLDER_ORDER_BY } from "@/types/models";
+import {
+  Folder,
+  Layout,
+  Order,
+  FolderOrderBy,
+  FOLDER_ORDER_BY,
+} from "@/types/models";
 import styles from "./HomePage.module.css";
 import { useState, useTransition, useMemo } from "react";
 import { updateLayout, updateFolderOrder } from "@/actions/settings";
 import PageHeader from "../PageHeader/PageHeader";
 import { sortFolders } from "@/utils/folder";
+import useRefreshBFCache from "@/lib/hook/useRefreshBFCache";
 
 interface HomePageProps {
   folders: Folder[];
@@ -22,7 +29,8 @@ export function HomePage({
   initialFolderOrder,
 }: HomePageProps) {
   const [layout, setLayout] = useState<Layout>(initialLayout);
-  const [folderOrder, setFolderOrder] = useState<Order<FolderOrderBy>>(initialFolderOrder);
+  const [folderOrder, setFolderOrder] =
+    useState<Order<FolderOrderBy>>(initialFolderOrder);
   const [, startTransition] = useTransition();
 
   const handleLayoutChange = (newLayout: Layout) => {
@@ -43,6 +51,8 @@ export function HomePage({
     return sortFolders(folders, folderOrder.orderBy, folderOrder.sortIncrease);
   }, [folders, folderOrder]);
 
+  useRefreshBFCache();
+
   return (
     <div className={styles.container}>
       <PageHeader
@@ -52,7 +62,11 @@ export function HomePage({
         layout={layout}
         onChangeLayout={handleLayoutChange}
       />
-      <FolderList folders={sortedFolders} libraryPath={libraryPath} layout={layout} />
+      <FolderList
+        folders={sortedFolders}
+        libraryPath={libraryPath}
+        layout={layout}
+      />
     </div>
   );
 }

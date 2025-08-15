@@ -18,6 +18,7 @@ import { ItemList } from "../ItemList/ItemList";
 import { updateLayout, updateFolderOrder } from "@/actions/settings";
 import styles from "./FolderPage.module.css";
 import PageHeader from "../PageHeader/PageHeader";
+import useRefreshBFCache from "@/lib/hook/useRefreshBFCache";
 
 interface FolderPageProps {
   folder: Folder;
@@ -40,7 +41,8 @@ export function FolderPage({
     orderBy: folder.orderBy,
     sortIncrease: folder.sortIncrease,
   });
-  const [folderOrder, setFolderOrder] = useState<Order<FolderOrderBy>>(initialFolderOrder);
+  const [folderOrder, setFolderOrder] =
+    useState<Order<FolderOrderBy>>(initialFolderOrder);
   const [layout, setLayout] = useState<Layout>(initialLayout);
   const [, startTransition] = useTransition();
 
@@ -53,7 +55,12 @@ export function FolderPage({
   );
 
   const sortedFolders = useMemo(
-    () => sortFolders(folder.children, folderOrder.orderBy, folderOrder.sortIncrease),
+    () =>
+      sortFolders(
+        folder.children,
+        folderOrder.orderBy,
+        folderOrder.sortIncrease
+      ),
     [folder.children, folderOrder]
   );
 
@@ -74,6 +81,8 @@ export function FolderPage({
   };
 
   const showSubtitle = sortedItems.length > 0 && folder.children.length > 0;
+
+  useRefreshBFCache();
 
   return (
     <div className={styles.container}>
