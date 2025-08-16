@@ -13,6 +13,7 @@ import {
   FolderOrderBy,
   Order,
   type Folder,
+  type Item,
   type Layout,
 } from "@/types/models";
 import { sortFolders } from "@/utils/folder";
@@ -20,7 +21,6 @@ import { useTranslations } from "next-intl";
 import { FolderList } from "../FolderList/FolderList";
 import { ItemList } from "../ItemList/ItemList";
 import { updateLayout, updateFolderOrder } from "@/actions/settings";
-import { type ItemsPage } from "@/actions/items";
 import styles from "./FolderPage.module.css";
 import PageHeader from "../PageHeader/PageHeader";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -29,7 +29,8 @@ import { orderToString, stringToOrder } from "@/utils/order";
 interface FolderPageProps {
   folder: Folder;
   parentFolder?: Folder;
-  initialItemsPage: ItemsPage;
+  items: Item[];
+  hasMore: boolean;
   libraryPath: string;
   initialLayout: Layout;
   initialFolderOrder: Order<FolderOrderBy>;
@@ -38,7 +39,8 @@ interface FolderPageProps {
 export function FolderPage({
   folder,
   parentFolder,
-  initialItemsPage,
+  items,
+  hasMore,
   libraryPath,
   initialLayout,
   initialFolderOrder,
@@ -59,8 +61,7 @@ export function FolderPage({
   };
 
   // Determine if we should use folder ordering (no items but has children)
-  const useFolderOrdering =
-    initialItemsPage.totalItems === 0 && folder.children.length > 0;
+  const useFolderOrdering = items.length === 0 && folder.children.length > 0;
 
   const sortedFolders = useMemo(
     () =>
@@ -98,7 +99,7 @@ export function FolderPage({
     });
   };
 
-  const showSubtitle = initialItemsPage.items.length > 0 && folder.children.length > 0;
+  const showSubtitle = items.length > 0 && folder.children.length > 0;
 
   return (
     <div className={styles.container}>
@@ -132,10 +133,10 @@ export function FolderPage({
         />
       )}
       {showSubtitle && <h6>{t("navigation.contents")}</h6>}
-      {initialItemsPage.items.length > 0 && (
+      {items.length > 0 && (
         <ItemList
-          folderId={folder.id}
-          initialItemsPage={initialItemsPage}
+          items={items}
+          hasMore={hasMore}
           libraryPath={libraryPath}
           layout={layout}
         />

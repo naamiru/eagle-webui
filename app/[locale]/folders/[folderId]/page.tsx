@@ -7,21 +7,20 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { settingsService } from "@/lib/settings";
 import { getFetchOptions } from "@/utils/fetch";
-import { type ItemsPage } from "@/actions/items";
 import { stringToOrder } from "@/utils/order";
 
 interface FolderPageProps {
   params: Promise<{ folderId: string }>;
-  searchParams: Promise<{ order?: string }>;
+  searchParams: Promise<{ order?: string; limit?: string }>;
 }
 
 export default async function Page({ params, searchParams }: FolderPageProps) {
   const { folderId } = await params;
-  const { order: orderParam } = await searchParams;
+  const { order: orderParam, limit: limitParam } = await searchParams;
 
   const fetchOptions = await getFetchOptions();
 
-  const [folders, items, libraryPath, layout, folderOrder] = await Promise.all([
+  const [folders, allItems, libraryPath, layout, folderOrder] = await Promise.all([
     fetchFolders({ fetchOptions }),
     fetchFolderItems(folderId, { fetchOptions }),
     fetchLibraryPath({ fetchOptions }),
@@ -44,21 +43,21 @@ export default async function Page({ params, searchParams }: FolderPageProps) {
   };
 
   // Sort items according to the selected order
-  const sortedItems = sortItems(items, itemOrder.orderBy, itemOrder.sortIncrease);
+  const sortedItems = sortItems(allItems, itemOrder.orderBy, itemOrder.sortIncrease);
 
-  // Prepare initial page
-  const initialItemsPerPage = 100;
-  const initialItemsPage: ItemsPage = {
-    items: sortedItems.slice(0, initialItemsPerPage),
-    hasMore: sortedItems.length > initialItemsPerPage,
-    totalItems: sortedItems.length,
-  };
+  // Get limit from URL parameter or use default (minimum 100)
+  const limitNumber = limitParam ? parseInt(limitParam, 10) : 100;
+  const initialItemsPerPage = Math.max(100, limitNumber);
+
+  const items = sortedItems.slice(0, initialItemsPerPage);
+  const hasMore = sortedItems.length > initialItemsPerPage;
 
   return (
     <FolderPage
       folder={folder}
       parentFolder={parentFolder}
-      initialItemsPage={initialItemsPage}
+      items={items}
+      hasMore={hasMore}
       libraryPath={libraryPath}
       initialLayout={layout}
       initialFolderOrder={folderOrder}

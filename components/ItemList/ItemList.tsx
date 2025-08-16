@@ -1,57 +1,30 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Gallery } from "react-photoswipe-gallery";
 import { useInView } from "react-intersection-observer";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import type { Item, Layout } from "@/types/models";
 import { ItemItem } from "./ItemItem";
-import { loadMoreItems, type ItemsPage } from "@/actions/items";
 import styles from "./ItemList.module.css";
 import "photoswipe/dist/photoswipe.css";
 
 interface ItemListProps {
-  folderId: string;
-  initialItemsPage: ItemsPage;
+  items: Item[];
+  hasMore: boolean;
   libraryPath: string;
   layout: Layout;
 }
 
 export function ItemList({
-  folderId,
-  initialItemsPage,
+  items,
+  hasMore,
   libraryPath,
   layout,
 }: ItemListProps) {
-  const [items, setItems] = useState<Item[]>(initialItemsPage.items);
-  const [hasMore, setHasMore] = useState(initialItemsPage.hasMore);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Reset items when initial data changes
-  useEffect(() => {
-    setItems(initialItemsPage.items);
-    setHasMore(initialItemsPage.hasMore);
-  }, [initialItemsPage.items, initialItemsPage.hasMore]);
-
-  // Load more items callback
-  const handleLoadMore = useCallback(async () => {
-    if (isLoading || !hasMore) return;
-
-    setIsLoading(true);
-    try {
-      const itemsPage = await loadMoreItems({
-        folderId,
-        offset: items.length,
-        limit: 100,
-      });
-
-      setItems((prev) => [...prev, ...itemsPage.items]);
-      setHasMore(itemsPage.hasMore);
-    } catch (error) {
-      console.error("Failed to load more items:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [folderId, items.length, hasMore, isLoading]);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   // Set rootMargin to 50% of viewport height for eager loading
   const rootMargin =
@@ -65,11 +38,15 @@ export function ItemList({
 
   const [lastInView, setLastInView] = useState(false);
   useEffect(() => {
-    if (!lastInView && inView && hasMore && !isLoading) {
-      handleLoadMore();
+    if (!lastInView && inView && hasMore) {
+      // Update limit parameter in URL when inView becomes active
+      const params = new URLSearchParams(searchParams.toString());
+      const newLimit = items.length + 100;
+      params.set('limit', newLimit.toString());
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     }
     setLastInView(inView);
-  }, [lastInView, inView, hasMore, isLoading, handleLoadMore]);
+  }, [lastInView, inView, hasMore, items.length, pathname, router, searchParams]);
 
   return (
     <Gallery
