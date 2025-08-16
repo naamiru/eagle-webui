@@ -32,7 +32,6 @@ export function ItemItem({ image, libraryPath }: ImageItemProps) {
           className={styles.thumbnail}
           width={image.width}
           height={image.height}
-          loading="lazy"
         />
       )}
     </GalleryItem>

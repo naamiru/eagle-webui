@@ -2,11 +2,12 @@ import { fetchFolders } from "@/lib/api/folder";
 import { fetchFolderItems } from "@/lib/api/item";
 import { fetchLibraryPath } from "@/lib/api/library";
 import { FolderPage } from "@/components/FolderPage/FolderPage";
-import { findFolderById, findParentFolder } from "@/utils/folder";
+import { findFolderById, findParentFolder, sortItems } from "@/utils/folder";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { settingsService } from "@/lib/settings";
 import { getFetchOptions } from "@/utils/fetch";
+import { type ItemsPage } from "@/actions/items";
 
 interface FolderPageProps {
   params: Promise<{ folderId: string }>;
@@ -32,11 +33,26 @@ export default async function Page({ params }: FolderPageProps) {
 
   const parentFolder = findParentFolder(folders, folderId);
 
+  // Sort items according to folder's order
+  const sortedItems = sortItems(items, folder.orderBy, folder.sortIncrease);
+
+  // Prepare initial page
+  const initialItemsPerPage = 100;
+  const initialItemsPage: ItemsPage = {
+    items: sortedItems.slice(0, initialItemsPerPage),
+    hasMore: sortedItems.length > initialItemsPerPage,
+    totalItems: sortedItems.length,
+  };
+
   return (
     <FolderPage
       folder={folder}
       parentFolder={parentFolder}
-      items={items}
+      initialItemsPage={initialItemsPage}
+      initialItemOrder={{
+        orderBy: folder.orderBy,
+        sortIncrease: folder.sortIncrease,
+      }}
       libraryPath={libraryPath}
       initialLayout={layout}
       initialFolderOrder={folderOrder}

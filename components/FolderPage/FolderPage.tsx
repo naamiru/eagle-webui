@@ -1,6 +1,12 @@
 "use client";
 
-import { useMemo, useState, useTransition, useEffect } from "react";
+import {
+  useMemo,
+  useState,
+  useTransition,
+  useEffect,
+  useCallback,
+} from "react";
 import {
   ITEM_ORDER_BY,
   FOLDER_ORDER_BY,
@@ -11,18 +17,24 @@ import {
   type Item,
   type Layout,
 } from "@/types/models";
-import { sortItems, sortFolders } from "@/utils/folder";
+import { sortFolders } from "@/utils/folder";
 import { useTranslations } from "next-intl";
 import { FolderList } from "../FolderList/FolderList";
 import { ItemList } from "../ItemList/ItemList";
 import { updateLayout, updateFolderOrder } from "@/actions/settings";
+import {
+  loadMoreItems,
+  updateItemOrder,
+  type ItemsPage,
+} from "@/actions/items";
 import styles from "./FolderPage.module.css";
 import PageHeader from "../PageHeader/PageHeader";
 
 interface FolderPageProps {
   folder: Folder;
   parentFolder?: Folder;
-  items: Item[];
+  initialItemsPage: ItemsPage;
+  initialItemOrder: Order<ItemOrderBy>;
   libraryPath: string;
   initialLayout: Layout;
   initialFolderOrder: Order<FolderOrderBy>;
@@ -31,35 +43,56 @@ interface FolderPageProps {
 export function FolderPage({
   folder,
   parentFolder,
-  items,
+  initialItemsPage,
+  initialItemOrder,
   libraryPath,
   initialLayout,
   initialFolderOrder,
 }: FolderPageProps) {
-  const [itemOrder, setItemOrder] = useState<Order<ItemOrderBy>>({
-    orderBy: folder.orderBy,
-    sortIncrease: folder.sortIncrease,
-  });
+  const [items, setItems] = useState<Item[]>(initialItemsPage.items);
+  const [hasMore, setHasMore] = useState(initialItemsPage.hasMore);
+  const [isLoading, setIsLoading] = useState(false);
+  const [itemOrder, setItemOrder] =
+    useState<Order<ItemOrderBy>>(initialItemOrder);
   const [folderOrder, setFolderOrder] =
     useState<Order<FolderOrderBy>>(initialFolderOrder);
   const [layout, setLayout] = useState<Layout>(initialLayout);
   const [, startTransition] = useTransition();
 
-  // Sync itemOrder with folder props when they change (after refresh)
+  // Reset items when folder changes
   useEffect(() => {
-    setItemOrder({
-      orderBy: folder.orderBy,
-      sortIncrease: folder.sortIncrease,
-    });
-  }, [folder.orderBy, folder.sortIncrease]);
+    setItems(initialItemsPage.items);
+    setHasMore(initialItemsPage.hasMore);
+    setItemOrder(initialItemOrder);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [folder.id]);
 
   // Determine if we should use folder ordering (no items but has children)
-  const useFolderOrdering = items.length === 0 && folder.children.length > 0;
+  const useFolderOrdering =
+    initialItemsPage.totalItems === 0 && folder.children.length > 0;
 
-  const sortedItems = useMemo(
-    () => sortItems(items, itemOrder.orderBy, itemOrder.sortIncrease),
-    [items, itemOrder]
-  );
+  // Load more items callback
+  const handleLoadMore = useCallback(async () => {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+    try {
+      const itemsPage = await loadMoreItems({
+        folderId: folder.id,
+        offset: items.length,
+        limit: 100,
+        orderBy: itemOrder.orderBy,
+        sortIncrease: itemOrder.sortIncrease,
+      });
+
+      setItems((prev) => [...prev, ...itemsPage.items]);
+      setHasMore(itemsPage.hasMore);
+    } catch (error) {
+      console.error("Failed to load more items:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [folder.id, items.length, hasMore, isLoading, itemOrder]);
 
   const sortedFolders = useMemo(
     () =>
@@ -80,6 +113,23 @@ export function FolderPage({
     });
   };
 
+  const handleItemOrderChange = useCallback(
+    async (newOrder: Order<ItemOrderBy>) => {
+      setIsLoading(true);
+      try {
+        const result = await updateItemOrder(folder.id, newOrder);
+        setItemOrder(newOrder);
+        setItems(result.items);
+        setHasMore(result.hasMore);
+      } catch (error) {
+        console.error("Failed to update item order:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [folder.id]
+  );
+
   const handleFolderOrderChange = (newOrder: Order<FolderOrderBy>) => {
     setFolderOrder(newOrder);
     startTransition(() => {
@@ -87,7 +137,7 @@ export function FolderPage({
     });
   };
 
-  const showSubtitle = sortedItems.length > 0 && folder.children.length > 0;
+  const showSubtitle = items.length > 0 && folder.children.length > 0;
 
   return (
     <div className={styles.container}>
@@ -106,7 +156,7 @@ export function FolderPage({
           title={folder.name}
           backLink={parentFolder ? `/folders/${parentFolder.id}` : "/"}
           order={itemOrder}
-          onChangeOrder={setItemOrder}
+          onChangeOrder={handleItemOrderChange}
           availableOrderBys={ITEM_ORDER_BY}
           layout={layout}
           onChangeLayout={handleLayoutChange}
@@ -121,11 +171,14 @@ export function FolderPage({
         />
       )}
       {showSubtitle && <h6>{t("navigation.contents")}</h6>}
-      {sortedItems.length > 0 && (
+      {items.length > 0 && (
         <ItemList
-          items={sortedItems}
+          items={items}
           libraryPath={libraryPath}
           layout={layout}
+          hasMore={hasMore}
+          isLoading={isLoading}
+          onLoadMore={handleLoadMore}
         />
       )}
     </div>
