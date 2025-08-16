@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition, useEffect } from "react";
 import {
   ITEM_ORDER_BY,
   FOLDER_ORDER_BY,
@@ -44,6 +44,14 @@ export function FolderPage({
     useState<Order<FolderOrderBy>>(initialFolderOrder);
   const [layout, setLayout] = useState<Layout>(initialLayout);
   const [, startTransition] = useTransition();
+
+  // Sync itemOrder with folder props when they change (after refresh)
+  useEffect(() => {
+    setItemOrder({
+      orderBy: folder.orderBy,
+      sortIncrease: folder.sortIncrease,
+    });
+  }, [folder.orderBy, folder.sortIncrease]);
 
   // Determine if we should use folder ordering (no items but has children)
   const useFolderOrdering = items.length === 0 && folder.children.length > 0;

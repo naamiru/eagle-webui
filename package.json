@@ -1,6 +1,6 @@
 {
   "name": "@naamiru/eagle-webui",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A mobile-friendly web interface for Eagle image viewer - browse your Eagle library from any device",
   "keywords": [
     "eagle",
@@ -36,7 +36,7 @@
     "dev": "next dev --turbopack",
     "lint": "next lint",
     "build": "next build && cp -r .next/static .next/standalone/.next/",
-    "start": "next start",
+    "start": "node start.js --hostname 0.0.0.0 --port 3000",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
