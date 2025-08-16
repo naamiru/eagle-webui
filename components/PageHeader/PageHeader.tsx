@@ -42,33 +42,36 @@ export default function PageHeader<OrderBy extends string>({
   const t = useTranslations();
 
   return (
-    <header className={`${styles.header} ${isStuck ? styles.stuck : ""}`}>
-      <nav>
-        <ul>
-          <li>
-            {backLink && (
-              <Link href={backLink} aria-label={t("navigation.back")}>
-                <ChevronLeft size={20} />
-              </Link>
-            )}
-          </li>
-        </ul>
-        <ul>
-          <li>{title && <strong>{title}</strong>}</li>
-        </ul>
-        <ul>
-          <li>
-            <LayoutDropdown value={layout} onChange={onChangeLayout} />
-          </li>
-          <li>
-            <OrderDropdown
-              value={order}
-              onChange={onChangeOrder}
-              availableValues={availableOrderBys}
-            />
-          </li>
-        </ul>
-      </nav>
-    </header>
+    <>
+      <header className={`${styles.header} ${isStuck ? styles.stuck : ""}`}>
+        <nav>
+          <ul>
+            <li>
+              {backLink && (
+                <Link href={backLink} aria-label={t("navigation.back")}>
+                  <ChevronLeft size={20} />
+                </Link>
+              )}
+            </li>
+          </ul>
+          <ul>
+            <li>{title && <strong>{title}</strong>}</li>
+          </ul>
+          <ul>
+            <li>
+              <LayoutDropdown value={layout} onChange={onChangeLayout} />
+            </li>
+            <li>
+              <OrderDropdown
+                value={order}
+                onChange={onChangeOrder}
+                availableValues={availableOrderBys}
+              />
+            </li>
+          </ul>
+        </nav>
+      </header>
+      <div className={styles.spacer} />
+    </>
   );
 }

@@ -21,7 +21,6 @@ export function FolderItem({ folder, libraryPath }: FolderItemProps) {
             className={styles.thumbnail}
             width={item.width}
             height={item.height}
-            loading="lazy"
           />
         ) : (
           <div className={styles.empty} />
