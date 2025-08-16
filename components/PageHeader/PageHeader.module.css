@@ -1,8 +1,8 @@
 .header {
-  position: sticky;
+  position: fixed;
   padding: 0 1rem;
   top: 0;
-  z-index: 10;
+  z-index: 2;
   width: 100%;
   background: rgba(255, 255, 255, 0.8);
   transition: box-shadow 0.5s ease;
@@ -51,4 +51,38 @@
 
 .header + h6 {
   margin-top: 0;
+}
+
+.spacer {
+  height: 73.5px;
+}
+
+@media (max-width: 1536px) {
+  .spacer {
+    height: 70px;
+  }
+}
+
+@media (max-width: 1280px) {
+  .spacer {
+    height: 66.5px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .spacer {
+    height: 63px;
+  }
+}
+
+@media (max-width: 768px) {
+  .spacer {
+    height: 59.5px;
+  }
+}
+
+@media (max-width: 576px) {
+  .spacer {
+    height: 56px;
+  }
 }
