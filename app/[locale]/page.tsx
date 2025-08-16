@@ -2,10 +2,10 @@ import { HomePage } from "@/components/HomePage/HomePage";
 import { fetchFolders } from "@/lib/api/folder";
 import { fetchLibraryPath } from "@/lib/api/library";
 import { settingsService } from "@/lib/settings";
-import { cacheControlWithHeaders } from "@/utils/fetch";
+import { getFetchOptions } from "@/utils/fetch";
 
 export default async function Home() {
-  const fetchOptions = await cacheControlWithHeaders();
+  const fetchOptions = await getFetchOptions();
 
   const [folders, libraryPath, layout, folderOrder] = await Promise.all([
     fetchFolders({ fetchOptions }),
