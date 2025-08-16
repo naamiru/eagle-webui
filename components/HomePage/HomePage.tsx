@@ -1,6 +1,6 @@
 "use client";
 
-import { FolderList } from "@/components/FolderList/FolderList";
+import { InfiniteFolderList } from "@/components/FolderList/InfiniteFolderList";
 import {
   Folder,
   Layout,
@@ -16,6 +16,7 @@ import { sortFolders } from "@/utils/folder";
 
 interface HomePageProps {
   folders: Folder[];
+  hasMore: boolean;
   libraryPath: string;
   initialLayout: Layout;
   initialFolderOrder: Order<FolderOrderBy>;
@@ -23,6 +24,7 @@ interface HomePageProps {
 
 export function HomePage({
   folders,
+  hasMore,
   libraryPath,
   initialLayout,
   initialFolderOrder,
@@ -59,8 +61,9 @@ export function HomePage({
         layout={layout}
         onChangeLayout={handleLayoutChange}
       />
-      <FolderList
+      <InfiniteFolderList
         folders={sortedFolders}
+        hasMore={hasMore}
         libraryPath={libraryPath}
         layout={layout}
       />

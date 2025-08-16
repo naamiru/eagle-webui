@@ -26,10 +26,10 @@ export function ItemList({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Set rootMargin to 50% of viewport height for eager loading
+  // Set rootMargin to 100% of viewport height for eager loading
   const rootMargin =
     typeof window !== "undefined"
-      ? `${Math.floor(window.innerHeight * 0.5)}px`
+      ? `${Math.floor(window.innerHeight)}px`
       : "200px";
 
   const { ref: sentinelRef, inView } = useInView({
@@ -42,11 +42,19 @@ export function ItemList({
       // Update limit parameter in URL when inView becomes active
       const params = new URLSearchParams(searchParams.toString());
       const newLimit = items.length + 100;
-      params.set('limit', newLimit.toString());
+      params.set("limit", newLimit.toString());
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     }
     setLastInView(inView);
-  }, [lastInView, inView, hasMore, items.length, pathname, router, searchParams]);
+  }, [
+    lastInView,
+    inView,
+    hasMore,
+    items.length,
+    pathname,
+    router,
+    searchParams,
+  ]);
 
   return (
     <Gallery

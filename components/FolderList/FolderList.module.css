@@ -87,3 +87,8 @@
     grid-template-columns: repeat(8, 1fr);
   }
 }
+
+.sentinel {
+  height: 1px;
+  margin: 20px 0;
+}
