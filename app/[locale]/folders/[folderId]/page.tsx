@@ -59,7 +59,6 @@ export default async function Page({ params, searchParams }: FolderPageProps) {
       folder={folder}
       parentFolder={parentFolder}
       initialItemsPage={initialItemsPage}
-      itemOrder={itemOrder}
       libraryPath={libraryPath}
       initialLayout={layout}
       initialFolderOrder={folderOrder}

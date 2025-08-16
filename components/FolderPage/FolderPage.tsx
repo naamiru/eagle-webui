@@ -4,7 +4,6 @@ import {
   useMemo,
   useState,
   useTransition,
-  useEffect,
   useCallback,
 } from "react";
 import {
@@ -14,7 +13,6 @@ import {
   FolderOrderBy,
   Order,
   type Folder,
-  type Item,
   type Layout,
 } from "@/types/models";
 import { sortFolders } from "@/utils/folder";
@@ -22,20 +20,16 @@ import { useTranslations } from "next-intl";
 import { FolderList } from "../FolderList/FolderList";
 import { ItemList } from "../ItemList/ItemList";
 import { updateLayout, updateFolderOrder } from "@/actions/settings";
-import {
-  loadMoreItems,
-  type ItemsPage,
-} from "@/actions/items";
+import { type ItemsPage } from "@/actions/items";
 import styles from "./FolderPage.module.css";
 import PageHeader from "../PageHeader/PageHeader";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { orderToString } from "@/utils/order";
+import { orderToString, stringToOrder } from "@/utils/order";
 
 interface FolderPageProps {
   folder: Folder;
   parentFolder?: Folder;
   initialItemsPage: ItemsPage;
-  itemOrder: Order<ItemOrderBy>;
   libraryPath: string;
   initialLayout: Layout;
   initialFolderOrder: Order<FolderOrderBy>;
@@ -45,14 +39,10 @@ export function FolderPage({
   folder,
   parentFolder,
   initialItemsPage,
-  itemOrder,
   libraryPath,
   initialLayout,
   initialFolderOrder,
 }: FolderPageProps) {
-  const [items, setItems] = useState<Item[]>(initialItemsPage.items);
-  const [hasMore, setHasMore] = useState(initialItemsPage.hasMore);
-  const [isLoading, setIsLoading] = useState(false);
   const [folderOrder, setFolderOrder] =
     useState<Order<FolderOrderBy>>(initialFolderOrder);
   const [layout, setLayout] = useState<Layout>(initialLayout);
@@ -61,37 +51,16 @@ export function FolderPage({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Reset items when folder or order changes
-  useEffect(() => {
-    setItems(initialItemsPage.items);
-    setHasMore(initialItemsPage.hasMore);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [folder.id, itemOrder.orderBy, itemOrder.sortIncrease]);
+  // Get current order from URL
+  const orderParam = searchParams.get('order');
+  const currentItemOrder = stringToOrder(orderParam) || {
+    orderBy: folder.orderBy,
+    sortIncrease: folder.sortIncrease,
+  };
 
   // Determine if we should use folder ordering (no items but has children)
   const useFolderOrdering =
     initialItemsPage.totalItems === 0 && folder.children.length > 0;
-
-  // Load more items callback
-  const handleLoadMore = useCallback(async () => {
-    if (isLoading || !hasMore) return;
-
-    setIsLoading(true);
-    try {
-      const itemsPage = await loadMoreItems({
-        folderId: folder.id,
-        offset: items.length,
-        limit: 100,
-      });
-
-      setItems((prev) => [...prev, ...itemsPage.items]);
-      setHasMore(itemsPage.hasMore);
-    } catch (error) {
-      console.error("Failed to load more items:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [folder.id, items.length, hasMore, isLoading]);
 
   const sortedFolders = useMemo(
     () =>
@@ -129,7 +98,7 @@ export function FolderPage({
     });
   };
 
-  const showSubtitle = items.length > 0 && folder.children.length > 0;
+  const showSubtitle = initialItemsPage.items.length > 0 && folder.children.length > 0;
 
   return (
     <div className={styles.container}>
@@ -147,7 +116,7 @@ export function FolderPage({
         <PageHeader
           title={folder.name}
           backLink={parentFolder ? `/folders/${parentFolder.id}` : "/"}
-          order={itemOrder}
+          order={currentItemOrder}
           onChangeOrder={handleItemOrderChange}
           availableOrderBys={ITEM_ORDER_BY}
           layout={layout}
@@ -163,14 +132,12 @@ export function FolderPage({
         />
       )}
       {showSubtitle && <h6>{t("navigation.contents")}</h6>}
-      {items.length > 0 && (
+      {initialItemsPage.items.length > 0 && (
         <ItemList
-          items={items}
+          folderId={folder.id}
+          initialItemsPage={initialItemsPage}
           libraryPath={libraryPath}
           layout={layout}
-          hasMore={hasMore}
-          isLoading={isLoading}
-          onLoadMore={handleLoadMore}
         />
       )}
     </div>
