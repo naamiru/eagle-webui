@@ -7,4 +7,4 @@ export const EAGLE_API_URL =
 export const EAGLE_API_CACHE_TTL = 3600;
 
 // Maximum items to fetch from Eagle API at once
-export const EAGLE_API_MAX_ITEMS = 2000;
+export const EAGLE_API_MAX_ITEMS = 10000;

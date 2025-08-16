@@ -6,7 +6,6 @@ import { findFolderById, findParentFolder, sortItems } from "@/utils/folder";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { settingsService } from "@/lib/settings";
-import { getFetchOptions } from "@/utils/fetch";
 import { stringToOrder } from "@/utils/order";
 
 interface FolderPageProps {
@@ -18,12 +17,10 @@ export default async function Page({ params, searchParams }: FolderPageProps) {
   const { folderId } = await params;
   const { order: orderParam, limit: limitParam } = await searchParams;
 
-  const fetchOptions = await getFetchOptions();
-
   const [folders, allItems, libraryPath, layout, folderOrder] = await Promise.all([
-    fetchFolders({ fetchOptions }),
-    fetchFolderItems(folderId, { fetchOptions }),
-    fetchLibraryPath({ fetchOptions }),
+    fetchFolders(),
+    fetchFolderItems(folderId),
+    fetchLibraryPath(),
     settingsService.getLayout(),
     settingsService.getFolderOrder(),
   ]);
@@ -69,8 +66,7 @@ export async function generateMetadata({
   params,
 }: FolderPageProps): Promise<Metadata> {
   const { folderId } = await params;
-  const fetchOptions = await getFetchOptions();
-  const folders = await fetchFolders({ fetchOptions });
+  const folders = await fetchFolders();
   const folder = findFolderById(folders, folderId);
   if (!folder) {
     notFound();

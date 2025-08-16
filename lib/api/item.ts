@@ -1,5 +1,6 @@
 import type { Item } from "@/types/models";
 import { EAGLE_API_URL, EAGLE_API_MAX_ITEMS } from "@/env";
+import { getFetchOptions } from "@/utils/fetch";
 
 interface EagleItemResponse {
   id: string;
@@ -34,8 +35,7 @@ export async function fetchFolderItems(
     limit?: number;
     orderBy?: string;
     sortIncrease?: boolean;
-    fetchOptions: RequestInit;
-  }
+  } = {}
 ): Promise<Item[]> {
   const { limit = EAGLE_API_MAX_ITEMS, orderBy, sortIncrease } = options;
   const params = new URLSearchParams({
@@ -55,7 +55,7 @@ export async function fetchFolderItems(
 
   const response = await fetch(
     `${EAGLE_API_URL}/api/item/list?${params.toString()}`,
-    options.fetchOptions
+    getFetchOptions()
   );
 
   if (!response.ok) {

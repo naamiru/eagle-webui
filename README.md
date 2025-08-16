@@ -61,4 +61,4 @@ npx @naamiru/eagle-webui --hostname 0.0.0.0
 ## Current Limitations
 
 - Images that are not in any folder cannot be viewed
-- Maximum of 2000 images are displayed per folder
+- Maximum of 10000 images are displayed per folder

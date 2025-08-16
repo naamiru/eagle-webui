@@ -1,14 +1,11 @@
 import { EAGLE_API_URL } from "@/env";
+import { getFetchOptions } from "@/utils/fetch";
 
-export async function fetchLibraryPath({
-  fetchOptions,
-}: {
-  fetchOptions: RequestInit;
-}): Promise<string> {
+export async function fetchLibraryPath(): Promise<string> {
   try {
     const listResponse = await fetch(
       `${EAGLE_API_URL}/api/item/list?limit=1`,
-      fetchOptions
+      getFetchOptions()
     );
     if (!listResponse.ok) {
       throw new Error(
@@ -29,7 +26,7 @@ export async function fetchLibraryPath({
 
     const thumbnailResponse = await fetch(
       `${EAGLE_API_URL}/api/item/thumbnail?id=${itemId}`,
-      fetchOptions
+      getFetchOptions()
     );
     if (!thumbnailResponse.ok) {
       throw new Error(

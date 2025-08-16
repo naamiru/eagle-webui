@@ -2,7 +2,6 @@ import { HomePage } from "@/components/HomePage/HomePage";
 import { fetchFolders } from "@/lib/api/folder";
 import { fetchLibraryPath } from "@/lib/api/library";
 import { settingsService } from "@/lib/settings";
-import { getFetchOptions } from "@/utils/fetch";
 import { sortFolders } from "@/utils/folder";
 
 interface HomePageProps {
@@ -11,11 +10,10 @@ interface HomePageProps {
 
 export default async function Home({ searchParams }: HomePageProps) {
   const { limit: limitParam } = await searchParams;
-  const fetchOptions = await getFetchOptions();
 
   const [allFolders, libraryPath, layout, folderOrder] = await Promise.all([
-    fetchFolders({ fetchOptions }),
-    fetchLibraryPath({ fetchOptions }),
+    fetchFolders(),
+    fetchLibraryPath(),
     settingsService.getLayout(),
     settingsService.getFolderOrder(),
   ]);

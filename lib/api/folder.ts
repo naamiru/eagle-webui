@@ -2,6 +2,7 @@ import type { Folder, ItemOrderBy } from "@/types/models";
 import { ITEM_ORDER_BY } from "@/types/models";
 import { EAGLE_API_URL } from "@/env";
 import { fetchFolderItems } from "./item";
+import { getFetchOptions } from "@/utils/fetch";
 
 interface EagleFolder {
   id: string;
@@ -31,23 +32,17 @@ function isItemOrderBy(value: unknown): value is ItemOrderBy {
 
 async function transformFolder(
   eagleFolder: EagleFolder,
-  defaultOrder: number,
-  {
-    fetchOptions,
-  }: {
-    fetchOptions: RequestInit;
-  }
+  defaultOrder: number
 ): Promise<Folder> {
   const [coverItems, children] = await Promise.all([
     fetchFolderItems(eagleFolder.id, {
       limit: 1,
       orderBy: eagleFolder.orderBy,
       sortIncrease: eagleFolder.sortIncrease,
-      fetchOptions,
     }).catch(() => []),
     Promise.all(
       eagleFolder.children.map((child, index) =>
-        transformFolder(child, index + 1, { fetchOptions })
+        transformFolder(child, index + 1)
       )
     ),
   ]);
@@ -77,14 +72,10 @@ async function transformFolder(
   };
 }
 
-export async function fetchFolders({
-  fetchOptions,
-}: {
-  fetchOptions: RequestInit;
-}): Promise<Folder[]> {
+export async function fetchFolders(): Promise<Folder[]> {
   const response = await fetch(
     `${EAGLE_API_URL}/api/folder/list`,
-    fetchOptions
+    getFetchOptions()
   );
 
   if (!response.ok) {
@@ -101,7 +92,7 @@ export async function fetchFolders({
 
   return Promise.all(
     data.data.map((folder, index) =>
-      transformFolder(folder, index + 1, { fetchOptions })
+      transformFolder(folder, index + 1)
     )
   );
 }

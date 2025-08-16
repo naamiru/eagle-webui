@@ -1,6 +1,6 @@
 {
   "name": "@naamiru/eagle-webui",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A mobile-friendly web interface for Eagle image viewer - browse your Eagle library from any device",
   "keywords": [
     "eagle",
