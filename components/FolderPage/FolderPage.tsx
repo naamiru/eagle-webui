@@ -24,17 +24,18 @@ import { ItemList } from "../ItemList/ItemList";
 import { updateLayout, updateFolderOrder } from "@/actions/settings";
 import {
   loadMoreItems,
-  updateItemOrder,
   type ItemsPage,
 } from "@/actions/items";
 import styles from "./FolderPage.module.css";
 import PageHeader from "../PageHeader/PageHeader";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { orderToString } from "@/utils/order";
 
 interface FolderPageProps {
   folder: Folder;
   parentFolder?: Folder;
   initialItemsPage: ItemsPage;
-  initialItemOrder: Order<ItemOrderBy>;
+  itemOrder: Order<ItemOrderBy>;
   libraryPath: string;
   initialLayout: Layout;
   initialFolderOrder: Order<FolderOrderBy>;
@@ -44,7 +45,7 @@ export function FolderPage({
   folder,
   parentFolder,
   initialItemsPage,
-  initialItemOrder,
+  itemOrder,
   libraryPath,
   initialLayout,
   initialFolderOrder,
@@ -52,20 +53,20 @@ export function FolderPage({
   const [items, setItems] = useState<Item[]>(initialItemsPage.items);
   const [hasMore, setHasMore] = useState(initialItemsPage.hasMore);
   const [isLoading, setIsLoading] = useState(false);
-  const [itemOrder, setItemOrder] =
-    useState<Order<ItemOrderBy>>(initialItemOrder);
   const [folderOrder, setFolderOrder] =
     useState<Order<FolderOrderBy>>(initialFolderOrder);
   const [layout, setLayout] = useState<Layout>(initialLayout);
   const [, startTransition] = useTransition();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  // Reset items when folder changes
+  // Reset items when folder or order changes
   useEffect(() => {
     setItems(initialItemsPage.items);
     setHasMore(initialItemsPage.hasMore);
-    setItemOrder(initialItemOrder);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [folder.id]);
+  }, [folder.id, itemOrder.orderBy, itemOrder.sortIncrease]);
 
   // Determine if we should use folder ordering (no items but has children)
   const useFolderOrdering =
@@ -81,8 +82,6 @@ export function FolderPage({
         folderId: folder.id,
         offset: items.length,
         limit: 100,
-        orderBy: itemOrder.orderBy,
-        sortIncrease: itemOrder.sortIncrease,
       });
 
       setItems((prev) => [...prev, ...itemsPage.items]);
@@ -92,7 +91,7 @@ export function FolderPage({
     } finally {
       setIsLoading(false);
     }
-  }, [folder.id, items.length, hasMore, isLoading, itemOrder]);
+  }, [folder.id, items.length, hasMore, isLoading]);
 
   const sortedFolders = useMemo(
     () =>
@@ -114,20 +113,13 @@ export function FolderPage({
   };
 
   const handleItemOrderChange = useCallback(
-    async (newOrder: Order<ItemOrderBy>) => {
-      setIsLoading(true);
-      try {
-        const result = await updateItemOrder(folder.id, newOrder);
-        setItemOrder(newOrder);
-        setItems(result.items);
-        setHasMore(result.hasMore);
-      } catch (error) {
-        console.error("Failed to update item order:", error);
-      } finally {
-        setIsLoading(false);
-      }
+    (newOrder: Order<ItemOrderBy>) => {
+      // Update URL with new order parameter
+      const params = new URLSearchParams(searchParams);
+      params.set('order', orderToString(newOrder));
+      router.replace(`${pathname}?${params.toString()}`);
     },
-    [folder.id]
+    [pathname, router, searchParams]
   );
 
   const handleFolderOrderChange = (newOrder: Order<FolderOrderBy>) => {

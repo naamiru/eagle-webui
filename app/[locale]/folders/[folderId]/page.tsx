@@ -8,13 +8,16 @@ import { Metadata } from "next";
 import { settingsService } from "@/lib/settings";
 import { getFetchOptions } from "@/utils/fetch";
 import { type ItemsPage } from "@/actions/items";
+import { stringToOrder } from "@/utils/order";
 
 interface FolderPageProps {
   params: Promise<{ folderId: string }>;
+  searchParams: Promise<{ order?: string }>;
 }
 
-export default async function Page({ params }: FolderPageProps) {
+export default async function Page({ params, searchParams }: FolderPageProps) {
   const { folderId } = await params;
+  const { order: orderParam } = await searchParams;
 
   const fetchOptions = await getFetchOptions();
 
@@ -33,8 +36,15 @@ export default async function Page({ params }: FolderPageProps) {
 
   const parentFolder = findParentFolder(folders, folderId);
 
-  // Sort items according to folder's order
-  const sortedItems = sortItems(items, folder.orderBy, folder.sortIncrease);
+  // Get order from URL parameter or use folder's default
+  const orderFromUrl = stringToOrder(orderParam);
+  const itemOrder = orderFromUrl || {
+    orderBy: folder.orderBy,
+    sortIncrease: folder.sortIncrease,
+  };
+
+  // Sort items according to the selected order
+  const sortedItems = sortItems(items, itemOrder.orderBy, itemOrder.sortIncrease);
 
   // Prepare initial page
   const initialItemsPerPage = 100;
@@ -49,10 +59,7 @@ export default async function Page({ params }: FolderPageProps) {
       folder={folder}
       parentFolder={parentFolder}
       initialItemsPage={initialItemsPage}
-      initialItemOrder={{
-        orderBy: folder.orderBy,
-        sortIncrease: folder.sortIncrease,
-      }}
+      itemOrder={itemOrder}
       libraryPath={libraryPath}
       initialLayout={layout}
       initialFolderOrder={folderOrder}

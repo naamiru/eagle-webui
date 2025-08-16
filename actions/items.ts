@@ -3,7 +3,9 @@
 import { fetchFolderItems } from "@/lib/api/item";
 import { sortItems } from "@/utils/folder";
 import { getFetchOptions } from "@/utils/fetch";
+import { stringToOrder } from "@/utils/order";
 import type { Item, ItemOrderBy, Order } from "@/types/models";
+import { headers } from "next/headers";
 
 
 export interface ItemsPage {
@@ -16,8 +18,6 @@ interface LoadMoreItemsParams {
   folderId: string;
   offset: number;
   limit: number;
-  orderBy: ItemOrderBy;
-  sortIncrease: boolean;
 }
 
 
@@ -25,12 +25,21 @@ export async function loadMoreItems({
   folderId,
   offset,
   limit,
-  orderBy,
-  sortIncrease,
 }: LoadMoreItemsParams): Promise<ItemsPage> {
   const fetchOptions = await getFetchOptions();
+  
+  // Get order from URL
+  const headersList = await headers();
+  const url = new URL(headersList.get('referer') || '');
+  const orderParam = url.searchParams.get('order');
+  
+  const order = stringToOrder(orderParam) || {
+    orderBy: 'GLOBAL' as ItemOrderBy,
+    sortIncrease: true,
+  };
+  
   const items = await fetchFolderItems(folderId, { fetchOptions });
-  const sortedItems = sortItems(items, orderBy, sortIncrease);
+  const sortedItems = sortItems(items, order.orderBy, order.sortIncrease);
 
   const endIndex = offset + limit;
   const pageItems = sortedItems.slice(offset, endIndex);
