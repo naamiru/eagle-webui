@@ -1,6 +1,6 @@
 # Eagle WebUI
 
-A web interface for the [Eagle image viewer application](https://jp.eagle.cool/).
+A web interface for the [Eagle](https://eagle.cool/) image viewer application.
 
 > [!IMPORTANT]
 > Looking for an iOS app? Check out [Eagle Viewer for iOS](https://github.com/naamiru/eagle-viewer-ios) - a native iPhone app for viewing your Eagle library.
