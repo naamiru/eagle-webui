@@ -2,8 +2,8 @@
 
 A web interface for the [Eagle image viewer application](https://jp.eagle.cool/).
 
-[!IMPORTANT]
-Looking for an iOS app? Check out [Eagle Viewer for iOS](https://github.com/naamiru/eagle-viewer-ios) - a native iPhone app for viewing your Eagle library.
+> [!IMPORTANT]
+> Looking for an iOS app? Check out [Eagle Viewer for iOS](https://github.com/naamiru/eagle-viewer-ios) - a native iPhone app for viewing your Eagle library.
 
 ## Screenshots
 
