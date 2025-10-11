@@ -1,95 +1,120 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import {
+  Anchor,
+  Badge,
+  Button,
+  Card,
+  Container,
+  Group,
+  SimpleGrid,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
+import Link from "next/link";
+
+const features = [
+  {
+    badge: "Library",
+    title: "Browse faster",
+    description:
+      "Navigate your Eagle collections with Mantine-powered search, filters, and quick previews tailored for large libraries.",
+  },
+  {
+    badge: "Review",
+    title: "Curate boards anywhere",
+    description:
+      "Save inspiration and organize assets without leaving the browser. Drag, reorder, and review with desktop parity in mind.",
+  },
+  {
+    badge: "Sync",
+    title: "Stay in lockstep",
+    description:
+      "Keep changes aligned with the Eagle desktop app so teams always see the latest annotations, tags, and statuses.",
+  },
+];
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <Container size="lg" py="xl">
+      <Stack gap="xl">
+        <Stack gap="sm">
+          <Badge size="lg" variant="light" color="yellow" w="fit-content">
+            Early preview
+          </Badge>
+          <Title order={1}>Bring Eagle's workspace to the web</Title>
+          <Text size="lg" c="dimmed">
+            A focused interface for browsing, curating, and sharing your Eagle
+            library from any device. Built with Mantine for rapid iteration and
+            a consistent design system.
+          </Text>
+        </Stack>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+        <Group gap="md">
+          <Button size="md">Launch library</Button>
+          <Button
+            size="md"
+            variant="light"
+            component="a"
+            href="https://en.eagle.cool/"
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noreferrer"
           >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+            Learn about Eagle
+          </Button>
+        </Group>
+
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
+          {features.map((feature) => (
+            <Card key={feature.title} radius="md" withBorder padding="lg">
+              <Stack gap="sm">
+                <Badge color="blue" variant="light" w="fit-content">
+                  {feature.badge}
+                </Badge>
+                <Title order={3}>{feature.title}</Title>
+                <Text size="sm" c="dimmed">
+                  {feature.description}
+                </Text>
+              </Stack>
+            </Card>
+          ))}
+        </SimpleGrid>
+
+        <Card radius="md" withBorder padding="lg">
+          <Stack gap="sm">
+            <Title order={3}>Help shape the roadmap</Title>
+            <Text size="sm" c="dimmed">
+              We are prioritizing remote sync, shared board reviews, and bulk
+              metadata editing. Share use cases or pain points with the team at{" "}
+              <Anchor
+                component="a"
+                href="mailto:feedback@eagle-webui.local"
+                fw={500}
+              >
+                feedback@eagle-webui.local
+              </Anchor>
+              .
+            </Text>
+            <Group gap="xs">
+              <Button
+                variant="subtle"
+                size="sm"
+                component={Link}
+                href="/roadmap"
+              >
+                View roadmap
+              </Button>
+              <Button
+                variant="subtle"
+                size="sm"
+                component={Link}
+                href="/changelog"
+              >
+                Changelog
+              </Button>
+            </Group>
+          </Stack>
+        </Card>
+      </Stack>
+    </Container>
   );
 }
