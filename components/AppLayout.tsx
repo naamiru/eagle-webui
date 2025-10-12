@@ -1,6 +1,6 @@
 "use client";
 
-import { AppShell, Burger, CloseButton, Group, Text } from "@mantine/core";
+import { AppShell, Burger, CloseButton, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
   IconLayoutSidebarLeftCollapse,
@@ -8,12 +8,18 @@ import {
 } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import type { Folder } from "@/data/types";
+import { HeaderSlotProvider, useHeaderSlot } from "./AppHeader";
 import { AppNavbar } from "./AppNavbar";
 
 type AppLayoutProps = {
   children: ReactNode;
   folders: Folder[];
 };
+
+function HeaderOutlet() {
+  const { header } = useHeaderSlot();
+  return <>{header}</>;
+}
 
 export function AppLayout({ children, folders }: AppLayoutProps) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
@@ -30,40 +36,42 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
       }}
       padding="md"
     >
-      <AppShell.Header>
-        <Group h="100%" px="md">
-          <Burger
-            opened={mobileOpened}
-            onClick={toggleMobile}
-            hiddenFrom="sm"
-            size="sm"
-          />
-
-          {desktopOpened ? (
-            <CloseButton
-              icon={<IconLayoutSidebarLeftCollapse stroke={1} />}
-              visibleFrom="sm"
-              onClick={toggleDesktop}
+      <HeaderSlotProvider>
+        <AppShell.Header>
+          <Group h="100%" px="md">
+            <Burger
+              opened={mobileOpened}
+              onClick={toggleMobile}
+              hiddenFrom="sm"
+              size="sm"
             />
-          ) : (
-            <CloseButton
-              icon={<IconLayoutSidebarRightCollapse stroke={1} />}
-              visibleFrom="sm"
-              onClick={toggleDesktop}
-            />
-          )}
 
-          <Text fw={600}>Eagle WebUI</Text>
-        </Group>
-      </AppShell.Header>
+            {desktopOpened ? (
+              <CloseButton
+                icon={<IconLayoutSidebarLeftCollapse stroke={1} />}
+                visibleFrom="sm"
+                onClick={toggleDesktop}
+              />
+            ) : (
+              <CloseButton
+                icon={<IconLayoutSidebarRightCollapse stroke={1} />}
+                visibleFrom="sm"
+                onClick={toggleDesktop}
+              />
+            )}
 
-      <AppNavbar
-        mobileOpened={mobileOpened}
-        onToggleMobile={toggleMobile}
-        folders={folders}
-      />
+            <HeaderOutlet />
+          </Group>
+        </AppShell.Header>
 
-      <AppShell.Main>{children}</AppShell.Main>
+        <AppNavbar
+          mobileOpened={mobileOpened}
+          onToggleMobile={toggleMobile}
+          folders={folders}
+        />
+
+        <AppShell.Main>{children}</AppShell.Main>
+      </HeaderSlotProvider>
     </AppShell>
   );
 }

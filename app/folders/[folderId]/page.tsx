@@ -1,5 +1,6 @@
-import { Stack, Title } from "@mantine/core";
+import { Stack, Text, Title } from "@mantine/core";
 import { notFound } from "next/navigation";
+import AppHeader from "@/components/AppHeader";
 import { getStore } from "@/data/store";
 
 type FolderPageProps = {
@@ -18,8 +19,14 @@ export default async function FolderPage({ params }: FolderPageProps) {
   }
 
   return (
-    <Stack gap="md">
-      <Title order={2}>{folder.name || folder.id}</Title>
-    </Stack>
+    <>
+      <AppHeader>
+        <Text fw={600}>{folder.name || folder.id}</Text>
+      </AppHeader>
+
+      <Stack gap="md">
+        <Title order={2}>{folder.name || folder.id}</Title>
+      </Stack>
+    </>
   );
 }

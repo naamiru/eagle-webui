@@ -1,4 +1,5 @@
 import { List, ListItem, Stack, Text, Title } from "@mantine/core";
+import AppHeader from "@/components/AppHeader";
 import { getStore } from "@/data/store";
 
 export const dynamic = "force-dynamic";
@@ -11,17 +12,23 @@ export default async function HomePage() {
     .sort((a, b) => a.manualOrder - b.manualOrder);
 
   return (
-    <Stack gap="lg">
-      <Title order={2}>Library folders (debug)</Title>
-      {rootFolders.length === 0 ? (
-        <Text c="dimmed">No folders found in the library.</Text>
-      ) : (
-        <List spacing="xs">
-          {rootFolders.map((folder) => (
-            <ListItem key={folder.id}>{folder.name || folder.id}</ListItem>
-          ))}
-        </List>
-      )}
-    </Stack>
+    <>
+      <AppHeader>
+        <Text fw={600}>Eagle WebUI</Text>
+      </AppHeader>
+
+      <Stack gap="lg">
+        <Title order={2}>Library folders (debug)</Title>
+        {rootFolders.length === 0 ? (
+          <Text c="dimmed">No folders found in the library.</Text>
+        ) : (
+          <List spacing="xs">
+            {rootFolders.map((folder) => (
+              <ListItem key={folder.id}>{folder.name || folder.id}</ListItem>
+            ))}
+          </List>
+        )}
+      </Stack>
+    </>
   );
 }
