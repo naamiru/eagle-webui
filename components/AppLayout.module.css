@@ -21,14 +21,20 @@
   display: flex;
   align-items: center;
   width: 100%;
+  margin-bottom: 1px;
   padding: var(--mantine-spacing-xxxs);
   border-radius: var(--mantine-radius-sm);
   font-weight: 500;
   color: var(--mantine-color-gray-7);
+  text-decoration: none;
 
   &:hover {
     background-color: var(--mantine-color-gray-2);
-    color: var(--mantine-color-gray-7);
+  }
+
+  &[aria-current],
+  &[aria-current]:hover {
+    background-color: var(--mantine-color-gray-3);
   }
 }
 
@@ -37,16 +43,14 @@
 }
 
 .folderLink {
-  display: flex;
-  align-items: center;
-  width: 100%;
-
-  &[data-has-children] {
-    margin-left: -12px;
-  }
+  position: relative;
 }
 
 .folderExpandIcon {
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  margin-top: -6px;
   opacity: 0.5;
 
   &:hover {

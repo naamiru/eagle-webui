@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ActionIcon,
   AppShell,
   Burger,
   CloseButton,
@@ -25,7 +24,8 @@ import {
   IconRefresh,
   IconTrash,
 } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useMemo, useTransition } from "react";
 import { reloadLibrary } from "@/actions/reloadLibrary";
@@ -41,10 +41,27 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const router = useRouter();
+  const pathname = usePathname();
   const [isReloading, startReload] = useTransition();
   const reloadLabel = isReloading ? "Reloading library..." : "Reload library";
 
   const folderTreeData = useMemo(() => buildFolderTreeData(folders), [folders]);
+  const activeFolderId = useMemo(() => {
+    if (!pathname) {
+      return null;
+    }
+
+    const match = pathname.match(/^\/folders\/([^/]+)/);
+    if (!match) {
+      return null;
+    }
+
+    try {
+      return decodeURIComponent(match[1]);
+    } catch {
+      return match[1];
+    }
+  }, [pathname]);
 
   const folderCount = folders.length;
 
@@ -177,9 +194,21 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
                         onClick={() => tree.toggleExpanded(node.value)}
                       />
                     ))}
-                  <UnstyledButton
+                  <Link
+                    href={`/folders/${encodeURIComponent(node.value)}`}
                     className={classes.mainLink}
-                    onDoubleClick={() => tree.toggleExpanded(node.value)}
+                    aria-current={
+                      activeFolderId === node.value ? "page" : undefined
+                    }
+                    onMouseDown={(event) => {
+                      if (event.detail === 2) {
+                        event.preventDefault();
+                      }
+                    }}
+                    onDoubleClick={(event) => {
+                      event.preventDefault();
+                      tree.toggleExpanded(node.value);
+                    }}
                   >
                     {hasChildren && expanded ? (
                       <IconFolderOpen
@@ -195,7 +224,7 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
                       />
                     )}
                     <Text size="sm">{node.label}</Text>
-                  </UnstyledButton>
+                  </Link>
                 </div>
               </div>
             )}
