@@ -1,5 +1,5 @@
-import { Container, List, ListItem, Stack, Text, Title } from "@mantine/core";
-
+import { List, ListItem, Stack, Text, Title } from "@mantine/core";
+import { AppLayout } from "@/components/AppLayout";
 import { getStore } from "@/data/store";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +12,7 @@ export default async function HomePage() {
     .sort((a, b) => a.manualOrder - b.manualOrder);
 
   return (
-    <Container size="sm" py="xl">
+    <AppLayout>
       <Stack gap="lg">
         <Title order={2}>Library folders (debug)</Title>
         {rootFolders.length === 0 ? (
@@ -25,6 +25,6 @@ export default async function HomePage() {
           </List>
         )}
       </Stack>
-    </Container>
+    </AppLayout>
   );
 }

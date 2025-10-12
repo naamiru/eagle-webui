@@ -5,9 +5,12 @@ import {
   Button,
   Center,
   ColorSchemeScript,
+  DEFAULT_THEME,
   Loader,
   MantineProvider,
   mantineHtmlProps,
+  mergeMantineTheme,
+  rem,
   Stack,
   Text,
 } from "@mantine/core";
@@ -26,6 +29,13 @@ export const metadata: Metadata = {
   title: "Eagle WebUI",
   description: "A web interface for the Eagle image viewer application",
 };
+
+const theme = mergeMantineTheme(DEFAULT_THEME, {
+  spacing: {
+    xxxs: rem(3),
+    xxs: rem(5),
+  },
+});
 
 async function handleRetry() {
   "use server";
@@ -48,7 +58,7 @@ export default async function RootLayout({
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider>
+        <MantineProvider theme={theme}>
           {renderImportState(importState, children)}
         </MantineProvider>
       </body>
@@ -58,7 +68,7 @@ export default async function RootLayout({
 
 function renderImportState(
   state: StoreInitializationState,
-  children: React.ReactNode,
+  children: React.ReactNode
 ) {
   if (state.status === "idle" || state.status === "loading") {
     return (

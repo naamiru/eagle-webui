@@ -13,6 +13,7 @@
   "dependencies": {
     "@mantine/core": "^8.3.4",
     "@mantine/hooks": "^8.3.4",
+    "@tabler/icons-react": "^3.35.0",
     "ajv": "^8.17.1",
     "next": "15.5.4",
     "react": "19.1.0",
