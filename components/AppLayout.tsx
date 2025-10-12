@@ -28,6 +28,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useMemo, useTransition } from "react";
+import { useSwipeable } from "react-swipeable";
 import { reloadLibrary } from "@/actions/reloadLibrary";
 import type { Folder } from "@/data/types";
 import classes from "./AppLayout.module.css";
@@ -64,6 +65,10 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
   }, [pathname]);
 
   const folderCount = folders.length;
+
+  const closeSwipeHandlers = useSwipeable({
+    onSwipedLeft: toggleMobile,
+  });
 
   const handleReload = () => {
     startReload(async () => {
@@ -110,7 +115,11 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
         </Group>
       </AppShell.Header>
 
-      <AppShell.Navbar p="md" className={classes.navbar}>
+      <AppShell.Navbar
+        p="md"
+        className={classes.navbar}
+        {...(mobileOpened && closeSwipeHandlers)}
+      >
         <div className={classes.header}>
           <Burger
             opened={mobileOpened}

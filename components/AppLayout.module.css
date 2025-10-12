@@ -2,7 +2,9 @@
   background-color: var(--mantine-color-gray-0);
 
   @media (max-width: 48em) {
+    /* biome-ignore lint/complexity/noImportantStyles: override mantine script */
     padding-left: 0 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: override mantine script */
     padding-right: 34px !important;
   }
 }
@@ -42,6 +44,7 @@
     var(--mantine-spacing-xxxs);
 
   @media (max-width: 48em) {
+    margin-top: var(--mantine-spacing-lg);
     margin-left: calc(34px + var(--mantine-spacing-sm));
   }
 }
