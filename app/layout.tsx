@@ -15,14 +15,13 @@ import {
   Text,
 } from "@mantine/core";
 import type { Metadata } from "next";
+import { reloadLibrary } from "@/actions/reloadLibrary";
 import { AppLayout } from "@/components/AppLayout";
 import { ImportLoader } from "@/components/ImportLoader";
 import {
   getStore,
   getStoreImportState,
-  resetStore,
   type StoreInitializationState,
-  waitForStoreInitialization,
 } from "@/data/store";
 
 export const metadata: Metadata = {
@@ -36,13 +35,6 @@ const theme = mergeMantineTheme(DEFAULT_THEME, {
     xxs: rem(5),
   },
 });
-
-async function handleRetry() {
-  "use server";
-  await waitForStoreInitialization();
-  resetStore();
-  await getStore().catch(() => undefined);
-}
 
 export default async function RootLayout({
   children,
@@ -114,7 +106,7 @@ function ImportErrorScreen({ message }: { message: string }) {
         >
           {message}
         </Alert>
-        <form action={handleRetry}>
+        <form action={reloadLibrary}>
           <Button type="submit" size="md">
             Retry import
           </Button>

@@ -1,10 +1,12 @@
 "use client";
 
 import {
+  ActionIcon,
   AppShell,
   Burger,
   CloseButton,
   Group,
+  Loader,
   Text,
   Tree,
   type TreeNodeData,
@@ -20,10 +22,13 @@ import {
   IconInbox,
   IconLayoutSidebarLeftCollapse,
   IconLayoutSidebarRightCollapse,
+  IconRefresh,
   IconTrash,
 } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
-import { useMemo } from "react";
+import { useMemo, useTransition } from "react";
+import { reloadLibrary } from "@/actions/reloadLibrary";
 import type { Folder } from "@/data/types";
 import classes from "./AppLayout.module.css";
 
@@ -35,10 +40,20 @@ type AppLayoutProps = {
 export function AppLayout({ children, folders }: AppLayoutProps) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+  const router = useRouter();
+  const [isReloading, startReload] = useTransition();
+  const reloadLabel = isReloading ? "Reloading library..." : "Reload library";
 
   const folderTreeData = useMemo(() => buildFolderTreeData(folders), [folders]);
 
   const folderCount = folders.length;
+
+  const handleReload = () => {
+    startReload(async () => {
+      await reloadLibrary();
+      router.refresh();
+    });
+  };
 
   return (
     <AppShell
@@ -92,6 +107,19 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
           <Text size="sm" fw={600}>
             Library Name
           </Text>
+          <CloseButton
+            size="md"
+            aria-label={reloadLabel}
+            onClick={handleReload}
+            disabled={isReloading}
+            icon={
+              isReloading ? (
+                <Loader size={16} color="gray" />
+              ) : (
+                <IconRefresh size={16} stroke={1.5} />
+              )
+            }
+          />
         </div>
 
         <section>
