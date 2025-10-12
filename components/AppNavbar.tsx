@@ -45,6 +45,7 @@ export function AppNavbar({
   const reloadLabel = isReloading ? "Reloading library..." : "Reload library";
   const folderTreeData = useMemo(() => buildFolderTreeData(folders), [folders]);
   const folderCount = folders.length;
+  const isAllActive = pathname === "/";
 
   const activeFolderId = useMemo(() => {
     if (!pathname) {
@@ -68,6 +69,13 @@ export function AppNavbar({
       await reloadLibrary();
       router.refresh();
     });
+  };
+
+  const handleAllSelect = () => {
+    router.push("/");
+    if (mobileOpened) {
+      onToggleMobile();
+    }
   };
 
   const handleFolderSelect = (folderId: string) => {
@@ -111,7 +119,11 @@ export function AppNavbar({
       </div>
 
       <section>
-        <UnstyledButton className={classes.mainLink}>
+        <UnstyledButton
+          className={classes.mainLink}
+          aria-current={isAllActive ? "page" : undefined}
+          onClick={handleAllSelect}
+        >
           <IconInbox className={classes.mainLinkIcon} size={20} stroke={1} />
           <Text size="sm">All</Text>
         </UnstyledButton>
