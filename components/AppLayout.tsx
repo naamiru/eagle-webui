@@ -2,6 +2,7 @@
 
 import {
   AppShell,
+  Box,
   Burger,
   CloseButton,
   Group,
@@ -24,7 +25,6 @@ import {
   IconRefresh,
   IconTrash,
 } from "@tabler/icons-react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useMemo, useTransition } from "react";
@@ -110,10 +110,7 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
         </Group>
       </AppShell.Header>
 
-      <AppShell.Navbar
-        p="md"
-        style={{ backgroundColor: "var(--mantine-color-gray-0)" }}
-      >
+      <AppShell.Navbar p="md" className={classes.navbar}>
         <div className={classes.header}>
           <Burger
             opened={mobileOpened}
@@ -121,22 +118,21 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
             hiddenFrom="sm"
             size="sm"
           />
-          <Text size="sm" fw={600}>
-            Library Name
-          </Text>
-          <CloseButton
-            size="md"
+          <UnstyledButton
+            className={classes.libraryName}
             aria-label={reloadLabel}
             onClick={handleReload}
             disabled={isReloading}
-            icon={
-              isReloading ? (
-                <Loader size={16} color="gray" />
-              ) : (
-                <IconRefresh size={16} stroke={1.5} />
-              )
-            }
-          />
+          >
+            <Text size="sm" fw={600}>
+              Library Name
+            </Text>
+            {isReloading ? (
+              <Loader size={16} color="gray" />
+            ) : (
+              <IconRefresh size={16} stroke={1.5} />
+            )}
+          </UnstyledButton>
         </div>
 
         <section>
@@ -182,24 +178,49 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
                 >
                   {hasChildren &&
                     (expanded ? (
-                      <IconCaretDownFilled
-                        className={classes.folderExpandIcon}
-                        size={12}
-                        onClick={() => tree.toggleExpanded(node.value)}
-                      />
+                      <>
+                        <Box visibleFrom="sm">
+                          <IconCaretDownFilled
+                            className={classes.folderExpandIcon}
+                            size={12}
+                            onClick={() => tree.toggleExpanded(node.value)}
+                          />
+                        </Box>
+                        <CloseButton
+                          size="lg"
+                          icon={<IconCaretDownFilled size={16} />}
+                          hiddenFrom="sm"
+                          onClick={() => tree.toggleExpanded(node.value)}
+                        />
+                      </>
                     ) : (
-                      <IconCaretRightFilled
-                        className={classes.folderExpandIcon}
-                        size={12}
-                        onClick={() => tree.toggleExpanded(node.value)}
-                      />
+                      <>
+                        <Box visibleFrom="sm">
+                          <IconCaretRightFilled
+                            className={classes.folderExpandIcon}
+                            size={12}
+                            onClick={() => tree.toggleExpanded(node.value)}
+                          />
+                        </Box>
+                        <CloseButton
+                          size="lg"
+                          icon={<IconCaretRightFilled size={16} />}
+                          hiddenFrom="sm"
+                          onClick={() => tree.toggleExpanded(node.value)}
+                        />
+                      </>
                     ))}
-                  <Link
-                    href={`/folders/${encodeURIComponent(node.value)}`}
+                  <UnstyledButton
                     className={classes.mainLink}
                     aria-current={
                       activeFolderId === node.value ? "page" : undefined
                     }
+                    onClick={() => {
+                      router.push(`/folders/${encodeURIComponent(node.value)}`);
+                      if (mobileOpened) {
+                        toggleMobile();
+                      }
+                    }}
                     onMouseDown={(event) => {
                       if (event.detail === 2) {
                         event.preventDefault();
@@ -224,7 +245,7 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
                       />
                     )}
                     <Text size="sm">{node.label}</Text>
-                  </Link>
+                  </UnstyledButton>
                 </div>
               </div>
             )}

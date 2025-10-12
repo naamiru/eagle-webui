@@ -1,20 +1,49 @@
+.navbar {
+  background-color: var(--mantine-color-gray-0);
+
+  @media (max-width: 48em) {
+    padding-left: 0 !important;
+    padding-right: 34px !important;
+  }
+}
+
 .header {
   display: flex;
   align-items: center;
   gap: var(--mantine-spacing-sm);
-  padding: 0 var(--mantine-spacing-xxs) var(--mantine-spacing-sm)
-    var(--mantine-spacing-xxs);
+  padding: 0 0 var(--mantine-spacing-sm) 0;
+
+  @media (max-width: 48em) {
+    padding: 0 var(--mantine-spacing-sm) var(--mantine-spacing-sm);
+  }
 }
 
-@media (max-width: 48em) {
-  .header {
-    padding: 0 0 var(--mantine-spacing-sm) 0;
+.libraryName {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-xs);
+  padding: var(--mantine-spacing-xxxs);
+  border-radius: var(--mantine-radius-sm);
+
+  @media (min-width: 48em) {
+    &:hover {
+      background-color: var(--mantine-color-gray-2);
+    }
+  }
+
+  @media (max-width: 48em) {
+    flex-grow: 1;
+    justify-content: center;
   }
 }
 
 .sectionTitle {
   margin: var(--mantine-spacing-sm) 0 var(--mantine-spacing-xs)
     var(--mantine-spacing-xxxs);
+
+  @media (max-width: 48em) {
+    margin-left: calc(34px + var(--mantine-spacing-sm));
+  }
 }
 
 .mainLink {
@@ -36,24 +65,42 @@
   &[aria-current]:hover {
     background-color: var(--mantine-color-gray-3);
   }
+
+  @media (max-width: 48em) {
+    margin-left: 34px;
+    padding: var(--mantine-spacing-sm);
+  }
 }
 
 .mainLinkIcon {
   margin-right: var(--mantine-spacing-xxs);
 }
 
-.folderLink {
-  position: relative;
+@media (min-width: 48em) {
+  .folderLink {
+    position: relative;
+  }
+
+  .folderExpandIcon {
+    position: absolute;
+    left: -12px;
+    top: 50%;
+    margin-top: -6px;
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
 }
 
-.folderExpandIcon {
-  position: absolute;
-  left: -12px;
-  top: 50%;
-  margin-top: -6px;
-  opacity: 0.5;
+@media (max-width: 48em) {
+  .folderLink {
+    display: flex;
+    align-items: center;
 
-  &:hover {
-    opacity: 0.8;
+    &[data-has-children] .mainLink {
+      margin-left: 0;
+    }
   }
 }
