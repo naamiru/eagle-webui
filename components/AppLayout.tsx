@@ -36,10 +36,7 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
 
-  const folderTreeData = useMemo(
-    () => buildFolderTreeData(folders),
-    [folders],
-  );
+  const folderTreeData = useMemo(() => buildFolderTreeData(folders), [folders]);
 
   const folderCount = folders.length;
 

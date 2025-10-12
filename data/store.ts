@@ -1,6 +1,19 @@
 import { discoverLibraryPath } from "./library/discover-library-path";
 import { importLibraryMetadata } from "./library/import-metadata";
-import type { Folder, Store } from "./types";
+import type { Folder, Item } from "./types";
+
+export class Store {
+  constructor(
+    public readonly libraryPath: string,
+    public readonly applicationVersion: string,
+    public readonly folders: Map<string, Folder>,
+    public readonly items: Map<string, Item>,
+  ) {}
+
+  getFolders(): Folder[] {
+    return Array.from(this.folders.values());
+  }
+}
 
 export type StoreInitializationState =
   | { status: "idle" }
@@ -10,7 +23,6 @@ export type StoreInitializationState =
 
 let storePromise: Promise<Store> | null = null;
 let storeState: StoreInitializationState = { status: "idle" };
-let storeCache: Store | null = null;
 
 export function getStoreImportState(): StoreInitializationState {
   return storeState;
@@ -20,31 +32,22 @@ export async function getStore(): Promise<Store> {
   if (!storePromise) {
     storeState = { status: "loading" };
 
-    storePromise = initializeStore()
-      .then((result) => {
-        storeCache = result;
+    storePromise = (async () => {
+      try {
+        const store = await initializeStore();
         storeState = { status: "ready" };
-        return result;
-      })
-      .catch((error) => {
+        return store;
+      } catch (error) {
         storePromise = null;
-        storeCache = null;
         const message =
           error instanceof Error ? error.message : "Unknown import error";
         storeState = { status: "error", message };
         throw error;
-      });
+      }
+    })();
   }
 
   return storePromise;
-}
-
-export function getFolders(): Folder[] {
-  if (!storeCache) {
-    return [];
-  }
-
-  return Array.from(storeCache.folders.values());
 }
 
 export async function waitForStoreInitialization(): Promise<void> {
@@ -63,12 +66,17 @@ export async function waitForStoreInitialization(): Promise<void> {
 
 async function initializeStore(): Promise<Store> {
   const libraryPath = await discoverLibraryPath();
-  return importLibraryMetadata(libraryPath);
+  const data = await importLibraryMetadata(libraryPath);
+  return new Store(
+    data.libraryPath,
+    data.applicationVersion,
+    data.folders,
+    data.items,
+  );
 }
 
 export function resetStore(): void {
   storePromise = null;
-  storeCache = null;
   storeState = { status: "idle" };
 }
 

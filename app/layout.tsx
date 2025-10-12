@@ -18,14 +18,12 @@ import type { Metadata } from "next";
 import { AppLayout } from "@/components/AppLayout";
 import { ImportLoader } from "@/components/ImportLoader";
 import {
-  getFolders,
   getStore,
   getStoreImportState,
   resetStore,
   type StoreInitializationState,
   waitForStoreInitialization,
 } from "@/data/store";
-import type { Folder } from "@/data/types";
 
 export const metadata: Metadata = {
   title: "Eagle WebUI",
@@ -53,7 +51,6 @@ export default async function RootLayout({
 }>) {
   void getStore().catch(() => undefined);
   const importState = getStoreImportState();
-  const folders = getFolders();
 
   return (
     <html lang="en" {...mantineHtmlProps}>
@@ -62,57 +59,72 @@ export default async function RootLayout({
       </head>
       <body>
         <MantineProvider theme={theme}>
-          {renderImportState(importState, children, folders)}
+          <ImportStateContent state={importState}>
+            {children}
+          </ImportStateContent>
         </MantineProvider>
       </body>
     </html>
   );
 }
 
-function renderImportState(
-  state: StoreInitializationState,
-  children: React.ReactNode,
-  folders: Folder[],
-) {
-  if (state.status === "idle" || state.status === "loading") {
-    return (
-      <>
-        <ImportLoader />
-        <Center h="100vh">
-          <Stack gap="sm" align="center">
-            <Loader size="lg" />
-            <Text>Importing Eagle library…</Text>
-          </Stack>
-        </Center>
-      </>
-    );
+function ImportStateContent({
+  state,
+  children,
+}: {
+  state: StoreInitializationState;
+  children: React.ReactNode;
+}) {
+  switch (state.status) {
+    case "idle":
+    case "loading":
+      return <ImportLoadingScreen />;
+    case "error":
+      return <ImportErrorScreen message={state.message} />;
+    case "ready":
+      return <ImportReadyLayout>{children}</ImportReadyLayout>;
+    default:
+      return null;
   }
+}
 
-  if (state.status === "error") {
-    return (
+function ImportLoadingScreen() {
+  return (
+    <>
+      <ImportLoader />
       <Center h="100vh">
-        <Stack gap="md" align="center">
-          <Alert
-            color="red"
-            title="Library import failed"
-            radius="md"
-            variant="filled"
-          >
-            {state.message}
-          </Alert>
-          <form action={handleRetry}>
-            <Button type="submit" size="md">
-              Retry import
-            </Button>
-          </form>
+        <Stack gap="sm" align="center">
+          <Loader size="lg" />
+          <Text>Importing Eagle library…</Text>
         </Stack>
       </Center>
-    );
-  }
+    </>
+  );
+}
 
-  if (state.status === "ready") {
-    return <AppLayout folders={folders}>{children}</AppLayout>;
-  }
+function ImportErrorScreen({ message }: { message: string }) {
+  return (
+    <Center h="100vh">
+      <Stack gap="md" align="center">
+        <Alert
+          color="red"
+          title="Library import failed"
+          radius="md"
+          variant="filled"
+        >
+          {message}
+        </Alert>
+        <form action={handleRetry}>
+          <Button type="submit" size="md">
+            Retry import
+          </Button>
+        </form>
+      </Stack>
+    </Center>
+  );
+}
 
-  return null;
+async function ImportReadyLayout({ children }: { children: React.ReactNode }) {
+  const store = await getStore();
+  return <AppLayout folders={store.getFolders()}>{children}</AppLayout>;
 }

@@ -39,10 +39,3 @@ export type Item = {
   lastModified: number;
   palettes: Palette[];
 };
-
-export type Store = {
-  libraryPath: string;
-  applicationVersion: string;
-  folders: Map<string, Folder>;
-  items: Map<string, Item>;
-};

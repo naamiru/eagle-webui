@@ -5,7 +5,7 @@ import type { ErrorObject } from "ajv";
 import Ajv from "ajv";
 
 import { LibraryImportError } from "../errors";
-import type { Folder, Item, Palette, Store } from "../types";
+import type { Folder, Item, Palette } from "../types";
 
 type RawFolder = {
   id?: string;
@@ -170,9 +170,16 @@ const validateLibraryMetadata = ajv.compile<RawLibraryMetadata>(
 const validateMTime = ajv.compile<RawMTimeIndex>(mtimeSchema);
 const validateItemMetadata = ajv.compile<RawItemMetadata>(itemMetadataSchema);
 
+export type LibraryImportPayload = {
+  libraryPath: string;
+  applicationVersion: string;
+  folders: Map<string, Folder>;
+  items: Map<string, Item>;
+};
+
 export async function importLibraryMetadata(
   libraryPath: string,
-): Promise<Store> {
+): Promise<LibraryImportPayload> {
   const metadataPath = path.join(libraryPath, "metadata.json");
   const metadata = await loadLibraryMetadata(metadataPath);
 
