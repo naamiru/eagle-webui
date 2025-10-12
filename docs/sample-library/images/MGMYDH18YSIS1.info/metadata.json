@@ -1,0 +1,28 @@
+{
+  "id": "MGMYDH18YSIS1",
+  "name": "pexels-stuart-robinson-461411873-33528653",
+  "size": 63785,
+  "btime": 1756571097667,
+  "mtime": 1756571097667,
+  "ext": "jpg",
+  "tags": ["Animal", "Bird"],
+  "folders": ["MGH4XZ1OQCGZD"],
+  "isDeleted": false,
+  "url": "",
+  "annotation": "",
+  "modificationTime": 1760228118908,
+  "height": 960,
+  "width": 640,
+  "noThumbnail": true,
+  "lastModified": 1760232756999,
+  "palettes": [
+    { "color": [221, 218, 210], "ratio": 51, "$$hashKey": "object:668" },
+    { "color": [170, 148, 109], "ratio": 16, "$$hashKey": "object:672" },
+    { "color": [132, 113, 74], "ratio": 13, "$$hashKey": "object:673" },
+    { "color": [200, 184, 153], "ratio": 9, "$$hashKey": "object:671" },
+    { "color": [113, 83, 39], "ratio": 4.05, "$$hashKey": "object:674" },
+    { "color": [74, 54, 15], "ratio": 3.22, "$$hashKey": "object:675" },
+    { "color": [188, 188, 176], "ratio": 1.32, "$$hashKey": "object:669" },
+    { "color": [183, 180, 172], "ratio": 0.34, "$$hashKey": "object:670" }
+  ]
+}

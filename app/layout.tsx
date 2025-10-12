@@ -1,31 +1,100 @@
-import type { Metadata } from "next";
-
 import "@mantine/core/styles.css";
 
 import {
+  Alert,
+  Button,
+  Center,
   ColorSchemeScript,
+  Loader,
   MantineProvider,
   mantineHtmlProps,
+  Stack,
+  Text,
 } from "@mantine/core";
+import type { Metadata } from "next";
+
+import { ImportLoader } from "@/components/ImportLoader";
+import {
+  getStore,
+  getStoreImportState,
+  resetStore,
+  type StoreInitializationState,
+  waitForStoreInitialization,
+} from "@/data/store";
 
 export const metadata: Metadata = {
   title: "Eagle WebUI",
   description: "A web interface for the Eagle image viewer application",
 };
 
-export default function RootLayout({
+async function handleRetry() {
+  "use server";
+  await waitForStoreInitialization();
+  resetStore();
+  await getStore().catch(() => undefined);
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  void getStore().catch(() => undefined);
+  const importState = getStoreImportState();
+
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider>{children}</MantineProvider>
+        <MantineProvider>
+          {renderImportState(importState, children)}
+        </MantineProvider>
       </body>
     </html>
   );
+}
+
+function renderImportState(
+  state: StoreInitializationState,
+  children: React.ReactNode,
+) {
+  if (state.status === "idle" || state.status === "loading") {
+    return (
+      <>
+        <ImportLoader />
+        <Center h="100vh">
+          <Stack gap="sm" align="center">
+            <Loader size="lg" />
+            <Text>Importing Eagle library…</Text>
+          </Stack>
+        </Center>
+      </>
+    );
+  }
+
+  if (state.status === "error") {
+    return (
+      <Center h="100vh">
+        <Stack gap="md" align="center">
+          <Alert
+            color="red"
+            title="Library import failed"
+            radius="md"
+            variant="filled"
+          >
+            {state.message}
+          </Alert>
+          <form action={handleRetry}>
+            <Button type="submit" size="md">
+              Retry import
+            </Button>
+          </form>
+        </Stack>
+      </Center>
+    );
+  }
+
+  return children;
 }
