@@ -1,6 +1,6 @@
 import { discoverLibraryPath } from "./library/discover-library-path";
 import { importLibraryMetadata } from "./library/import-metadata";
-import type { Store } from "./types";
+import type { Folder, Store } from "./types";
 
 export type StoreInitializationState =
   | { status: "idle" }
@@ -10,6 +10,7 @@ export type StoreInitializationState =
 
 let storePromise: Promise<Store> | null = null;
 let storeState: StoreInitializationState = { status: "idle" };
+let storeCache: Store | null = null;
 
 export function getStoreImportState(): StoreInitializationState {
   return storeState;
@@ -21,11 +22,13 @@ export async function getStore(): Promise<Store> {
 
     storePromise = initializeStore()
       .then((result) => {
+        storeCache = result;
         storeState = { status: "ready" };
         return result;
       })
       .catch((error) => {
         storePromise = null;
+        storeCache = null;
         const message =
           error instanceof Error ? error.message : "Unknown import error";
         storeState = { status: "error", message };
@@ -34,6 +37,14 @@ export async function getStore(): Promise<Store> {
   }
 
   return storePromise;
+}
+
+export function getFolders(): Folder[] {
+  if (!storeCache) {
+    return [];
+  }
+
+  return Array.from(storeCache.folders.values());
 }
 
 export async function waitForStoreInitialization(): Promise<void> {
@@ -57,6 +68,7 @@ async function initializeStore(): Promise<Store> {
 
 export function resetStore(): void {
   storePromise = null;
+  storeCache = null;
   storeState = { status: "idle" };
 }
 

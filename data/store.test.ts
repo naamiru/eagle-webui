@@ -16,7 +16,7 @@ vi.mock("./library/import-metadata", () => ({
 
 import { discoverLibraryPath } from "./library/discover-library-path";
 import { importLibraryMetadata } from "./library/import-metadata";
-import { __resetStoreForTests, getStore } from "./store";
+import { __resetStoreForTests, getFolders, getStore } from "./store";
 
 const discoverLibraryPathMock = vi.mocked(discoverLibraryPath);
 const importLibraryMetadataMock = vi.mocked(importLibraryMetadata);
@@ -66,11 +66,15 @@ describe("getStore", () => {
     discoverLibraryPathMock.mockResolvedValue("C:/library");
     importLibraryMetadataMock.mockResolvedValue(mockLibraryData());
 
+    expect(getFolders()).toHaveLength(0);
     const first = await getStore();
     const second = await getStore();
+    const folders = getFolders();
 
     expect(first).toBe(second);
     expect(first.libraryPath).toBe("C:/library");
+    expect(folders).toHaveLength(1);
+    expect(folders[0]?.id).toBe("root");
     expect(importLibraryMetadataMock).toHaveBeenCalledTimes(1);
     expect(discoverLibraryPathMock).toHaveBeenCalledTimes(1);
   });

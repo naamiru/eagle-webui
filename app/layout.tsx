@@ -15,15 +15,17 @@ import {
   Text,
 } from "@mantine/core";
 import type { Metadata } from "next";
-
+import { AppLayout } from "@/components/AppLayout";
 import { ImportLoader } from "@/components/ImportLoader";
 import {
+  getFolders,
   getStore,
   getStoreImportState,
   resetStore,
   type StoreInitializationState,
   waitForStoreInitialization,
 } from "@/data/store";
+import type { Folder } from "@/data/types";
 
 export const metadata: Metadata = {
   title: "Eagle WebUI",
@@ -51,6 +53,7 @@ export default async function RootLayout({
 }>) {
   void getStore().catch(() => undefined);
   const importState = getStoreImportState();
+  const folders = getFolders();
 
   return (
     <html lang="en" {...mantineHtmlProps}>
@@ -59,7 +62,7 @@ export default async function RootLayout({
       </head>
       <body>
         <MantineProvider theme={theme}>
-          {renderImportState(importState, children)}
+          {renderImportState(importState, children, folders)}
         </MantineProvider>
       </body>
     </html>
@@ -68,7 +71,8 @@ export default async function RootLayout({
 
 function renderImportState(
   state: StoreInitializationState,
-  children: React.ReactNode
+  children: React.ReactNode,
+  folders: Folder[],
 ) {
   if (state.status === "idle" || state.status === "loading") {
     return (
@@ -106,5 +110,9 @@ function renderImportState(
     );
   }
 
-  return children;
+  if (state.status === "ready") {
+    return <AppLayout folders={folders}>{children}</AppLayout>;
+  }
+
+  return null;
 }
