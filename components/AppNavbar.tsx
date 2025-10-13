@@ -6,6 +6,7 @@ import {
   Burger,
   CloseButton,
   Loader,
+  ScrollArea,
   Text,
   Tree,
   type TreeNodeData,
@@ -118,120 +119,132 @@ export function AppNavbar({
         </UnstyledButton>
       </div>
 
-      <section>
-        <UnstyledButton
-          className={classes.mainLink}
-          aria-current={isAllActive ? "page" : undefined}
-          onClick={handleAllSelect}
-        >
-          <IconInbox className={classes.mainLinkIcon} size={20} stroke={1} />
-          <Text size="sm">All</Text>
-        </UnstyledButton>
+      <AppShell.Section
+        grow
+        component={ScrollArea}
+        className={classes.scrollable}
+      >
+        <section>
+          <UnstyledButton
+            className={classes.mainLink}
+            aria-current={isAllActive ? "page" : undefined}
+            onClick={handleAllSelect}
+          >
+            <IconInbox className={classes.mainLinkIcon} size={20} stroke={1} />
+            <Text size="sm">All</Text>
+          </UnstyledButton>
 
-        <UnstyledButton className={classes.mainLink}>
-          <IconFolderQuestion
-            className={classes.mainLinkIcon}
-            size={20}
-            stroke={1}
-          />
-          <Text size="sm">Uncategorized</Text>
-        </UnstyledButton>
+          <UnstyledButton className={classes.mainLink}>
+            <IconFolderQuestion
+              className={classes.mainLinkIcon}
+              size={20}
+              stroke={1}
+            />
+            <Text size="sm">Uncategorized</Text>
+          </UnstyledButton>
 
-        <UnstyledButton className={classes.mainLink}>
-          <IconTrash className={classes.mainLinkIcon} size={20} stroke={1} />
-          <Text size="sm">Trash</Text>
-        </UnstyledButton>
-      </section>
+          <UnstyledButton className={classes.mainLink}>
+            <IconTrash className={classes.mainLinkIcon} size={20} stroke={1} />
+            <Text size="sm">Trash</Text>
+          </UnstyledButton>
+        </section>
 
-      <section>
-        <Text size="xs" fw={500} c="dimmed" className={classes.sectionTitle}>
-          Folders ({folderCount})
-        </Text>
+        <section>
+          <Text size="xs" fw={500} c="dimmed" className={classes.sectionTitle}>
+            Folders ({folderCount})
+          </Text>
 
-        <Tree
-          data={folderTreeData}
-          expandOnClick={false}
-          renderNode={({ node, expanded, hasChildren, elementProps, tree }) => {
-            const folderId = String(node.value);
-            const isActiveFolder = activeFolderId === folderId;
+          <Tree
+            data={folderTreeData}
+            expandOnClick={false}
+            renderNode={({
+              node,
+              expanded,
+              hasChildren,
+              elementProps,
+              tree,
+            }) => {
+              const folderId = String(node.value);
+              const isActiveFolder = activeFolderId === folderId;
 
-            return (
-              <div {...elementProps}>
-                <div
-                  className={classes.folderLink}
-                  {...(hasChildren && { "data-has-children": "" })}
-                >
-                  {hasChildren &&
-                    (expanded ? (
-                      <>
-                        <Box visibleFrom="sm">
-                          <IconCaretDownFilled
-                            className={classes.folderExpandIcon}
-                            size={12}
-                            onClick={() => tree.toggleExpanded(node.value)}
-                          />
-                        </Box>
-                        <CloseButton
-                          size="lg"
-                          icon={<IconCaretDownFilled size={16} />}
-                          hiddenFrom="sm"
-                          onClick={() => tree.toggleExpanded(node.value)}
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <Box visibleFrom="sm">
-                          <IconCaretRightFilled
-                            className={classes.folderExpandIcon}
-                            size={12}
-                            onClick={() => tree.toggleExpanded(node.value)}
-                          />
-                        </Box>
-                        <CloseButton
-                          size="lg"
-                          icon={<IconCaretRightFilled size={16} />}
-                          hiddenFrom="sm"
-                          onClick={() => tree.toggleExpanded(node.value)}
-                        />
-                      </>
-                    ))}
-                  <UnstyledButton
-                    className={classes.mainLink}
-                    aria-current={isActiveFolder ? "page" : undefined}
-                    onClick={() => {
-                      handleFolderSelect(folderId);
-                    }}
-                    onMouseDown={(event) => {
-                      if (event.detail === 2) {
-                        event.preventDefault();
-                      }
-                    }}
-                    onDoubleClick={(event) => {
-                      event.preventDefault();
-                      tree.toggleExpanded(node.value);
-                    }}
+              return (
+                <div {...elementProps}>
+                  <div
+                    className={classes.folderLink}
+                    {...(hasChildren && { "data-has-children": "" })}
                   >
-                    {hasChildren && expanded ? (
-                      <IconFolderOpen
-                        className={classes.mainLinkIcon}
-                        size={20}
-                        stroke={1}
-                      />
-                    ) : (
-                      <IconFolder
-                        className={classes.mainLinkIcon}
-                        size={20}
-                        stroke={1}
-                      />
-                    )}
-                    <Text size="sm">{node.label}</Text>
-                  </UnstyledButton>
+                    {hasChildren &&
+                      (expanded ? (
+                        <>
+                          <Box visibleFrom="sm">
+                            <IconCaretDownFilled
+                              className={classes.folderExpandIcon}
+                              size={12}
+                              onClick={() => tree.toggleExpanded(node.value)}
+                            />
+                          </Box>
+                          <CloseButton
+                            size="lg"
+                            icon={<IconCaretDownFilled size={16} />}
+                            hiddenFrom="sm"
+                            onClick={() => tree.toggleExpanded(node.value)}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <Box visibleFrom="sm">
+                            <IconCaretRightFilled
+                              className={classes.folderExpandIcon}
+                              size={12}
+                              onClick={() => tree.toggleExpanded(node.value)}
+                            />
+                          </Box>
+                          <CloseButton
+                            size="lg"
+                            icon={<IconCaretRightFilled size={16} />}
+                            hiddenFrom="sm"
+                            onClick={() => tree.toggleExpanded(node.value)}
+                          />
+                        </>
+                      ))}
+                    <UnstyledButton
+                      className={classes.mainLink}
+                      aria-current={isActiveFolder ? "page" : undefined}
+                      onClick={() => {
+                        handleFolderSelect(folderId);
+                      }}
+                      onMouseDown={(event) => {
+                        if (event.detail === 2) {
+                          event.preventDefault();
+                        }
+                      }}
+                      onDoubleClick={(event) => {
+                        event.preventDefault();
+                        tree.toggleExpanded(node.value);
+                      }}
+                    >
+                      {hasChildren && expanded ? (
+                        <IconFolderOpen
+                          className={classes.mainLinkIcon}
+                          size={20}
+                          stroke={1}
+                        />
+                      ) : (
+                        <IconFolder
+                          className={classes.mainLinkIcon}
+                          size={20}
+                          stroke={1}
+                        />
+                      )}
+                      <Text size="sm">{node.label}</Text>
+                    </UnstyledButton>
+                  </div>
                 </div>
-              </div>
-            );
-          }}
-        />
-      </section>
+              );
+            }}
+          />
+        </section>
+      </AppShell.Section>
     </AppShell.Navbar>
   );
 }

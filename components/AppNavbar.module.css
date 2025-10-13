@@ -1,23 +1,15 @@
 .navbar {
   background-color: var(--mantine-color-gray-0);
-
-  @media (max-width: 48em) {
-    /* biome-ignore lint/complexity/noImportantStyles: override mantine script */
-    padding-left: 0 !important;
-    /* biome-ignore lint/complexity/noImportantStyles: override mantine script */
-    padding-right: 34px !important;
-  }
+  /* biome-ignore lint/complexity/noImportantStyles: override mantine script */
+  padding: 0 !important;
 }
 
 .header {
   display: flex;
   align-items: center;
   gap: var(--mantine-spacing-sm);
-  padding: 0 0 var(--mantine-spacing-sm) 0;
-
-  @media (max-width: 48em) {
-    padding: 0 var(--mantine-spacing-sm) var(--mantine-spacing-sm);
-  }
+  padding: var(--mantine-spacing-md) var(--mantine-spacing-md)
+    var(--mantine-spacing-sm) var(--mantine-spacing-md);
 }
 
 .libraryName {
@@ -36,6 +28,14 @@
   @media (max-width: 48em) {
     flex-grow: 1;
     justify-content: center;
+  }
+}
+
+.scrollable {
+  padding: 0 var(--mantine-spacing-md) var(--mantine-spacing-md);
+
+  @media (max-width: 48em) {
+    padding: 0 34px var(--mantine-spacing-md) 0;
   }
 }
 
