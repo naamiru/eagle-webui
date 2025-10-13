@@ -2,10 +2,7 @@
 
 import { AppShell, Burger, CloseButton, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import {
-  IconLayoutSidebarLeftCollapse,
-  IconLayoutSidebarRightCollapse,
-} from "@tabler/icons-react";
+import { IconLayoutSidebarRightCollapse } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import { useSwipeable } from "react-swipeable";
 import type { Folder } from "@/data/types";
@@ -56,13 +53,7 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
               size="sm"
             />
 
-            {desktopOpened ? (
-              <CloseButton
-                icon={<IconLayoutSidebarLeftCollapse stroke={1} />}
-                visibleFrom="sm"
-                onClick={toggleDesktop}
-              />
-            ) : (
+            {!desktopOpened && (
               <CloseButton
                 icon={<IconLayoutSidebarRightCollapse stroke={1} />}
                 visibleFrom="sm"
@@ -76,7 +67,9 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
 
         <AppNavbar
           mobileOpened={mobileOpened}
-          onToggleMobile={toggleMobile}
+          toggleMobile={toggleMobile}
+          desktopOpened={desktopOpened}
+          toggleDesktop={toggleDesktop}
           folders={folders}
         />
 

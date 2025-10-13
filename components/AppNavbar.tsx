@@ -19,6 +19,7 @@ import {
   IconFolderOpen,
   IconFolderQuestion,
   IconInbox,
+  IconLayoutSidebarLeftCollapse,
   IconRefresh,
   IconTrash,
 } from "@tabler/icons-react";
@@ -31,13 +32,17 @@ import classes from "./AppNavbar.module.css";
 
 type AppNavbarProps = {
   mobileOpened: boolean;
-  onToggleMobile: () => void;
+  toggleMobile: () => void;
+  desktopOpened: boolean;
+  toggleDesktop: () => void;
   folders: Folder[];
 };
 
 export function AppNavbar({
   mobileOpened,
-  onToggleMobile,
+  toggleMobile,
+  desktopOpened,
+  toggleDesktop,
   folders,
 }: AppNavbarProps) {
   const router = useRouter();
@@ -75,18 +80,18 @@ export function AppNavbar({
   const handleAllSelect = () => {
     router.push("/");
     if (mobileOpened) {
-      onToggleMobile();
+      toggleMobile();
     }
   };
 
   const handleFolderSelect = (folderId: string) => {
     router.push(`/folders/${encodeURIComponent(folderId)}`);
     if (mobileOpened) {
-      onToggleMobile();
+      toggleMobile();
     }
   };
   const swipeHandlers = useSwipeable({
-    onSwipedLeft: onToggleMobile,
+    onSwipedLeft: toggleMobile,
   });
 
   return (
@@ -98,7 +103,7 @@ export function AppNavbar({
       <div className={classes.header}>
         <Burger
           opened={mobileOpened}
-          onClick={onToggleMobile}
+          onClick={toggleMobile}
           hiddenFrom="sm"
           size="sm"
         />
@@ -117,6 +122,17 @@ export function AppNavbar({
             <IconRefresh size={16} stroke={1.5} />
           )}
         </UnstyledButton>
+
+        {desktopOpened && (
+          <>
+            <div style={{ flex: "1" }} />
+            <CloseButton
+              icon={<IconLayoutSidebarLeftCollapse stroke={1} />}
+              visibleFrom="sm"
+              onClick={toggleDesktop}
+            />
+          </>
+        )}
       </div>
 
       <AppShell.Section
