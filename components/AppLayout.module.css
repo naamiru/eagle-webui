@@ -1,4 +1,7 @@
 .main {
+  height: 100dvh;
+  min-height: 0;
+
   @media (max-width: 48em) {
     padding: calc(var(--app-shell-header-offset, 0rem))
       calc(var(--app-shell-aside-offset, 0rem))

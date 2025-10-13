@@ -1,9 +1,12 @@
 "use client";
 
-import { Text } from "@mantine/core";
+import { CloseButton, Text } from "@mantine/core";
+import { IconArrowLeft } from "@tabler/icons-react";
+import { useCallback, useState } from "react";
 import AppHeader from "@/components/AppHeader";
 import { ItemList } from "@/components/ItemList";
 import type { Item } from "@/data/types";
+import { ItemSlider } from "./ItemSlider";
 
 interface CollectionPageProps {
   title: string;
@@ -16,13 +19,34 @@ export default function CollectionPage({
   items,
   libraryPath,
 }: CollectionPageProps) {
-  return (
+  const [selectedItem, setSelectedItem] = useState<Item>();
+  const dismiss = useCallback(() => setSelectedItem(undefined), []);
+
+  return selectedItem ? (
     <>
       <AppHeader>
-        <Text fw={600}>{title}</Text>
+        <CloseButton icon={<IconArrowLeft stroke={1.2} />} onClick={dismiss} />
+        <Text>{title}</Text>
       </AppHeader>
 
-      <ItemList items={items} libraryPath={libraryPath} />
+      <ItemSlider
+        initialItem={selectedItem}
+        items={items}
+        libraryPath={libraryPath}
+        dismiss={dismiss}
+      />
+    </>
+  ) : (
+    <>
+      <AppHeader>
+        <Text>{title}</Text>
+      </AppHeader>
+
+      <ItemList
+        items={items}
+        libraryPath={libraryPath}
+        onSelectItem={setSelectedItem}
+      />
     </>
   );
 }
