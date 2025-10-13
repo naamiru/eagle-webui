@@ -1,6 +1,7 @@
-import { Stack, Text, Title } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { notFound } from "next/navigation";
 import AppHeader from "@/components/AppHeader";
+import { ItemList } from "@/components/ItemList/ItemList";
 import { getStore } from "@/data/store";
 
 type FolderPageProps = {
@@ -24,9 +25,11 @@ export default async function FolderPage({ params }: FolderPageProps) {
         <Text fw={600}>{folder.name || folder.id}</Text>
       </AppHeader>
 
-      <Stack gap="md">
-        <Title order={2}>{folder.name || folder.id}</Title>
-      </Stack>
+      <ItemList
+        items={store.getFolderItems(folderId)}
+        libraryPath={store.libraryPath}
+        hasMore={false}
+      />
     </>
   );
 }

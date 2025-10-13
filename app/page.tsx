@@ -15,7 +15,7 @@ export default async function HomePage() {
       </AppHeader>
 
       <ItemList
-        items={store.items.values().toArray()}
+        items={store.getItems()}
         libraryPath={store.libraryPath}
         hasMore={false}
       />

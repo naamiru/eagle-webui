@@ -13,6 +13,22 @@ export class Store {
   getFolders(): Folder[] {
     return Array.from(this.folders.values());
   }
+
+  getItems(): Item[] {
+    return Array.from(this.items.values());
+  }
+
+  getFolderItems(folderId: string): Item[] {
+    const items: Item[] = [];
+
+    for (const item of this.items.values()) {
+      if (item.folders.includes(folderId)) {
+        items.push(item);
+      }
+    }
+
+    return items;
+  }
 }
 
 export type StoreInitializationState =
