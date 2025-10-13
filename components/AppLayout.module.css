@@ -1,5 +1,4 @@
 .main {
-  height: 100dvh;
   min-height: 0;
 
   @media (max-width: 48em) {
@@ -8,5 +7,9 @@
       calc(var(--app-shell-footer-offset, 0rem))
       /* biome-ignore lint/complexity/noImportantStyles: override mantine */
       calc(var(--app-shell-navbar-offset, 0rem)) !important;
+  }
+
+  &[data-with-slider] {
+    height: 100dvh;
   }
 }

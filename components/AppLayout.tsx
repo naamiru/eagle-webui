@@ -5,6 +5,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconLayoutSidebarRightCollapse } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import type { Folder } from "@/data/types";
+import { useSliderState } from "@/stores/slider-state";
 import { HeaderSlotProvider, useHeaderSlot } from "./AppHeader";
 import classes from "./AppLayout.module.css";
 import { AppNavbar } from "./AppNavbar";
@@ -22,6 +23,8 @@ function HeaderOutlet() {
 export function AppLayout({ children, folders }: AppLayoutProps) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+
+  const { isPresented: isSliderPresented } = useSliderState();
 
   return (
     <AppShell
@@ -64,7 +67,12 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
           folders={folders}
         />
 
-        <AppShell.Main className={classes.main}>{children}</AppShell.Main>
+        <AppShell.Main
+          className={classes.main}
+          data-with-slider={isSliderPresented}
+        >
+          {children}
+        </AppShell.Main>
       </HeaderSlotProvider>
     </AppShell>
   );

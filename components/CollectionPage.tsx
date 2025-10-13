@@ -2,10 +2,11 @@
 
 import { CloseButton, Text } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AppHeader from "@/components/AppHeader";
 import { ItemList } from "@/components/ItemList";
 import type { Item } from "@/data/types";
+import { useSliderState } from "@/stores/slider-state";
 import { ItemSlider } from "./ItemSlider";
 
 interface CollectionPageProps {
@@ -23,6 +24,11 @@ export default function CollectionPage({
   const [activeIndex, setActiveIndex] = useState(0);
 
   const dismiss = useCallback(() => setSelectedItem(undefined), []);
+
+  const { setIsPresented: setSliderIsPresented } = useSliderState();
+  useEffect(() => {
+    setSliderIsPresented(!!selectedItem);
+  }, [selectedItem, setSliderIsPresented]);
 
   return selectedItem ? (
     <>

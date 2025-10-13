@@ -53,6 +53,7 @@ export function ItemSlider({
       keyboard={{
         enabled: true,
       }}
+      spaceBetween={16}
       initialSlide={initialIndex}
       className={classes.swiper}
       tabIndex={0}
