@@ -33,7 +33,6 @@ export function ItemItem({ image, libraryPath }: ImageItemProps) {
           alt={image.name}
           className={classes.thumbnail}
           width={image.width}
-          height={image.height}
         />
       )}
     </GalleryItem>

@@ -1,9 +1,13 @@
 .list {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 2px;
   max-width: 1400px;
   margin: 0;
+  gap: var(--mantine-spacing-sm);
+
+  @media (max-width: 48em) {
+    gap: 2px;
+  }
 }
 
 .list.grid-3 {

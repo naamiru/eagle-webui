@@ -71,6 +71,7 @@
 
   @media (max-width: 48em) {
     margin-left: 34px;
+    width: stretch;
     padding: var(--mantine-spacing-sm);
   }
 }
@@ -101,9 +102,15 @@
   .folderLink {
     display: flex;
     align-items: center;
+    -webkit-tap-highlight-color: transparent;
 
     &[data-has-children] .mainLink {
       margin-left: 0;
     }
   }
+}
+
+.navbar [role="treeitem"] {
+  /* biome-ignore lint/complexity/noImportantStyles: override mantine */
+  -webkit-tap-highlight-color: transparent !important;
 }

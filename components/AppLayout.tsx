@@ -9,6 +9,7 @@ import {
 import type { ReactNode } from "react";
 import type { Folder } from "@/data/types";
 import { HeaderSlotProvider, useHeaderSlot } from "./AppHeader";
+import classes from "./AppLayout.module.css";
 import { AppNavbar } from "./AppNavbar";
 
 type AppLayoutProps = {
@@ -70,7 +71,7 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
           folders={folders}
         />
 
-        <AppShell.Main>{children}</AppShell.Main>
+        <AppShell.Main className={classes.main}>{children}</AppShell.Main>
       </HeaderSlotProvider>
     </AppShell>
   );
