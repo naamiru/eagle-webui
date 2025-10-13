@@ -16,6 +16,7 @@ interface ItemSliderProps {
   items: Item[];
   libraryPath: string;
   dismiss: () => void;
+  onActiveIndexChange: (indx: number) => void;
 }
 
 export function ItemSlider({
@@ -23,11 +24,17 @@ export function ItemSlider({
   items,
   libraryPath,
   dismiss,
+  onActiveIndexChange,
 }: ItemSliderProps) {
   const initialIndex = useMemo(
     () => items.findIndex((item) => item.id === initialItem.id),
     [initialItem, items]
   );
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: call once
+  useEffect(() => {
+    onActiveIndexChange(initialIndex);
+  }, []);
 
   // ESC to dismiss
   useEffect(() => {
@@ -49,6 +56,7 @@ export function ItemSlider({
       initialSlide={initialIndex}
       className={classes.swiper}
       tabIndex={0}
+      onActiveIndexChange={(swiper) => onActiveIndexChange(swiper.activeIndex)}
     >
       {items.map((item, index) => (
         <SwiperSlide key={item.id} virtualIndex={index}>

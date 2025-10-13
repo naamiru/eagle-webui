@@ -29,7 +29,7 @@ export function ItemList({ items, libraryPath, onSelectItem }: ItemListProps) {
   };
   return (
     <VirtuosoGrid
-      useWindowScroll
+      // useWindowScroll
       listClassName={classes.list}
       itemClassName={classes.item}
       totalCount={items.length}

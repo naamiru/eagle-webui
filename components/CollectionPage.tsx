@@ -20,13 +20,17 @@ export default function CollectionPage({
   libraryPath,
 }: CollectionPageProps) {
   const [selectedItem, setSelectedItem] = useState<Item>();
+  const [activeIndex, setActiveIndex] = useState(0);
+
   const dismiss = useCallback(() => setSelectedItem(undefined), []);
 
   return selectedItem ? (
     <>
       <AppHeader>
         <CloseButton icon={<IconArrowLeft stroke={1.2} />} onClick={dismiss} />
-        <Text>{title}</Text>
+        <Text size="sm">
+          {activeIndex + 1} / {items.length}
+        </Text>
       </AppHeader>
 
       <ItemSlider
@@ -34,6 +38,7 @@ export default function CollectionPage({
         items={items}
         libraryPath={libraryPath}
         dismiss={dismiss}
+        onActiveIndexChange={setActiveIndex}
       />
     </>
   ) : (
