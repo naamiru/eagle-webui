@@ -32,19 +32,18 @@
 }
 
 .scrollable {
-  padding: 0 var(--mantine-spacing-md) var(--mantine-spacing-md);
+  padding: 0 var(--mantine-spacing-md) var(--mantine-spacing-md) 0;
 
   @media (max-width: 48em) {
-    padding: 0 34px var(--mantine-spacing-md) 0;
+    padding-right: 34px;
   }
 }
 
 .sectionTitle {
-  margin: var(--mantine-spacing-sm) 0 var(--mantine-spacing-xs)
-    var(--mantine-spacing-xxxs);
+  margin: var(--mantine-spacing-lg) 0 var(--mantine-spacing-xs)
+    calc(var(--mantine-spacing-md) + var(--mantine-spacing-xxxs));
 
   @media (max-width: 48em) {
-    margin-top: var(--mantine-spacing-lg);
     margin-left: calc(34px + var(--mantine-spacing-sm));
   }
 }
@@ -53,6 +52,7 @@
   display: flex;
   align-items: center;
   width: 100%;
+  margin-left: var(--mantine-spacing-md);
   margin-bottom: 1px;
   padding: var(--mantine-spacing-xxxs);
   border-radius: var(--mantine-radius-sm);
@@ -80,32 +80,28 @@
   margin-right: var(--mantine-spacing-xxs);
 }
 
-@media (min-width: 48em) {
-  .folderLink {
-    position: relative;
-  }
+.folderLink {
+  display: flex;
+  align-items: center;
+  -webkit-tap-highlight-color: transparent;
 
-  .folderExpandIcon {
-    position: absolute;
-    left: -12px;
-    top: 50%;
-    margin-top: -6px;
-    opacity: 0.5;
+  &[data-has-children] {
+    @media (min-width: 48em) {
+      margin-left: calc(var(--mantine-spacing-md) - 12px);
+    }
 
-    &:hover {
-      opacity: 0.8;
+    .mainLink {
+      margin-left: 0;
     }
   }
 }
 
-@media (max-width: 48em) {
-  .folderLink {
-    display: flex;
-    align-items: center;
-    -webkit-tap-highlight-color: transparent;
+@media (min-width: 48em) {
+  .folderExpandIcon {
+    opacity: 0.5;
 
-    &[data-has-children] .mainLink {
-      margin-left: 0;
+    &:hover {
+      opacity: 0.8;
     }
   }
 }
