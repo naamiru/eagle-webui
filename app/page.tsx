@@ -1,6 +1,6 @@
 import { Text } from "@mantine/core";
 import AppHeader from "@/components/AppHeader";
-import { ItemList } from "@/components/ItemList/ItemList";
+import { ItemList } from "@/components/ItemList";
 import { getStore } from "@/data/store";
 
 export const dynamic = "force-dynamic";
@@ -14,11 +14,7 @@ export default async function HomePage() {
         <Text fw={600}>All</Text>
       </AppHeader>
 
-      <ItemList
-        items={store.getItems()}
-        libraryPath={store.libraryPath}
-        hasMore={false}
-      />
+      <ItemList items={store.getItems()} libraryPath={store.libraryPath} />
     </>
   );
 }

@@ -1,0 +1,25 @@
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  max-width: 1400px;
+  margin: 0;
+  gap: var(--mantine-spacing-sm);
+
+  @media (max-width: 48em) {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 2px;
+  }
+}
+
+.item {
+  aspect-ratio: 1 / 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

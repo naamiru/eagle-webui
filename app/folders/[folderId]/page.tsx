@@ -1,7 +1,7 @@
 import { Text } from "@mantine/core";
 import { notFound } from "next/navigation";
 import AppHeader from "@/components/AppHeader";
-import { ItemList } from "@/components/ItemList/ItemList";
+import { ItemList } from "@/components/ItemList";
 import { getStore } from "@/data/store";
 
 type FolderPageProps = {
@@ -28,7 +28,6 @@ export default async function FolderPage({ params }: FolderPageProps) {
       <ItemList
         items={store.getFolderItems(folderId)}
         libraryPath={store.libraryPath}
-        hasMore={false}
       />
     </>
   );

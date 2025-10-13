@@ -51,7 +51,7 @@
 .mainLink {
   display: flex;
   align-items: center;
-  width: 100%;
+  width: stretch;
   margin-left: var(--mantine-spacing-md);
   margin-bottom: 1px;
   padding: var(--mantine-spacing-xxxs);
