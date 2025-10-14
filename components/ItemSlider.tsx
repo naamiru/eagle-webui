@@ -2,13 +2,14 @@
 
 import { Keyboard, Virtual, Zoom } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper/types";
 import "swiper/css";
 import "swiper/css/zoom";
 import "swiper/css/virtual";
 import "swiper/css/keyboard";
 import { CloseButton, Text } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ItemPreview } from "@/data/types";
 import { useSliderState } from "@/stores/slider-state";
 import { getImageUrl } from "@/utils/item";
@@ -33,7 +34,7 @@ export function ItemSlider({
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
   const initialIndex = useMemo(
     () => Math.max(itemIds.indexOf(initialItemId), 0),
-    [initialItemId, itemIds],
+    [initialItemId, itemIds]
   );
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -53,6 +54,28 @@ export function ItemSlider({
     setIsPresented(true);
     return () => setIsPresented(false);
   }, []);
+
+  const playAndPauseVideo = useCallback(
+    (swiper: SwiperType) => {
+      if (!swiper.slides) return;
+      for (const slide of swiper.slides) {
+        const index = parseInt(slide.dataset.swiperSlideIndex ?? "", 10);
+        if (Number.isNaN(index)) continue;
+        const item = items[index];
+        if (!item || item.duration === 0) continue;
+        const video = slide.querySelector("video");
+        if (video) {
+          if (index === swiper.activeIndex) {
+            video.play();
+          } else {
+            video.pause();
+            video.currentTime = 0;
+          }
+        }
+      }
+    },
+    [items]
+  );
 
   return (
     <>
@@ -82,18 +105,46 @@ export function ItemSlider({
             setActiveIndex(nextIndex);
           }
         }}
+        onAfterInit={(swiper) => {
+          requestAnimationFrame(() => {
+            playAndPauseVideo(swiper);
+          });
+        }}
+        onSlideChange={playAndPauseVideo}
       >
         {items.map((item, index) => (
           <SwiperSlide key={item.id} virtualIndex={index}>
-            <div className="swiper-zoom-container">
-              {/** biome-ignore lint/performance/noImgElement: use swiper */}
-              <img
-                src={getImageUrl(item.id, libraryPath)}
-                alt={item.id}
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
+            {item.duration > 0 ? (
+              <div className={classes.videoContainer}>
+                <div
+                  className={classes.videoFitbox}
+                  style={
+                    {
+                      "--ratio": `(${item.width}/${item.height})`,
+                    } as React.CSSProperties
+                  }
+                >
+                  {/** biome-ignore lint/a11y/useMediaCaption: simple video */}
+                  <video
+                    className={classes.video}
+                    src={getImageUrl(item.id, libraryPath)}
+                    controls
+                    playsInline
+                    loop
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="swiper-zoom-container">
+                {/** biome-ignore lint/performance/noImgElement: use swiper */}
+                <img
+                  src={getImageUrl(item.id, libraryPath)}
+                  alt={item.id}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            )}
           </SwiperSlide>
         ))}
       </Swiper>

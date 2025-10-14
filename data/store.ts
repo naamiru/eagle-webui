@@ -119,7 +119,12 @@ export class Store {
   }
 
   private toItemPreviews(items: Item[]): ItemPreview[] {
-    return items.map(({ id, duration }) => ({ id, duration }));
+    return items.map(({ id, duration, width, height }) => ({
+      id,
+      duration,
+      width,
+      height,
+    }));
   }
 }
 

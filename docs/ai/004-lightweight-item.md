@@ -9,7 +9,7 @@ Limit client props to minimal metadata while keeping media grids and sliders fun
 
 ### Plan
 1. **Server → client contract**
-   - Update `CollectionPage`, `ItemList`, `ItemSlider`, and `MobileItemSlider` to accept item previews shaped as `{ id, duration }` instead of full `Item` objects.
+   - Update `CollectionPage`, `ItemList`, `ItemSlider`, and `MobileItemSlider` to accept item previews shaped as `{ id, duration, width, height }` instead of full `Item` objects.
    - Keep `initialItemId` and `totalItemCount` props where needed for selection state and counters.
    - On server routes (`app/page.tsx`, `app/folders/[folderId]/page.tsx`) call `store` helpers that emit lightweight items for the relevant scope.
 2. **Rendering with ids**
@@ -20,6 +20,6 @@ Limit client props to minimal metadata while keeping media grids and sliders fun
    - In `/api/items/(image|thumbnail)`, call `getStore()` to look up `libraryPath` and verify the item exists before streaming the file.
 
 ### Acceptance
-- Inspect `CollectionPage` props in React DevTools and confirm only `{ id, duration }` crosses the RSC boundary as the `ItemPreview` type.
+- Inspect `CollectionPage` props in React DevTools and confirm only `{ id, duration, width, height }` crosses the RSC boundary as the `ItemPreview` type.
 - Grid thumbnails and sliders still render item names and media.
 - Inspect the image markup in devtools and confirm `alt` attributes equal the item id.

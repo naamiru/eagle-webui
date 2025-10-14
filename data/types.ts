@@ -50,4 +50,6 @@ export type Item = {
 export type ItemPreview = {
   id: string;
   duration: number;
+  width: number;
+  height: number;
 };
