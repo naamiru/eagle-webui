@@ -5,6 +5,7 @@ import type { ErrorObject } from "ajv";
 import Ajv from "ajv";
 
 import { LibraryImportError } from "../errors";
+import { computeNameForSort } from "../name-for-sort";
 import { FOLDER_SORT_METHODS, type SortMethod } from "../sort-options";
 import type { Folder, Item, Palette } from "../types";
 
@@ -307,9 +308,12 @@ async function loadItem(
 }
 
 function normalizeItem(raw: RawItemMetadata): Item {
+  const itemName = typeof raw.name === "string" ? raw.name : "";
+
   return {
     id: raw.id ?? "",
-    name: typeof raw.name === "string" ? raw.name : "",
+    name: itemName,
+    nameForSort: computeNameForSort(itemName),
     size: toNumber(raw.size),
     btime: toNumber(raw.btime),
     mtime: toNumber(raw.mtime),
@@ -373,9 +377,11 @@ function traverseFolders(
       .map((child) => child.id)
       .filter((id): id is string => typeof id === "string" && id.length > 0);
 
+    const folderName = typeof raw.name === "string" ? raw.name : "";
     const folder: Folder = {
       id: folderId,
-      name: typeof raw.name === "string" ? raw.name : "",
+      name: folderName,
+      nameForSort: computeNameForSort(folderName),
       description: typeof raw.description === "string" ? raw.description : "",
       children: childIds,
       parentId,

@@ -33,7 +33,7 @@ Implement consistent sorting for item collections regardless of where they are d
 | `IMPORT`     | Import time       | `modificationTime`                      | Newest first        |
 | `MTIME`      | Modification time | `mtime`                                 | Newest first        |
 | `BTIME`      | Creation time     | `btime`                                 | Newest first        |
-| `NAME`       | Filename          | `name`                                  | A → Z               |
+| `NAME`       | Filename          | `nameForSort` (digits padded to 19 chars) | A → Z             |
 | `EXT`        | Extension         | `ext`                                   | A → Z               |
 | `FILESIZE`   | File size         | `size`                                  | Smallest first      |
 | `RESOLUTION` | Pixel count       | `width * height`                        | Smallest first      |

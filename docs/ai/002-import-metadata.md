@@ -84,6 +84,7 @@ Use this checklist when implementing the metadata import flow.
   - `manualOrder: number` to preserve the order supplied by the file.
   - `children: string[]` containing the IDs of child folders.
   - `parentId?: string` set when a folder appears inside another folder’s `children`.
+  - `nameForSort: string` derived from `name` where digit sequences are zero-padded to 19 characters.
 - Treat every property except `id`, `parentId`, and `coverId` as required in our runtime model. Provide sensible defaults when the source omits a field:
   - Strings → `""`
   - Numbers → `0`
@@ -97,6 +98,7 @@ Use this checklist when implementing the metadata import flow.
 ## Item Metadata (`images/${itemId}.info/metadata.json`)
 - For each item ID from `mtime.json`, load the item metadata file and add it to `store.items` as a `Map<string, Item>`.
 - As with folders, treat only `id` as required in the source data. Provide default values (`""`, `0`, `[]`) for all other fields in the `Item` type so consumers can rely on non-optional properties.
+  - Add `nameForSort: string` using the same zero-padding rule as folders for natural numeric ordering.
 
 ## UI Behaviour During Import
 - While importing, render a full-screen loader across all pages without changing the current URL.

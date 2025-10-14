@@ -3,6 +3,7 @@
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LibraryPathNotFoundError } from "./errors";
+import { computeNameForSort } from "./name-for-sort";
 import {
   DEFAULT_GLOBAL_SORT_OPTIONS,
   type GlobalSortOptions,
@@ -26,6 +27,7 @@ const importLibraryMetadataMock = vi.mocked(importLibraryMetadata);
 const mockFolder: Folder = {
   id: "root",
   name: "Root",
+  nameForSort: "Root",
   description: "",
   children: [],
   manualOrder: 0,
@@ -39,6 +41,7 @@ const mockFolder: Folder = {
 const mockItem: Item = {
   id: "item-1",
   name: "",
+  nameForSort: "",
   size: 0,
   btime: 0,
   mtime: 0,
@@ -129,6 +132,28 @@ describe("Store sorting", () => {
 
     const result = store.getItems();
     expect(result.map((item) => item.id)).toEqual(["item-a", "item-b"]);
+  });
+
+  it("sorts digit sequences in names using natural order", () => {
+    const store = createStore({
+      items: [
+        createItem({
+          id: "item-10",
+          name: "Screenshot 10",
+        }),
+        createItem({
+          id: "item-2",
+          name: "Screenshot 2",
+        }),
+      ],
+      globalSortSettings: {
+        orderBy: "NAME",
+        sortIncrease: true,
+      },
+    });
+
+    const result = store.getItems();
+    expect(result.map((item) => item.id)).toEqual(["item-2", "item-10"]);
   });
 
   it("uses manual ordering for folder items when available", () => {
@@ -248,9 +273,11 @@ function createStore(options: {
 }
 
 function createFolder(overrides: Partial<Folder>): Folder {
+  const name = overrides.name ?? "Folder";
   return {
     id: overrides.id ?? "folder-id",
-    name: overrides.name ?? "Folder",
+    name,
+    nameForSort: overrides.nameForSort ?? computeNameForSort(name),
     description: overrides.description ?? "",
     children: overrides.children ?? [],
     parentId: overrides.parentId,
@@ -266,9 +293,11 @@ function createFolder(overrides: Partial<Folder>): Folder {
 }
 
 function createItem(overrides: Partial<Item>): Item {
+  const name = overrides.name ?? "";
   return {
     id: overrides.id ?? "item-id",
-    name: overrides.name ?? "",
+    name,
+    nameForSort: overrides.nameForSort ?? computeNameForSort(name),
     size: overrides.size ?? 0,
     btime: overrides.btime ?? 0,
     mtime: overrides.mtime ?? 0,

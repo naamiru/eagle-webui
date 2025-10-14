@@ -1,14 +1,15 @@
+import type { SortMethod } from "./sort-options";
+
 export type Palette = {
   color: [number, number, number];
   ratio: number;
   $$hashKey?: string;
 };
 
-import type { SortMethod } from "./sort-options";
-
 export type Folder = {
   id: string;
   name: string;
+  nameForSort: string;
   description: string;
   children: string[];
   parentId?: string;
@@ -34,6 +35,7 @@ export type Item = {
   isDeleted: boolean;
   url: string;
   annotation: string;
+  nameForSort: string;
   modificationTime: number;
   height: number;
   width: number;

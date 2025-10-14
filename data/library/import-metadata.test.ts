@@ -8,6 +8,7 @@ import path from "node:path";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 
 import { LibraryImportError } from "../errors";
+import { computeNameForSort } from "../name-for-sort";
 import { importLibraryMetadata } from "./import-metadata";
 
 const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {
@@ -43,6 +44,7 @@ describe("importLibraryMetadata", () => {
     expect(video?.manualOrder).toBe(0);
     expect(video?.children).toHaveLength(0);
     expect(video?.orderBy).toBe("GLOBAL");
+    expect(video?.nameForSort).toBe(computeNameForSort("video"));
 
     const animal = data.folders.get("FOLDER_ANIMAL");
     expect(animal).toBeDefined();
@@ -55,12 +57,14 @@ describe("importLibraryMetadata", () => {
     expect(dog?.parentId).toBe("FOLDER_ANIMAL");
     expect(dog?.manualOrder).toBe(0);
     expect(dog?.orderBy).toBe("MANUAL");
+    expect(dog?.nameForSort).toBe(computeNameForSort("dog"));
 
     expect(data.items.size).toBeGreaterThanOrEqual(1);
     const item = data.items.get("ITEM_BIRD");
     expect(item).toBeDefined();
     expect(item?.tags).toEqual(["Animal", "Bird"]);
     expect(item?.palettes[0]?.color).toEqual([221, 218, 210]);
+    expect(item?.nameForSort).toBe(computeNameForSort("Bird"));
 
     // Missing item metadata files are reported but do not stop import.
     expect(consoleErrorSpy).toHaveBeenCalledTimes(1);

@@ -70,7 +70,7 @@ function compareByMethod(
     case "DURATION":
       return compareNumbers(left.duration, right.duration);
     case "NAME":
-      return compareStrings(left.name, right.name);
+      return compareStrings(left.nameForSort, right.nameForSort);
     case "EXT":
       return compareStrings(left.ext, right.ext);
     case "RANDOM":
