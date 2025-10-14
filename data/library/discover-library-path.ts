@@ -73,7 +73,7 @@ async function fetchThumbnailPath(
     throw new LibraryImportError("LIBRARY_PATH_NOT_FOUND");
   }
 
-  return payload.data;
+  return decodeEaglePath(payload.data);
 }
 
 function extractLibraryPath(
@@ -115,8 +115,17 @@ function ensureBaseUrl(apiUrl: string): string {
   return apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`;
 }
 
+function decodeEaglePath(pathWithPercentEncoding: string): string {
+  try {
+    return decodeURI(pathWithPercentEncoding);
+  } catch {
+    return pathWithPercentEncoding;
+  }
+}
+
 // Exported for targeted testing.
 export const __testUtils = {
   extractLibraryPath,
+  decodeEaglePath,
   ensureBaseUrl,
 };

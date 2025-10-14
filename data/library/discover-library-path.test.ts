@@ -192,3 +192,18 @@ describe("extractLibraryPath (test utils)", () => {
     );
   });
 });
+
+describe("decodeEaglePath (test utils)", () => {
+  it("decodes percent-encoded spaces", () => {
+    const input =
+      "/Users/demo/Pictures/My%20Sample.library/images/item-1/thumbnail.jpg";
+    expect(__testUtils.decodeEaglePath(input)).toBe(
+      "/Users/demo/Pictures/My Sample.library/images/item-1/thumbnail.jpg",
+    );
+  });
+
+  it("returns original path when decoding fails", () => {
+    const input = "%E0%A4%A"; // truncated sequence
+    expect(__testUtils.decodeEaglePath(input)).toBe(input);
+  });
+});
