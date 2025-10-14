@@ -86,7 +86,7 @@ function ImportLoadingScreen() {
       <ImportLoader />
       <Center h="100vh">
         <Stack gap="sm" align="center">
-          <Loader size="lg" />
+          <Loader size="lg" color="gray" />
           <Text>Importing Eagle library…</Text>
         </Stack>
       </Center>

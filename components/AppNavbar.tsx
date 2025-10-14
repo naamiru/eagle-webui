@@ -107,31 +107,32 @@ export function AppNavbar({
           hiddenFrom="sm"
           size="sm"
         />
-        <UnstyledButton
-          className={classes.libraryName}
-          aria-label={reloadLabel}
-          onClick={handleReload}
-          disabled={isReloading}
-        >
-          <Text size="sm" fw={600}>
-            Library Name
-          </Text>
-          {isReloading ? (
-            <Loader size={16} color="gray" />
-          ) : (
-            <IconRefresh size={16} stroke={1.5} />
-          )}
-        </UnstyledButton>
+
+        <div className={classes.headerMain}>
+          <UnstyledButton
+            className={classes.libraryName}
+            aria-label={reloadLabel}
+            onClick={handleReload}
+            disabled={isReloading}
+          >
+            <Text size="sm" fw={600}>
+              Library Name
+            </Text>
+            {isReloading ? (
+              <Loader size={16} color="gray" />
+            ) : (
+              <IconRefresh size={16} stroke={1.5} />
+            )}
+          </UnstyledButton>
+        </div>
 
         {desktopOpened && (
-          <>
-            <div style={{ flex: "1" }} />
+          <Box visibleFrom="sm" className={classes.headerTrailing}>
             <CloseButton
               icon={<IconLayoutSidebarLeftCollapse stroke={1} />}
-              visibleFrom="sm"
               onClick={toggleDesktop}
             />
-          </>
+          </Box>
         )}
       </div>
 

@@ -6,16 +6,13 @@ import type { Item } from "@/data/types";
 import "swiper/css";
 import "swiper/css/zoom";
 import "swiper/css/virtual";
-import "swiper/css/keyboard";
-import { CloseButton, Text } from "@mantine/core";
+import { CloseButton, FocusTrap, Modal, Text } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { useEffect, useMemo, useState } from "react";
-import { useSliderState } from "@/stores/slider-state";
+import { useMemo, useState } from "react";
 import { getImageUrl } from "@/utils/item";
-import AppHeader from "./AppHeader";
-import classes from "./ItemSlider.module.css";
+import classes from "./MobileItemSlider.module.css";
 
-interface ItemSliderProps {
+interface MobileItemSliderProps {
   initialItem: Item;
   items: Item[];
   libraryPath: string;
@@ -23,13 +20,13 @@ interface ItemSliderProps {
   onChangeActiveItem: (item: Item) => void;
 }
 
-export function ItemSlider({
+export function MobileItemSlider({
   initialItem,
   items,
   libraryPath,
   dismiss,
   onChangeActiveItem,
-}: ItemSliderProps) {
+}: MobileItemSliderProps) {
   const initialIndex = useMemo(
     () => items.findIndex((item) => item.id === initialItem.id),
     [initialItem, items]
@@ -37,30 +34,25 @@ export function ItemSlider({
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
 
-  // ESC to dismiss
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") dismiss();
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [dismiss]);
-
-  const { setIsPresented } = useSliderState();
-  // biome-ignore lint/correctness/useExhaustiveDependencies: depend on lifecycle
-  useEffect(() => {
-    setIsPresented(true);
-    return () => setIsPresented(false);
-  }, []);
-
   return (
-    <>
-      <AppHeader>
+    <Modal
+      opened={true}
+      onClose={dismiss}
+      withCloseButton={false}
+      fullScreen
+      radius={0}
+      classNames={{
+        body: classes.modalBody,
+      }}
+    >
+      <FocusTrap.InitialFocus />
+
+      <header className={classes.header}>
         <CloseButton icon={<IconArrowLeft stroke={1.2} />} onClick={dismiss} />
         <Text size="sm">
           {activeIndex + 1} / {items.length}
         </Text>
-      </AppHeader>
+      </header>
 
       <Swiper
         modules={[Zoom, Virtual, Keyboard]}
@@ -74,8 +66,8 @@ export function ItemSlider({
         className={classes.swiper}
         tabIndex={0}
         onActiveIndexChange={(swiper) => {
-          onChangeActiveItem(items[swiper.activeIndex]);
           setActiveIndex(swiper.activeIndex);
+          onChangeActiveItem(items[swiper.activeIndex]);
         }}
       >
         {items.map((item, index) => (
@@ -92,6 +84,6 @@ export function ItemSlider({
           </SwiperSlide>
         ))}
       </Swiper>
-    </>
+    </Modal>
   );
 }

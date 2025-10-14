@@ -9,7 +9,7 @@
       calc(var(--app-shell-navbar-offset, 0rem)) !important;
   }
 
-  &[data-with-slider] {
+  &[data-with-slider="true"] {
     height: 100dvh;
   }
 }

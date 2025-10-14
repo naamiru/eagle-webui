@@ -12,6 +12,22 @@
     var(--mantine-spacing-sm) var(--mantine-spacing-md);
 }
 
+.headerMain {
+  @media (max-width: 48em) {
+    flex-grow: 1;
+    margin-right: 40px;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.headerTrailing {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
 .libraryName {
   display: flex;
   align-items: center;
@@ -23,11 +39,6 @@
     &:hover {
       background-color: var(--mantine-color-gray-2);
     }
-  }
-
-  @media (max-width: 48em) {
-    flex-grow: 1;
-    justify-content: center;
   }
 }
 

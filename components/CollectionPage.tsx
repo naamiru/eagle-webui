@@ -1,13 +1,13 @@
 "use client";
 
-import { CloseButton, Text } from "@mantine/core";
-import { IconArrowLeft } from "@tabler/icons-react";
-import { useCallback, useEffect, useState } from "react";
+import { Text } from "@mantine/core";
+import { useCallback, useState } from "react";
 import AppHeader from "@/components/AppHeader";
 import { ItemList } from "@/components/ItemList";
 import type { Item } from "@/data/types";
-import { useSliderState } from "@/stores/slider-state";
+import { useIsMobile } from "@/utils/responsive";
 import { ItemSlider } from "./ItemSlider";
+import { MobileItemSlider } from "./MobileItemSlider";
 
 interface CollectionPageProps {
   title: string;
@@ -21,33 +21,24 @@ export default function CollectionPage({
   libraryPath,
 }: CollectionPageProps) {
   const [selectedItem, setSelectedItem] = useState<Item>();
-  const [activeIndex, setActiveIndex] = useState(0);
 
   const dismiss = useCallback(() => setSelectedItem(undefined), []);
 
-  const { setIsPresented: setSliderIsPresented } = useSliderState();
-  useEffect(() => {
-    setSliderIsPresented(!!selectedItem);
-  }, [selectedItem, setSliderIsPresented]);
+  const isMobile = useIsMobile();
 
-  return selectedItem ? (
-    <>
-      <AppHeader>
-        <CloseButton icon={<IconArrowLeft stroke={1.2} />} onClick={dismiss} />
-        <Text size="sm">
-          {activeIndex + 1} / {items.length}
-        </Text>
-      </AppHeader>
-
+  if (selectedItem && !isMobile) {
+    return (
       <ItemSlider
         initialItem={selectedItem}
         items={items}
         libraryPath={libraryPath}
         dismiss={dismiss}
-        onActiveIndexChange={setActiveIndex}
+        onChangeActiveItem={setSelectedItem}
       />
-    </>
-  ) : (
+    );
+  }
+
+  return (
     <>
       <AppHeader>
         <Text>{title}</Text>
@@ -58,6 +49,16 @@ export default function CollectionPage({
         libraryPath={libraryPath}
         onSelectItem={setSelectedItem}
       />
+
+      {selectedItem && isMobile && (
+        <MobileItemSlider
+          initialItem={selectedItem}
+          items={items}
+          libraryPath={libraryPath}
+          dismiss={dismiss}
+          onChangeActiveItem={setSelectedItem}
+        />
+      )}
     </>
   );
 }
