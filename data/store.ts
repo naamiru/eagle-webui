@@ -19,14 +19,15 @@ export class Store {
   }
 
   getItems(): Item[] {
-    const activeItems = Array.from(this.items.values()).filter(
-      (item) => !item.isDeleted,
-    );
+    const items: Item[] = [];
 
-    return sortItems(activeItems, {
-      orderBy: this.globalSortSettings.orderBy,
-      sortIncrease: this.globalSortSettings.sortIncrease,
-    });
+    for (const item of this.items.values()) {
+      if (!item.isDeleted) {
+        items.push(item);
+      }
+    }
+
+    return sortItems(items, this.getGlobalSortContext());
   }
 
   getItemIds(): string[] {
@@ -34,7 +35,19 @@ export class Store {
   }
 
   getUncategorizedItems(): Item[] {
-    return this.getItems().filter((item) => item.folders.length === 0);
+    const items: Item[] = [];
+
+    for (const item of this.items.values()) {
+      if (item.isDeleted) {
+        continue;
+      }
+
+      if (item.folders.length === 0) {
+        items.push(item);
+      }
+    }
+
+    return sortItems(items, this.getGlobalSortContext());
   }
 
   getUncategorizedItemIds(): string[] {
@@ -42,14 +55,15 @@ export class Store {
   }
 
   getTrashItems(): Item[] {
-    const deletedItems = Array.from(this.items.values()).filter(
-      (item) => item.isDeleted,
-    );
+    const items: Item[] = [];
 
-    return sortItems(deletedItems, {
-      orderBy: this.globalSortSettings.orderBy,
-      sortIncrease: this.globalSortSettings.sortIncrease,
-    });
+    for (const item of this.items.values()) {
+      if (item.isDeleted) {
+        items.push(item);
+      }
+    }
+
+    return sortItems(items, this.getGlobalSortContext());
   }
 
   getTrashItemIds(): string[] {
@@ -90,6 +104,13 @@ export class Store {
     return {
       orderBy: folder.orderBy,
       sortIncrease: folder.sortIncrease,
+    };
+  }
+
+  private getGlobalSortContext(): SortContext {
+    return {
+      orderBy: this.globalSortSettings.orderBy,
+      sortIncrease: this.globalSortSettings.sortIncrease,
     };
   }
 }
