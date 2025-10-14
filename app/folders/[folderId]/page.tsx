@@ -17,11 +17,7 @@ export default async function FolderPage({ params }: FolderPageProps) {
     notFound();
   }
 
-  return (
-    <CollectionPage
-      title={folder.name}
-      items={store.getFolderItems(folderId)}
-      libraryPath={store.libraryPath}
-    />
-  );
+  const itemIds = store.getFolderItemIds(folderId);
+
+  return <CollectionPage title={folder.name} itemIds={itemIds} />;
 }

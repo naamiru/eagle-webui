@@ -1,27 +1,25 @@
 "use client";
 
 import { VirtuosoGrid } from "react-virtuoso";
-import type { Item } from "@/data/types";
 import { getThumbnailUrl } from "@/utils/item";
 import classes from "./ItemList.module.css";
 
 interface ItemListProps {
-  items: Item[];
-  libraryPath: string;
-  onSelectItem: (item: Item) => void;
+  itemIds: string[];
+  onSelectItem: (itemId: string) => void;
 }
 
-export function ItemList({ items, libraryPath, onSelectItem }: ItemListProps) {
+export function ItemList({ itemIds, onSelectItem }: ItemListProps) {
   const itemContent = (index: number) => {
-    const item = items[index];
+    const itemId = itemIds[index];
     return (
       // biome-ignore lint/performance/noImgElement: image grid
       // biome-ignore lint/a11y/useKeyWithClickEvents: image grid
       <img
         className={classes.image}
-        src={getThumbnailUrl(item.id, libraryPath)}
-        alt={item.name}
-        onClick={() => onSelectItem(item)}
+        src={getThumbnailUrl(itemId)}
+        alt={itemId}
+        onClick={() => onSelectItem(itemId)}
         loading="lazy"
         decoding="async"
       />
@@ -32,7 +30,7 @@ export function ItemList({ items, libraryPath, onSelectItem }: ItemListProps) {
       useWindowScroll
       listClassName={classes.list}
       itemClassName={classes.item}
-      totalCount={items.length}
+      totalCount={itemIds.length}
       itemContent={itemContent}
       increaseViewportBy={200}
     />

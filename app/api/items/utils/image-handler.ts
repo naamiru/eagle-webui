@@ -3,6 +3,7 @@ import path from "node:path";
 import etag from "etag";
 import mime from "mime";
 import { after, type NextRequest, NextResponse } from "next/server";
+import { getStore } from "@/data/store";
 
 async function findImageFile(
   itemDir: string,
@@ -30,12 +31,27 @@ export async function handleImageRequest(
 ): Promise<NextResponse> {
   const searchParams = request.nextUrl.searchParams;
   const id = searchParams.get("id");
-  const libraryPath = searchParams.get("libraryPath");
 
-  if (!id || !libraryPath) {
+  if (!id) {
     return NextResponse.json(
       { error: "Missing required parameters" },
       { status: 400 },
+    );
+  }
+
+  let libraryPath: string;
+
+  try {
+    const store = await getStore();
+    if (!store.items.has(id)) {
+      return NextResponse.json({ error: "Item not found" }, { status: 404 });
+    }
+    libraryPath = store.libraryPath;
+  } catch (error) {
+    console.error("Error resolving library path:", error);
+    return NextResponse.json(
+      { error: "Failed to resolve library path" },
+      { status: 500 },
     );
   }
 

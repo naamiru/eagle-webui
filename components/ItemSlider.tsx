@@ -2,7 +2,6 @@
 
 import { Keyboard, Virtual, Zoom } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import type { Item } from "@/data/types";
 import "swiper/css";
 import "swiper/css/zoom";
 import "swiper/css/virtual";
@@ -16,23 +15,21 @@ import AppHeader from "./AppHeader";
 import classes from "./ItemSlider.module.css";
 
 interface ItemSliderProps {
-  initialItem: Item;
-  items: Item[];
-  libraryPath: string;
+  initialItemId: string;
+  itemIds: string[];
   dismiss: () => void;
-  onChangeActiveItem: (item: Item) => void;
+  onChangeActiveItem: (itemId: string) => void;
 }
 
 export function ItemSlider({
-  initialItem,
-  items,
-  libraryPath,
+  initialItemId,
+  itemIds,
   dismiss,
   onChangeActiveItem,
 }: ItemSliderProps) {
   const initialIndex = useMemo(
-    () => items.findIndex((item) => item.id === initialItem.id),
-    [initialItem, items],
+    () => Math.max(itemIds.indexOf(initialItemId), 0),
+    [initialItemId, itemIds],
   );
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -58,7 +55,7 @@ export function ItemSlider({
       <AppHeader>
         <CloseButton icon={<IconArrowLeft stroke={1.2} />} onClick={dismiss} />
         <Text size="sm">
-          {activeIndex + 1} / {items.length}
+          {activeIndex + 1} / {itemIds.length}
         </Text>
       </AppHeader>
 
@@ -74,17 +71,21 @@ export function ItemSlider({
         className={classes.swiper}
         tabIndex={0}
         onActiveIndexChange={(swiper) => {
-          onChangeActiveItem(items[swiper.activeIndex]);
-          setActiveIndex(swiper.activeIndex);
+          const nextIndex = swiper.activeIndex;
+          const nextId = itemIds[nextIndex];
+          if (nextId) {
+            onChangeActiveItem(nextId);
+            setActiveIndex(nextIndex);
+          }
         }}
       >
-        {items.map((item, index) => (
-          <SwiperSlide key={item.id} virtualIndex={index}>
+        {itemIds.map((itemId, index) => (
+          <SwiperSlide key={itemId} virtualIndex={index}>
             <div className="swiper-zoom-container">
               {/** biome-ignore lint/performance/noImgElement: use swiper */}
               <img
-                src={getImageUrl(item.id, libraryPath)}
-                alt={item.name}
+                src={getImageUrl(itemId)}
+                alt={itemId}
                 loading="lazy"
                 decoding="async"
               />

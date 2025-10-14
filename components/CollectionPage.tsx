@@ -4,36 +4,32 @@ import { Text } from "@mantine/core";
 import { useCallback, useState } from "react";
 import AppHeader from "@/components/AppHeader";
 import { ItemList } from "@/components/ItemList";
-import type { Item } from "@/data/types";
 import { useIsMobile } from "@/utils/responsive";
 import { ItemSlider } from "./ItemSlider";
 import { MobileItemSlider } from "./MobileItemSlider";
 
 interface CollectionPageProps {
   title: string;
-  libraryPath: string;
-  items: Item[];
+  itemIds: string[];
 }
 
 export default function CollectionPage({
   title,
-  items,
-  libraryPath,
+  itemIds,
 }: CollectionPageProps) {
-  const [selectedItem, setSelectedItem] = useState<Item>();
+  const [selectedItemId, setSelectedItemId] = useState<string>();
 
-  const dismiss = useCallback(() => setSelectedItem(undefined), []);
+  const dismiss = useCallback(() => setSelectedItemId(undefined), []);
 
   const isMobile = useIsMobile();
 
-  if (selectedItem && !isMobile) {
+  if (selectedItemId && !isMobile) {
     return (
       <ItemSlider
-        initialItem={selectedItem}
-        items={items}
-        libraryPath={libraryPath}
+        initialItemId={selectedItemId}
+        itemIds={itemIds}
         dismiss={dismiss}
-        onChangeActiveItem={setSelectedItem}
+        onChangeActiveItem={setSelectedItemId}
       />
     );
   }
@@ -44,19 +40,14 @@ export default function CollectionPage({
         <Text>{title}</Text>
       </AppHeader>
 
-      <ItemList
-        items={items}
-        libraryPath={libraryPath}
-        onSelectItem={setSelectedItem}
-      />
+      <ItemList itemIds={itemIds} onSelectItem={setSelectedItemId} />
 
-      {selectedItem && isMobile && (
+      {selectedItemId && isMobile && (
         <MobileItemSlider
-          initialItem={selectedItem}
-          items={items}
-          libraryPath={libraryPath}
+          initialItemId={selectedItemId}
+          itemIds={itemIds}
           dismiss={dismiss}
-          onChangeActiveItem={setSelectedItem}
+          onChangeActiveItem={setSelectedItemId}
         />
       )}
     </>

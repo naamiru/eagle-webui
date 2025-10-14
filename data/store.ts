@@ -19,16 +19,28 @@ export class Store {
   }
 
   getItems(): Item[] {
-    return sortItems(Array.from(this.items.values()), {
+    const activeItems = Array.from(this.items.values()).filter(
+      (item) => !item.isDeleted,
+    );
+
+    return sortItems(activeItems, {
       orderBy: this.globalSortSettings.orderBy,
       sortIncrease: this.globalSortSettings.sortIncrease,
     });
+  }
+
+  getItemIds(): string[] {
+    return this.getItems().map((item) => item.id);
   }
 
   getFolderItems(folderId: string): Item[] {
     const items: Item[] = [];
 
     for (const item of this.items.values()) {
+      if (item.isDeleted) {
+        continue;
+      }
+
       if (item.folders.includes(folderId)) {
         items.push(item);
       }
@@ -38,6 +50,10 @@ export class Store {
     const sortContext = this.resolveFolderSortContext(folder);
 
     return sortItems(items, { ...sortContext, folderId });
+  }
+
+  getFolderItemIds(folderId: string): string[] {
+    return this.getFolderItems(folderId).map((item) => item.id);
   }
 
   private resolveFolderSortContext(folder: Folder | undefined): SortContext {
