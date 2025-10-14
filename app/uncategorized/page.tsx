@@ -7,5 +7,11 @@ export default async function UncategorizedPage() {
   const store = await getStore();
   const itemIds = store.getUncategorizedItemIds();
 
-  return <CollectionPage title="Uncategorized" itemIds={itemIds} />;
+  return (
+    <CollectionPage
+      title="Uncategorized"
+      libraryPath={store.libraryPath}
+      itemIds={itemIds}
+    />
+  );
 }

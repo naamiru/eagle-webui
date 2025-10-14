@@ -21,6 +21,8 @@ import {
 } from "@/data/store";
 import { getLibraryName } from "@/utils/get-library-name";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Eagle WebUI",
   description: "A web interface for the Eagle image viewer application",

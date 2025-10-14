@@ -33,7 +33,7 @@
   ],
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack && cp -r .next/static .next/standalone/.next/",
+    "build": "pkill -f 'next dev' || true && rm -rf .next && next build --turbopack && cp -r .next/static .next/standalone/.next/",
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",

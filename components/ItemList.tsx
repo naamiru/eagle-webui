@@ -5,11 +5,16 @@ import { getThumbnailUrl } from "@/utils/item";
 import classes from "./ItemList.module.css";
 
 interface ItemListProps {
+  libraryPath: string;
   itemIds: string[];
   onSelectItem: (itemId: string) => void;
 }
 
-export function ItemList({ itemIds, onSelectItem }: ItemListProps) {
+export function ItemList({
+  libraryPath,
+  itemIds,
+  onSelectItem,
+}: ItemListProps) {
   const itemContent = (index: number) => {
     const itemId = itemIds[index];
     return (
@@ -17,7 +22,7 @@ export function ItemList({ itemIds, onSelectItem }: ItemListProps) {
       // biome-ignore lint/a11y/useKeyWithClickEvents: image grid
       <img
         className={classes.image}
-        src={getThumbnailUrl(itemId)}
+        src={getThumbnailUrl(itemId, libraryPath)}
         alt={itemId}
         onClick={() => onSelectItem(itemId)}
         loading="lazy"

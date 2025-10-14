@@ -10,11 +10,13 @@ import { MobileItemSlider } from "./MobileItemSlider";
 
 interface CollectionPageProps {
   title: string;
+  libraryPath: string;
   itemIds: string[];
 }
 
 export default function CollectionPage({
   title,
+  libraryPath,
   itemIds,
 }: CollectionPageProps) {
   const [selectedItemId, setSelectedItemId] = useState<string>();
@@ -27,6 +29,7 @@ export default function CollectionPage({
     return (
       <ItemSlider
         initialItemId={selectedItemId}
+        libraryPath={libraryPath}
         itemIds={itemIds}
         dismiss={dismiss}
         onChangeActiveItem={setSelectedItemId}
@@ -40,11 +43,16 @@ export default function CollectionPage({
         <Text>{title}</Text>
       </AppHeader>
 
-      <ItemList itemIds={itemIds} onSelectItem={setSelectedItemId} />
+      <ItemList
+        libraryPath={libraryPath}
+        itemIds={itemIds}
+        onSelectItem={setSelectedItemId}
+      />
 
       {selectedItemId && isMobile && (
         <MobileItemSlider
           initialItemId={selectedItemId}
+          libraryPath={libraryPath}
           itemIds={itemIds}
           dismiss={dismiss}
           onChangeActiveItem={setSelectedItemId}

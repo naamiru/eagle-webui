@@ -7,5 +7,11 @@ export default async function TrashPage() {
   const store = await getStore();
   const itemIds = store.getTrashItemIds();
 
-  return <CollectionPage title="Trash" itemIds={itemIds} />;
+  return (
+    <CollectionPage
+      title="Trash"
+      libraryPath={store.libraryPath}
+      itemIds={itemIds}
+    />
+  );
 }

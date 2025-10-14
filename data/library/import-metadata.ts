@@ -179,7 +179,7 @@ const itemMetadataSchema = {
 } as const;
 
 const validateLibraryMetadata = ajv.compile<RawLibraryMetadata>(
-  libraryMetadataSchema,
+  libraryMetadataSchema
 );
 const validateMTime = ajv.compile<RawMTimeIndex>(mtimeSchema);
 const validateItemMetadata = ajv.compile<RawItemMetadata>(itemMetadataSchema);
@@ -192,7 +192,7 @@ export type LibraryImportPayload = {
 };
 
 export async function importLibraryMetadata(
-  libraryPath: string,
+  libraryPath: string
 ): Promise<LibraryImportPayload> {
   const metadataPath = path.join(libraryPath, "metadata.json");
   const metadata = await loadLibraryMetadata(metadataPath);
@@ -215,14 +215,16 @@ export async function importLibraryMetadata(
 }
 
 async function loadLibraryMetadata(
-  metadataPath: string,
+  metadataPath: string
 ): Promise<RawLibraryMetadata> {
   try {
     const raw = await readJson(metadataPath);
     if (!validateLibraryMetadata(raw)) {
       throw new LibraryImportError("METADATA_READ_FAILURE", {
         cause: new Error(
-          `metadata.json failed validation: ${formatAjvErrors(validateLibraryMetadata.errors)}`,
+          `metadata.json failed validation: ${formatAjvErrors(
+            validateLibraryMetadata.errors
+          )}`
         ),
       });
     }
@@ -243,7 +245,9 @@ async function loadMTimeIndex(mtimePath: string): Promise<RawMTimeIndex> {
     if (!validateMTime(raw)) {
       throw new LibraryImportError("MTIME_READ_FAILURE", {
         cause: new Error(
-          `mtime.json failed validation: ${formatAjvErrors(validateMTime.errors)}`,
+          `mtime.json failed validation: ${formatAjvErrors(
+            validateMTime.errors
+          )}`
         ),
       });
     }
@@ -260,7 +264,7 @@ async function loadMTimeIndex(mtimePath: string): Promise<RawMTimeIndex> {
 
 async function loadItems(
   libraryPath: string,
-  mtimeIndex: RawMTimeIndex,
+  mtimeIndex: RawMTimeIndex
 ): Promise<Map<string, Item>> {
   const items = new Map<string, Item>();
 
@@ -272,7 +276,7 @@ async function loadItems(
         if (item) {
           items.set(item.id, item);
         }
-      }),
+      })
   );
 
   return items;
@@ -280,20 +284,22 @@ async function loadItems(
 
 async function loadItem(
   libraryPath: string,
-  itemId: string,
+  itemId: string
 ): Promise<Item | null> {
   const itemMetadataPath = path.join(
     libraryPath,
     "images",
     `${itemId}.info`,
-    "metadata.json",
+    "metadata.json"
   );
 
   try {
     const raw = await readJson(itemMetadataPath);
     if (!validateItemMetadata(raw)) {
       throw new Error(
-        `item metadata failed validation: ${formatAjvErrors(validateItemMetadata.errors)}`,
+        `item metadata failed validation: ${formatAjvErrors(
+          validateItemMetadata.errors
+        )}`
       );
     }
     const normalized = normalizeItem(raw);
@@ -301,7 +307,7 @@ async function loadItem(
   } catch (error) {
     console.error(
       `[library-import] Unable to import item ${itemId}:`,
-      error instanceof Error ? error : new Error(String(error)),
+      error instanceof Error ? error : new Error(String(error))
     );
     return null;
   }
@@ -361,13 +367,15 @@ function buildFolderMap(rawFolders: RawFolder[]): Map<string, Folder> {
 function traverseFolders(
   rawFolders: RawFolder[],
   collection: Map<string, Folder>,
-  parentId?: string,
+  parentId?: string
 ): void {
   rawFolders.forEach((raw, index) => {
     const folderId = raw.id;
     if (!folderId) {
       console.error(
-        `[library-import] Encountered folder without id under ${parentId ?? "root"}`,
+        `[library-import] Encountered folder without id under ${
+          parentId ?? "root"
+        }`
       );
       return;
     }
@@ -411,7 +419,9 @@ function assertApplicationVersion(version: string | undefined): void {
   if (!version || !version.startsWith("4.")) {
     throw new LibraryImportError("INVALID_APPLICATION_VERSION", {
       cause: new Error(
-        `Eagle library requires application version 4.x (found "${version ?? "unknown"}")`,
+        `Eagle library requires application version 4.x (found "${
+          version ?? "unknown"
+        }")`
       ),
     });
   }
@@ -448,7 +458,7 @@ function toOrderMap(value: unknown): Record<string, number> {
   }
 
   const entries = Object.entries(value as Record<string, unknown>).filter(
-    ([key]) => typeof key === "string" && key.length > 0,
+    ([key]) => typeof key === "string" && key.length > 0
   );
 
   if (entries.length === 0) {
@@ -462,8 +472,8 @@ function toOrderMap(value: unknown): Record<string, number> {
       typeof rawValue === "number"
         ? rawValue
         : typeof rawValue === "string"
-          ? Number.parseFloat(rawValue)
-          : Number.NaN;
+        ? Number.parseFloat(rawValue)
+        : Number.NaN;
 
     if (Number.isFinite(parsed)) {
       orderMap[folderId] = parsed;

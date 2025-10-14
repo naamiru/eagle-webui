@@ -13,6 +13,7 @@ import classes from "./MobileItemSlider.module.css";
 
 interface MobileItemSliderProps {
   initialItemId: string;
+  libraryPath: string;
   itemIds: string[];
   dismiss: () => void;
   onChangeActiveItem: (itemId: string) => void;
@@ -20,6 +21,7 @@ interface MobileItemSliderProps {
 
 export function MobileItemSlider({
   initialItemId,
+  libraryPath,
   itemIds,
   dismiss,
   onChangeActiveItem,
@@ -76,7 +78,7 @@ export function MobileItemSlider({
             <div className="swiper-zoom-container">
               {/** biome-ignore lint/performance/noImgElement: use swiper */}
               <img
-                src={getImageUrl(itemId)}
+                src={getImageUrl(itemId, libraryPath)}
                 alt={itemId}
                 loading="lazy"
                 decoding="async"

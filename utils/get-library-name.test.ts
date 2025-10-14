@@ -4,17 +4,21 @@ import { getLibraryName } from "./get-library-name";
 
 describe("getLibraryName", () => {
   it("returns the folder name without .library suffix for posix paths", () => {
-    expect(getLibraryName("/Users/demo/Pictures/sample.library")).toBe("sample");
-  });
-
-  it("returns the folder name without .library suffix for windows paths", () => {
-    expect(getLibraryName("C:\\\\Users\\\\demo\\\\Pictures\\\\sample.library")).toBe(
+    expect(getLibraryName("/Users/demo/Pictures/sample.library")).toBe(
       "sample",
     );
   });
 
+  it("returns the folder name without .library suffix for windows paths", () => {
+    expect(
+      getLibraryName("C:\\\\Users\\\\demo\\\\Pictures\\\\sample.library"),
+    ).toBe("sample");
+  });
+
   it("handles trailing path separators", () => {
-    expect(getLibraryName("/Users/demo/Pictures/sample.library/")).toBe("sample");
+    expect(getLibraryName("/Users/demo/Pictures/sample.library/")).toBe(
+      "sample",
+    );
   });
 
   it("returns the basename when suffix is missing", () => {

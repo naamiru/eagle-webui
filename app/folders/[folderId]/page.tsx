@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import CollectionPage from "@/components/CollectionPage";
 import { getStore } from "@/data/store";
 
+export const dynamic = "force-dynamic";
+
 type FolderPageProps = {
   params: {
     folderId: string;
@@ -19,5 +21,11 @@ export default async function FolderPage({ params }: FolderPageProps) {
 
   const itemIds = store.getFolderItemIds(folderId);
 
-  return <CollectionPage title={folder.name} itemIds={itemIds} />;
+  return (
+    <CollectionPage
+      title={folder.name}
+      libraryPath={store.libraryPath}
+      itemIds={itemIds}
+    />
+  );
 }
