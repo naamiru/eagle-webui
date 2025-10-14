@@ -5,18 +5,15 @@ import {
   Button,
   Center,
   ColorSchemeScript,
-  DEFAULT_THEME,
   Loader,
-  MantineProvider,
   mantineHtmlProps,
-  mergeMantineTheme,
-  rem,
   Stack,
   Text,
 } from "@mantine/core";
 import type { Metadata } from "next";
 import { reloadLibrary } from "@/actions/reloadLibrary";
 import { AppLayout } from "@/components/AppLayout";
+import { AppMantineProvider } from "@/components/AppMantineProvider";
 import { ImportLoader } from "@/components/ImportLoader";
 import {
   getStore,
@@ -28,13 +25,6 @@ export const metadata: Metadata = {
   title: "Eagle WebUI",
   description: "A web interface for the Eagle image viewer application",
 };
-
-const theme = mergeMantineTheme(DEFAULT_THEME, {
-  spacing: {
-    xxxs: rem(3),
-    xxs: rem(5),
-  },
-});
 
 export default async function RootLayout({
   children,
@@ -50,11 +40,11 @@ export default async function RootLayout({
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider theme={theme}>
+        <AppMantineProvider>
           <ImportStateContent state={importState}>
             {children}
           </ImportStateContent>
-        </MantineProvider>
+        </AppMantineProvider>
       </body>
     </html>
   );

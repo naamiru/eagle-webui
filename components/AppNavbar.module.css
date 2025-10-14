@@ -68,7 +68,6 @@
   padding: var(--mantine-spacing-xxxs);
   border-radius: var(--mantine-radius-sm);
   font-weight: 500;
-  color: var(--mantine-color-gray-7);
   text-decoration: none;
 
   &:hover {
