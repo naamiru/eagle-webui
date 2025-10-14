@@ -8,13 +8,14 @@ import "swiper/css/virtual";
 import { CloseButton, FocusTrap, Modal, Text } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
+import type { ItemPreview } from "@/data/types";
 import { getImageUrl } from "@/utils/item";
 import classes from "./MobileItemSlider.module.css";
 
 interface MobileItemSliderProps {
   initialItemId: string;
   libraryPath: string;
-  itemIds: string[];
+  items: ItemPreview[];
   dismiss: () => void;
   onChangeActiveItem: (itemId: string) => void;
 }
@@ -22,10 +23,11 @@ interface MobileItemSliderProps {
 export function MobileItemSlider({
   initialItemId,
   libraryPath,
-  itemIds,
+  items,
   dismiss,
   onChangeActiveItem,
 }: MobileItemSliderProps) {
+  const itemIds = useMemo(() => items.map((item) => item.id), [items]);
   const initialIndex = useMemo(
     () => Math.max(itemIds.indexOf(initialItemId), 0),
     [initialItemId, itemIds],
@@ -49,7 +51,7 @@ export function MobileItemSlider({
       <header className={classes.header}>
         <CloseButton icon={<IconArrowLeft stroke={1.2} />} onClick={dismiss} />
         <Text size="sm">
-          {activeIndex + 1} / {itemIds.length}
+          {activeIndex + 1} / {items.length}
         </Text>
       </header>
 
@@ -66,20 +68,20 @@ export function MobileItemSlider({
         tabIndex={0}
         onActiveIndexChange={(swiper) => {
           const nextIndex = swiper.activeIndex;
-          const nextId = itemIds[nextIndex];
-          if (nextId) {
+          const nextItem = items[nextIndex];
+          if (nextItem) {
             setActiveIndex(nextIndex);
-            onChangeActiveItem(nextId);
+            onChangeActiveItem(nextItem.id);
           }
         }}
       >
-        {itemIds.map((itemId, index) => (
-          <SwiperSlide key={itemId} virtualIndex={index}>
+        {items.map((item, index) => (
+          <SwiperSlide key={item.id} virtualIndex={index}>
             <div className="swiper-zoom-container">
               {/** biome-ignore lint/performance/noImgElement: use swiper */}
               <img
-                src={getImageUrl(itemId, libraryPath)}
-                alt={itemId}
+                src={getImageUrl(item.id, libraryPath)}
+                alt={item.id}
                 loading="lazy"
                 decoding="async"
               />

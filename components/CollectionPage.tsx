@@ -4,6 +4,7 @@ import { Text } from "@mantine/core";
 import { useCallback, useState } from "react";
 import AppHeader from "@/components/AppHeader";
 import { ItemList } from "@/components/ItemList";
+import type { ItemPreview } from "@/data/types";
 import { useIsMobile } from "@/utils/responsive";
 import { ItemSlider } from "./ItemSlider";
 import { MobileItemSlider } from "./MobileItemSlider";
@@ -11,13 +12,13 @@ import { MobileItemSlider } from "./MobileItemSlider";
 interface CollectionPageProps {
   title: string;
   libraryPath: string;
-  itemIds: string[];
+  items: ItemPreview[];
 }
 
 export default function CollectionPage({
   title,
   libraryPath,
-  itemIds,
+  items,
 }: CollectionPageProps) {
   const [selectedItemId, setSelectedItemId] = useState<string>();
 
@@ -30,7 +31,7 @@ export default function CollectionPage({
       <ItemSlider
         initialItemId={selectedItemId}
         libraryPath={libraryPath}
-        itemIds={itemIds}
+        items={items}
         dismiss={dismiss}
         onChangeActiveItem={setSelectedItemId}
       />
@@ -45,7 +46,7 @@ export default function CollectionPage({
 
       <ItemList
         libraryPath={libraryPath}
-        itemIds={itemIds}
+        items={items}
         onSelectItem={setSelectedItemId}
       />
 
@@ -53,7 +54,7 @@ export default function CollectionPage({
         <MobileItemSlider
           initialItemId={selectedItemId}
           libraryPath={libraryPath}
-          itemIds={itemIds}
+          items={items}
           dismiss={dismiss}
           onChangeActiveItem={setSelectedItemId}
         />

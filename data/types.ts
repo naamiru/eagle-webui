@@ -46,3 +46,8 @@ export type Item = {
   star: number;
   order: Record<string, number>;
 };
+
+export type ItemPreview = {
+  id: string;
+  duration: number;
+};

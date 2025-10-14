@@ -7,7 +7,7 @@ import { discoverLibraryPath } from "./library/discover-library-path";
 import { importLibraryMetadata } from "./library/import-metadata";
 import { type SortContext, sortItems } from "./sort-items";
 import type { GlobalSortOptions } from "./sort-options";
-import type { Folder, Item } from "./types";
+import type { Folder, Item, ItemPreview } from "./types";
 
 export class Store {
   constructor(
@@ -34,8 +34,8 @@ export class Store {
     return sortItems(items, this.getGlobalSortContext());
   }
 
-  getItemIds(): string[] {
-    return this.getItems().map((item) => item.id);
+  getItemPreviews(): ItemPreview[] {
+    return this.toItemPreviews(this.getItems());
   }
 
   getUncategorizedItems(): Item[] {
@@ -54,8 +54,8 @@ export class Store {
     return sortItems(items, this.getGlobalSortContext());
   }
 
-  getUncategorizedItemIds(): string[] {
-    return this.getUncategorizedItems().map((item) => item.id);
+  getUncategorizedItemPreviews(): ItemPreview[] {
+    return this.toItemPreviews(this.getUncategorizedItems());
   }
 
   getTrashItems(): Item[] {
@@ -70,8 +70,8 @@ export class Store {
     return sortItems(items, this.getGlobalSortContext());
   }
 
-  getTrashItemIds(): string[] {
-    return this.getTrashItems().map((item) => item.id);
+  getTrashItemPreviews(): ItemPreview[] {
+    return this.toItemPreviews(this.getTrashItems());
   }
 
   getFolderItems(folderId: string): Item[] {
@@ -93,8 +93,8 @@ export class Store {
     return sortItems(items, { ...sortContext, folderId });
   }
 
-  getFolderItemIds(folderId: string): string[] {
-    return this.getFolderItems(folderId).map((item) => item.id);
+  getFolderItemPreviews(folderId: string): ItemPreview[] {
+    return this.toItemPreviews(this.getFolderItems(folderId));
   }
 
   private resolveFolderSortContext(folder: Folder | undefined): SortContext {
@@ -116,6 +116,10 @@ export class Store {
       orderBy: this.globalSortSettings.orderBy,
       sortIncrease: this.globalSortSettings.sortIncrease,
     };
+  }
+
+  private toItemPreviews(items: Item[]): ItemPreview[] {
+    return items.map(({ id, duration }) => ({ id, duration }));
   }
 }
 

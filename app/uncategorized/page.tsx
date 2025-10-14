@@ -5,13 +5,13 @@ export const dynamic = "force-dynamic";
 
 export default async function UncategorizedPage() {
   const store = await getStore();
-  const itemIds = store.getUncategorizedItemIds();
+  const items = store.getUncategorizedItemPreviews();
 
   return (
     <CollectionPage
       title="Uncategorized"
       libraryPath={store.libraryPath}
-      itemIds={itemIds}
+      items={items}
     />
   );
 }

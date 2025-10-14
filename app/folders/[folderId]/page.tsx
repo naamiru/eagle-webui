@@ -19,13 +19,13 @@ export default async function FolderPage({ params }: FolderPageProps) {
     notFound();
   }
 
-  const itemIds = store.getFolderItemIds(folderId);
+  const items = store.getFolderItemPreviews(folderId);
 
   return (
     <CollectionPage
       title={folder.name}
       libraryPath={store.libraryPath}
-      itemIds={itemIds}
+      items={items}
     />
   );
 }
