@@ -19,6 +19,7 @@ import {
   getStoreImportState,
   type StoreInitializationState,
 } from "@/data/store";
+import { getLibraryName } from "@/utils/get-library-name";
 
 export const metadata: Metadata = {
   title: "Eagle WebUI",
@@ -85,5 +86,11 @@ function ImportLoadingScreen() {
 
 async function ImportReadyLayout({ children }: { children: React.ReactNode }) {
   const store = await getStore();
-  return <AppLayout folders={store.getFolders()}>{children}</AppLayout>;
+  const libraryName = getLibraryName(store.libraryPath);
+
+  return (
+    <AppLayout folders={store.getFolders()} libraryName={libraryName}>
+      {children}
+    </AppLayout>
+  );
 }

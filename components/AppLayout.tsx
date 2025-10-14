@@ -13,6 +13,7 @@ import { AppNavbar } from "./AppNavbar";
 type AppLayoutProps = {
   children: ReactNode;
   folders: Folder[];
+  libraryName: string;
 };
 
 function HeaderOutlet() {
@@ -20,7 +21,7 @@ function HeaderOutlet() {
   return <>{header}</>;
 }
 
-export function AppLayout({ children, folders }: AppLayoutProps) {
+export function AppLayout({ children, folders, libraryName }: AppLayoutProps) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
 
@@ -65,6 +66,7 @@ export function AppLayout({ children, folders }: AppLayoutProps) {
           desktopOpened={desktopOpened}
           toggleDesktop={toggleDesktop}
           folders={folders}
+          libraryName={libraryName}
         />
 
         <AppShell.Main

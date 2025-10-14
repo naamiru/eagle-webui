@@ -39,6 +39,7 @@ type AppNavbarProps = {
   desktopOpened: boolean;
   toggleDesktop: () => void;
   folders: Folder[];
+  libraryName: string;
 };
 
 export function AppNavbar({
@@ -47,6 +48,7 @@ export function AppNavbar({
   desktopOpened,
   toggleDesktop,
   folders,
+  libraryName,
 }: AppNavbarProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -156,7 +158,7 @@ export function AppNavbar({
             disabled={isReloading}
           >
             <Text size="sm" fw={600}>
-              Library Name
+              {libraryName}
             </Text>
             {isReloading ? (
               <Loader size={16} color="gray" />
