@@ -2,7 +2,7 @@
  * @vitest-environment node
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { LibraryPathNotFoundError } from "./errors";
+import { LibraryImportError } from "./errors";
 import { computeNameForSort } from "./name-for-sort";
 import {
   DEFAULT_GLOBAL_SORT_OPTIONS,
@@ -82,20 +82,26 @@ describe("getStore", () => {
     expect(importLibraryMetadataMock).toHaveBeenCalledTimes(1);
     expect(discoverLibraryPathMock).toHaveBeenCalledTimes(1);
   });
-  it("propagates LibraryPathNotFoundError from discovery", async () => {
-    discoverLibraryPathMock.mockRejectedValue(new LibraryPathNotFoundError());
-    await expect(getStore()).rejects.toBeInstanceOf(LibraryPathNotFoundError);
+  it("propagates LibraryImportError from discovery", async () => {
+    discoverLibraryPathMock.mockRejectedValue(
+      new LibraryImportError("LIBRARY_PATH_NOT_FOUND"),
+    );
+    await expect(getStore()).rejects.toBeInstanceOf(LibraryImportError);
     expect(discoverLibraryPathMock).toHaveBeenCalledTimes(1);
     expect(importLibraryMetadataMock).not.toHaveBeenCalled();
   });
-  it("resets the initialization promise after an import failure", async () => {
+  it("does not reinitialize automatically after a failure", async () => {
     discoverLibraryPathMock.mockResolvedValue("C:/library");
     importLibraryMetadataMock
       .mockRejectedValueOnce(new Error("boom"))
-      .mockResolvedValueOnce(mockLibraryData());
+      .mockResolvedValue(mockLibraryData());
     await expect(getStore()).rejects.toThrow("boom");
-    const second = await getStore();
-    expect(second.applicationVersion).toBe("4.0.0");
+    await expect(getStore()).rejects.toThrow("boom");
+    expect(importLibraryMetadataMock).toHaveBeenCalledTimes(1);
+
+    __resetStoreForTests();
+    const recovered = await getStore();
+    expect(recovered.applicationVersion).toBe("4.0.0");
     expect(importLibraryMetadataMock).toHaveBeenCalledTimes(2);
   });
 });

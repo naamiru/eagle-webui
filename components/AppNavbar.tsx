@@ -28,6 +28,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useTransition } from "react";
 import { useSwipeable } from "react-swipeable";
 import { reloadLibrary } from "@/actions/reloadLibrary";
+import { getLibraryImportErrorMessage } from "@/data/errors";
 import type { Folder } from "@/data/types";
 import { resolveErrorMessage } from "@/utils/resolve-error-message";
 import classes from "./AppNavbar.module.css";
@@ -77,15 +78,25 @@ export function AppNavbar({
   const handleReload = () => {
     startReload(async () => {
       try {
-        await reloadLibrary();
-        router.refresh();
+        const result = await reloadLibrary();
+
+        if (result.ok) {
+          router.refresh();
+          return;
+        }
+
+        notifications.show({
+          color: "red",
+          title: "Library sync failed",
+          message: getLibraryImportErrorMessage(result.code),
+        });
       } catch (error) {
         notifications.show({
           color: "red",
           title: "Library sync failed",
           message: resolveErrorMessage(
             error,
-            "Could not sync library. Please try again."
+            "Could not sync library. Please try again.",
           ),
         });
       }

@@ -5,7 +5,7 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { LibraryPathNotFoundError } from "../errors";
+import { LibraryImportError } from "../errors";
 import { __testUtils, discoverLibraryPath } from "./discover-library-path";
 
 const originalEnv = {
@@ -125,7 +125,7 @@ describe("discoverLibraryPath", () => {
     expect(result).toBe(libraryRoot);
   });
 
-  it("throws LibraryPathNotFoundError when list response has no items", async () => {
+  it("throws LibraryImportError when list response has no items", async () => {
     delete process.env.EAGLE_LIBRARY_PATH;
 
     const fetchMock = vi.fn().mockResolvedValueOnce(
@@ -137,13 +137,13 @@ describe("discoverLibraryPath", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    await expect(discoverLibraryPath()).rejects.toBeInstanceOf(
-      LibraryPathNotFoundError,
-    );
+    await expect(discoverLibraryPath()).rejects.toMatchObject({
+      code: "LIBRARY_PATH_NOT_FOUND",
+    });
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it("throws LibraryPathNotFoundError when thumbnail response is malformed", async () => {
+  it("throws LibraryImportError when thumbnail response is malformed", async () => {
     delete process.env.EAGLE_LIBRARY_PATH;
 
     const fetchMock = vi
@@ -164,7 +164,7 @@ describe("discoverLibraryPath", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     await expect(discoverLibraryPath()).rejects.toBeInstanceOf(
-      LibraryPathNotFoundError,
+      LibraryImportError,
     );
   });
 });
@@ -173,7 +173,7 @@ describe("extractLibraryPath (test utils)", () => {
   it("throws when path does not contain .library segment", () => {
     expect(() =>
       __testUtils.extractLibraryPath("/Users/demo/Pictures/invalid"),
-    ).toThrow(LibraryPathNotFoundError);
+    ).toThrow(LibraryImportError);
   });
 
   it("extracts path when separator is provided explicitly", () => {

@@ -61,9 +61,7 @@ function ImportStateContent({
     case "loading":
       return <ImportLoadingScreen />;
     case "error":
-      return (
-        <ImportErrorScreen message={state.message} reason={state.reason} />
-      );
+      return <ImportErrorScreen code={state.code} />;
     case "ready":
       return <ImportReadyLayout>{children}</ImportReadyLayout>;
     default:

@@ -1,3 +1,7 @@
+import {
+  type LibraryImportErrorCode,
+  toLibraryImportErrorCode,
+} from "./errors";
 import { loadGlobalSortSettings } from "./global-sort-settings";
 import { discoverLibraryPath } from "./library/discover-library-path";
 import { importLibraryMetadata } from "./library/import-metadata";
@@ -119,7 +123,7 @@ export type StoreInitializationState =
   | { status: "idle" }
   | { status: "loading" }
   | { status: "ready" }
-  | { status: "error"; message: string; reason?: string };
+  | { status: "error"; code: LibraryImportErrorCode };
 
 let storePromise: Promise<Store> | null = null;
 let storeState: StoreInitializationState = { status: "idle" };
@@ -138,13 +142,8 @@ export async function getStore(): Promise<Store> {
         storeState = { status: "ready" };
         return store;
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Unknown import error";
-        const reason =
-          error instanceof Error && typeof error.name === "string"
-            ? error.name
-            : undefined;
-        storeState = { status: "error", message, reason };
+        const code = toLibraryImportErrorCode(error);
+        storeState = { status: "error", code };
         throw error;
       }
     })();

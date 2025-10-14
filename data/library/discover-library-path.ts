@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { LibraryPathNotFoundError } from "../errors";
+import { LibraryImportError } from "../errors";
 
 type EagleItemListResponse = {
   status: string;
@@ -27,11 +27,11 @@ export async function discoverLibraryPath(): Promise<string> {
     const thumbnailPath = await fetchThumbnailPath(apiUrl, itemId);
     return extractLibraryPath(thumbnailPath);
   } catch (error) {
-    if (error instanceof LibraryPathNotFoundError) {
+    if (error instanceof LibraryImportError) {
       throw error;
     }
 
-    throw new LibraryPathNotFoundError(undefined, {
+    throw new LibraryImportError("LIBRARY_PATH_NOT_FOUND", {
       cause: error instanceof Error ? error : undefined,
     });
   }
@@ -48,12 +48,12 @@ async function fetchSampleItemId(apiUrl: string): Promise<string> {
   };
 
   if (payload.status !== "success" || !Array.isArray(payload.data)) {
-    throw new LibraryPathNotFoundError();
+    throw new LibraryImportError("LIBRARY_PATH_NOT_FOUND");
   }
 
   const firstItem = payload.data[0];
   if (!firstItem?.id) {
-    throw new LibraryPathNotFoundError();
+    throw new LibraryImportError("LIBRARY_PATH_NOT_FOUND");
   }
 
   return firstItem.id;
@@ -70,7 +70,7 @@ async function fetchThumbnailPath(
   const payload = await parseJson<EagleThumbnailResponse>(response);
 
   if (payload?.status !== "success" || typeof payload.data !== "string") {
-    throw new LibraryPathNotFoundError();
+    throw new LibraryImportError("LIBRARY_PATH_NOT_FOUND");
   }
 
   return payload.data;
@@ -89,7 +89,7 @@ function extractLibraryPath(
   const searchTarget = `${LIBRARY_SUFFIX}${normalizedSeparator}`.toLowerCase();
   const markerIndex = lowerPath.lastIndexOf(searchTarget);
   if (markerIndex === -1) {
-    throw new LibraryPathNotFoundError();
+    throw new LibraryImportError("LIBRARY_PATH_NOT_FOUND");
   }
 
   return pathWithAsset.slice(0, markerIndex + LIBRARY_SUFFIX.length);
@@ -98,7 +98,7 @@ function extractLibraryPath(
 async function safeFetch(input: URL): Promise<Response> {
   const response = await fetch(input);
   if (!response.ok) {
-    throw new LibraryPathNotFoundError();
+    throw new LibraryImportError("LIBRARY_PATH_NOT_FOUND");
   }
   return response;
 }
@@ -107,7 +107,7 @@ async function parseJson<T>(response: Response): Promise<T | undefined> {
   try {
     return (await response.json()) as T;
   } catch {
-    throw new LibraryPathNotFoundError();
+    throw new LibraryImportError("LIBRARY_PATH_NOT_FOUND");
   }
 }
 

@@ -14,43 +14,30 @@ import {
   ImportErrorActions,
   type ImportErrorRetryFailure,
 } from "@/components/ImportErrorActions";
+import {
+  getLibraryImportErrorMessage,
+  type LibraryImportErrorCode,
+} from "@/data/errors";
 
 type ImportErrorScreenProps = {
-  message: string;
-  reason?: string;
+  code: LibraryImportErrorCode;
 };
 
-type ErrorDetails = ImportErrorRetryFailure;
+const LIBRARY_PATH_NOT_FOUND: LibraryImportErrorCode = "LIBRARY_PATH_NOT_FOUND";
 
-const LIBRARY_PATH_NOT_FOUND = "LibraryPathNotFoundError";
-
-export function ImportErrorScreen({ message, reason }: ImportErrorScreenProps) {
-  const [errorDetails, setErrorDetails] = useState<ErrorDetails>({
-    message,
-    reason,
-  });
+export function ImportErrorScreen({ code }: ImportErrorScreenProps) {
+  const [errorCode, setErrorCode] = useState<LibraryImportErrorCode>(code);
 
   useEffect(() => {
-    setErrorDetails({ message, reason });
-  }, [message, reason]);
+    setErrorCode(code);
+  }, [code]);
 
-  const handleRetryFailed = ({
-    message: nextMessage,
-    reason: nextReason,
-  }: ImportErrorRetryFailure) => {
-    setErrorDetails((prev) => {
-      if (nextMessage.trim().length === 0) {
-        return prev;
-      }
-
-      return {
-        message: nextMessage,
-        reason: nextReason ?? prev.reason,
-      };
-    });
+  const handleRetryFailed = ({ code: nextCode }: ImportErrorRetryFailure) => {
+    setErrorCode(nextCode);
   };
 
-  const showSetupInstructions = errorDetails.reason === LIBRARY_PATH_NOT_FOUND;
+  const message = getLibraryImportErrorMessage(errorCode);
+  const showSetupInstructions = errorCode === LIBRARY_PATH_NOT_FOUND;
 
   return (
     <Container>
@@ -58,7 +45,7 @@ export function ImportErrorScreen({ message, reason }: ImportErrorScreenProps) {
         <Stack align="center" gap="lg">
           <Title>Library sync failed.</Title>
           <Text c="dimmed" size="lg" ta="center">
-            {errorDetails.message}
+            {message}
           </Text>
           {showSetupInstructions && (
             <Paper
@@ -84,9 +71,8 @@ export function ImportErrorScreen({ message, reason }: ImportErrorScreenProps) {
                     fontFamily: "var(--mantine-font-family-monospace)",
                   }}
                 >
-                  {
-                    'npx @naamiru/eagle-webui --eagle-library-path "/path/to/MyPhotos.library"'
-                  }
+                  npx @naamiru/eagle-webui --eagle-library-path
+                  "/path/to/MyPhotos.library"
                 </Text>
               </Stack>
             </Paper>

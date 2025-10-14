@@ -7,20 +7,19 @@ The web UI must resolve the Eagle desktop library location (`libraryPath`) befor
 1. **Environment override** – if the `EAGLE_LIBRARY_PATH` environment variable is defined, use it directly (no filesystem validation).
 2. **Eagle HTTP API** – otherwise derive the path via the Eagle REST API hosted at `EAGLE_API_URL` (defaults to `http://localhost:41595`).
 
-If neither source yields a valid path, throw an explicit `LibraryPathNotFoundError`.
+If neither source yields a valid path, throw a `LibraryImportError` with the code `LIBRARY_PATH_NOT_FOUND`.
 
 ### Error contract
 
-- Implement `class LibraryPathNotFoundError extends Error` in `data/errors/library-path-not-found-error.ts`.
-- Provide a stable message (e.g., `"Unable to resolve Eagle library path"`). Include optional metadata such as the attempted discovery sources if helpful for logging.
-- Export the class via `data/errors/index.ts` so callers can catch it without deep imports.
+- Implement the error using `LibraryImportError` and the `LibraryImportErrorCode` union in `data/errors/library-import-error.ts`.
+- Use the `LIBRARY_PATH_NOT_FOUND` code whenever discovery fails. The shared error helper maps codes to user-facing messages.
 
 ## Deriving The Path From Eagle
 
 1. Request a single item from the active library:  
    `GET {EAGLE_API_URL}/api/item/list?limit=1` (docs: <https://api.eagle.cool/item/list>)  
    - Response shape: `{ "status": "success", "data": [ { "id": "KB91GNOPDDVTH", ... } ] }`.  
-   - Reject the response if `status !== "success"` or `data` is empty; treat both as “library unavailable” and raise `LibraryPathNotFoundError`.
+   - Reject the response if `status !== "success"` or `data` is empty; treat both as “library unavailable” and raise `LibraryImportError` with the `LIBRARY_PATH_NOT_FOUND` code.
 2. Use the item identifier to fetch its thumbnail metadata:  
    `GET {EAGLE_API_URL}/api/item/thumbnail?id={itemId}` (docs: <https://api.eagle.cool/item/thumbnail>)  
    - Response shape: `{ "status": "success", "data": "/Users/alex/Pictures/team.library/images/KB..." }`.  
@@ -40,4 +39,4 @@ Use **Vitest** to cover the discovery logic:
 - Environment preference: when `EAGLE_LIBRARY_PATH` is set, the API is not called.
 - API fallback: simulate both populated and empty `/api/item/list` responses.
 - Path extraction: ensure `.library` detection works for POSIX and Windows style paths (mock the separator in unit tests when running on a different host OS).
-- Error handling: verify a missing library raises `LibraryPathNotFoundError`.
+- Error handling: verify a missing library raises `LibraryImportError` with the `LIBRARY_PATH_NOT_FOUND` code.

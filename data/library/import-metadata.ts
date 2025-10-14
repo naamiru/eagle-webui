@@ -220,19 +220,19 @@ async function loadLibraryMetadata(
   try {
     const raw = await readJson(metadataPath);
     if (!validateLibraryMetadata(raw)) {
-      throw new LibraryImportError(
-        `metadata.json failed validation: ${formatAjvErrors(validateLibraryMetadata.errors)}`,
-        { code: "METADATA_READ_FAILURE" },
-      );
+      throw new LibraryImportError("METADATA_READ_FAILURE", {
+        cause: new Error(
+          `metadata.json failed validation: ${formatAjvErrors(validateLibraryMetadata.errors)}`,
+        ),
+      });
     }
     return raw;
   } catch (error) {
     if (error instanceof LibraryImportError) {
       throw error;
     }
-    throw new LibraryImportError("Unable to read metadata.json", {
+    throw new LibraryImportError("METADATA_READ_FAILURE", {
       cause: error instanceof Error ? error : undefined,
-      code: "METADATA_READ_FAILURE",
     });
   }
 }
@@ -241,19 +241,19 @@ async function loadMTimeIndex(mtimePath: string): Promise<RawMTimeIndex> {
   try {
     const raw = await readJson(mtimePath);
     if (!validateMTime(raw)) {
-      throw new LibraryImportError(
-        `mtime.json failed validation: ${formatAjvErrors(validateMTime.errors)}`,
-        { code: "MTIME_READ_FAILURE" },
-      );
+      throw new LibraryImportError("MTIME_READ_FAILURE", {
+        cause: new Error(
+          `mtime.json failed validation: ${formatAjvErrors(validateMTime.errors)}`,
+        ),
+      });
     }
     return raw;
   } catch (error) {
     if (error instanceof LibraryImportError) {
       throw error;
     }
-    throw new LibraryImportError("Unable to read mtime.json", {
+    throw new LibraryImportError("MTIME_READ_FAILURE", {
       cause: error instanceof Error ? error : undefined,
-      code: "MTIME_READ_FAILURE",
     });
   }
 }
@@ -409,10 +409,11 @@ async function readJson(filePath: string): Promise<unknown> {
 
 function assertApplicationVersion(version: string | undefined): void {
   if (!version || !version.startsWith("4.")) {
-    throw new LibraryImportError(
-      `Eagle library requires application version 4.x (found "${version ?? "unknown"}")`,
-      { code: "INVALID_APPLICATION_VERSION" },
-    );
+    throw new LibraryImportError("INVALID_APPLICATION_VERSION", {
+      cause: new Error(
+        `Eagle library requires application version 4.x (found "${version ?? "unknown"}")`,
+      ),
+    });
   }
 }
 

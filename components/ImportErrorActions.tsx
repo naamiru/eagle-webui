@@ -5,11 +5,14 @@ import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { reloadLibrary } from "@/actions/reloadLibrary";
+import {
+  getLibraryImportErrorMessage,
+  type LibraryImportErrorCode,
+} from "@/data/errors";
 import { resolveErrorMessage } from "@/utils/resolve-error-message";
 
 export type ImportErrorRetryFailure = {
-  message: string;
-  reason?: string;
+  code: LibraryImportErrorCode;
 };
 
 type ImportErrorActionsProps = {
@@ -23,18 +26,14 @@ export function ImportErrorActions({ onRetryFailed }: ImportErrorActionsProps) {
   const handleRetry = () => {
     startTransition(async () => {
       try {
-        await reloadLibrary();
-        router.refresh();
-      } catch (error) {
-        const failureMessage = resolveErrorMessage(
-          error,
-          "Could not retry sync. Please try again.",
-        );
+        const result = await reloadLibrary();
 
-        const reason =
-          error instanceof Error && typeof error.name === "string"
-            ? error.name
-            : undefined;
+        if (result.ok) {
+          router.refresh();
+          return;
+        }
+
+        const failureMessage = getLibraryImportErrorMessage(result.code);
 
         notifications.show({
           color: "red",
@@ -42,7 +41,20 @@ export function ImportErrorActions({ onRetryFailed }: ImportErrorActionsProps) {
           message: failureMessage,
         });
 
-        onRetryFailed?.({ message: failureMessage, reason });
+        onRetryFailed?.({ code: result.code });
+      } catch (error) {
+        const failureMessage = resolveErrorMessage(
+          error,
+          getLibraryImportErrorMessage("UNKNOWN_ERROR"),
+        );
+
+        notifications.show({
+          color: "red",
+          title: "Library sync failed",
+          message: failureMessage,
+        });
+
+        onRetryFailed?.({ code: "UNKNOWN_ERROR" });
       }
     });
   };
