@@ -6,7 +6,7 @@ import { after, type NextRequest, NextResponse } from "next/server";
 
 async function findImageFile(
   itemDir: string,
-  preferThumbnail: boolean
+  preferThumbnail: boolean,
 ): Promise<string | null> {
   const files = await fs.readdir(itemDir);
 
@@ -18,7 +18,7 @@ async function findImageFile(
   }
 
   const originalFile = files.find(
-    (file) => !file.includes("_thumbnail.") && file !== "metadata.json"
+    (file) => !file.includes("_thumbnail.") && file !== "metadata.json",
   );
 
   return originalFile ? path.join(itemDir, originalFile) : null;
@@ -26,7 +26,7 @@ async function findImageFile(
 
 export async function handleImageRequest(
   request: NextRequest,
-  preferThumbnail: boolean
+  preferThumbnail: boolean,
 ): Promise<NextResponse> {
   const searchParams = request.nextUrl.searchParams;
   const id = searchParams.get("id");
@@ -35,7 +35,7 @@ export async function handleImageRequest(
   if (!id || !libraryPath) {
     return NextResponse.json(
       { error: "Missing required parameters" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

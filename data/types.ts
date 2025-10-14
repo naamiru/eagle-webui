@@ -4,6 +4,8 @@ export type Palette = {
   $$hashKey?: string;
 };
 
+import type { SortMethod } from "./sort-options";
+
 export type Folder = {
   id: string;
   name: string;
@@ -16,7 +18,7 @@ export type Folder = {
   password: string;
   passwordTips: string;
   coverId?: string;
-  orderBy: string;
+  orderBy: SortMethod;
   sortIncrease: boolean;
 };
 
@@ -38,4 +40,7 @@ export type Item = {
   noThumbnail: boolean;
   lastModified: number;
   palettes: Palette[];
+  duration: number;
+  star: number;
+  order: Record<string, number>;
 };

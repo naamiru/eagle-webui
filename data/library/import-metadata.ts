@@ -5,6 +5,7 @@ import type { ErrorObject } from "ajv";
 import Ajv from "ajv";
 
 import { LibraryImportError } from "../errors";
+import { FOLDER_SORT_METHODS, type SortMethod } from "../sort-options";
 import type { Folder, Item, Palette } from "../types";
 
 type RawFolder = {
@@ -56,6 +57,9 @@ type RawItemMetadata = {
   noThumbnail?: unknown;
   lastModified?: unknown;
   palettes?: RawPalette[];
+  duration?: unknown;
+  star?: unknown;
+  order?: unknown;
 };
 
 const ajv = new Ajv({ allErrors: true, allowUnionTypes: true });
@@ -159,6 +163,15 @@ const itemMetadataSchema = {
     palettes: {
       type: "array",
       items: paletteSchema,
+    },
+    duration: { type: "number" },
+    star: { type: "number" },
+    order: {
+      type: "object",
+      propertyNames: { type: "string" },
+      additionalProperties: {
+        anyOf: [{ type: "string" }, { type: "number" }],
+      },
     },
   },
   additionalProperties: true,
@@ -314,6 +327,9 @@ function normalizeItem(raw: RawItemMetadata): Item {
     palettes: Array.isArray(raw.palettes)
       ? raw.palettes.map(normalizePalette)
       : [],
+    duration: toNumber(raw.duration),
+    star: toNumber(raw.star),
+    order: toOrderMap(raw.order),
   };
 }
 
@@ -370,7 +386,7 @@ function traverseFolders(
       passwordTips:
         typeof raw.passwordTips === "string" ? raw.passwordTips : "",
       coverId: typeof raw.coverId === "string" ? raw.coverId : undefined,
-      orderBy: typeof raw.orderBy === "string" ? raw.orderBy : "GLOBAL",
+      orderBy: sanitizeFolderOrderBy(raw.orderBy),
       sortIncrease:
         typeof raw.sortIncrease === "boolean" ? raw.sortIncrease : true,
     };
@@ -417,4 +433,46 @@ function toStringArray(value: unknown): string[] {
   return Array.isArray(value)
     ? value.filter((entry): entry is string => typeof entry === "string")
     : [];
+}
+
+function toOrderMap(value: unknown): Record<string, number> {
+  if (!value || typeof value !== "object") {
+    return {};
+  }
+
+  const entries = Object.entries(value as Record<string, unknown>).filter(
+    ([key]) => typeof key === "string" && key.length > 0,
+  );
+
+  if (entries.length === 0) {
+    return {};
+  }
+
+  const orderMap: Record<string, number> = {};
+
+  for (const [folderId, rawValue] of entries) {
+    const parsed =
+      typeof rawValue === "number"
+        ? rawValue
+        : typeof rawValue === "string"
+          ? Number.parseFloat(rawValue)
+          : Number.NaN;
+
+    if (Number.isFinite(parsed)) {
+      orderMap[folderId] = parsed;
+    }
+  }
+
+  return orderMap;
+}
+
+function sanitizeFolderOrderBy(value: unknown): SortMethod {
+  if (
+    typeof value === "string" &&
+    (FOLDER_SORT_METHODS as readonly string[]).includes(value)
+  ) {
+    return value as SortMethod;
+  }
+
+  return "GLOBAL";
 }

@@ -29,7 +29,7 @@ export function MobileItemSlider({
 }: MobileItemSliderProps) {
   const initialIndex = useMemo(
     () => items.findIndex((item) => item.id === initialItem.id),
-    [initialItem, items]
+    [initialItem, items],
   );
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);

@@ -1,5 +1,8 @@
+import { loadGlobalSortSettings } from "./global-sort-settings";
 import { discoverLibraryPath } from "./library/discover-library-path";
 import { importLibraryMetadata } from "./library/import-metadata";
+import { type SortContext, sortItems } from "./sort-items";
+import type { GlobalSortOptions } from "./sort-options";
 import type { Folder, Item } from "./types";
 
 export class Store {
@@ -8,6 +11,7 @@ export class Store {
     public readonly applicationVersion: string,
     public readonly folders: Map<string, Folder>,
     public readonly items: Map<string, Item>,
+    public readonly globalSortSettings: GlobalSortOptions,
   ) {}
 
   getFolders(): Folder[] {
@@ -15,7 +19,10 @@ export class Store {
   }
 
   getItems(): Item[] {
-    return Array.from(this.items.values());
+    return sortItems(Array.from(this.items.values()), {
+      orderBy: this.globalSortSettings.orderBy,
+      sortIncrease: this.globalSortSettings.sortIncrease,
+    });
   }
 
   getFolderItems(folderId: string): Item[] {
@@ -27,7 +34,24 @@ export class Store {
       }
     }
 
-    return items;
+    const folder = this.folders.get(folderId);
+    const sortContext = this.resolveFolderSortContext(folder);
+
+    return sortItems(items, { ...sortContext, folderId });
+  }
+
+  private resolveFolderSortContext(folder: Folder | undefined): SortContext {
+    if (!folder || folder.orderBy === "GLOBAL") {
+      return {
+        orderBy: this.globalSortSettings.orderBy,
+        sortIncrease: this.globalSortSettings.sortIncrease,
+      };
+    }
+
+    return {
+      orderBy: folder.orderBy,
+      sortIncrease: folder.sortIncrease,
+    };
   }
 }
 
@@ -83,11 +107,14 @@ export async function waitForStoreInitialization(): Promise<void> {
 async function initializeStore(): Promise<Store> {
   const libraryPath = await discoverLibraryPath();
   const data = await importLibraryMetadata(libraryPath);
+  const globalSortSettings = await loadGlobalSortSettings();
+
   return new Store(
     data.libraryPath,
     data.applicationVersion,
     data.folders,
     data.items,
+    globalSortSettings,
   );
 }
 
