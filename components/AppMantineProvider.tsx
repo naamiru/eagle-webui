@@ -6,6 +6,7 @@ import {
   mergeMantineTheme,
   rem,
 } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 import type { PropsWithChildren } from "react";
 
 const theme = mergeMantineTheme(DEFAULT_THEME, {
@@ -24,6 +25,7 @@ const cssVariablesResolver = () => ({
 export function AppMantineProvider({ children }: PropsWithChildren) {
   return (
     <MantineProvider theme={theme} cssVariablesResolver={cssVariablesResolver}>
+      <Notifications position="top-center" />
       {children}
     </MantineProvider>
   );

@@ -12,6 +12,7 @@ import {
   type TreeNodeData,
   UnstyledButton,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import {
   IconCaretDownFilled,
   IconCaretRightFilled,
@@ -28,6 +29,7 @@ import { useMemo, useTransition } from "react";
 import { useSwipeable } from "react-swipeable";
 import { reloadLibrary } from "@/actions/reloadLibrary";
 import type { Folder } from "@/data/types";
+import { resolveErrorMessage } from "@/utils/resolve-error-message";
 import classes from "./AppNavbar.module.css";
 
 type AppNavbarProps = {
@@ -74,8 +76,19 @@ export function AppNavbar({
 
   const handleReload = () => {
     startReload(async () => {
-      await reloadLibrary();
-      router.refresh();
+      try {
+        await reloadLibrary();
+        router.refresh();
+      } catch (error) {
+        notifications.show({
+          color: "red",
+          title: "Library sync failed",
+          message: resolveErrorMessage(
+            error,
+            "Could not sync library. Please try again."
+          ),
+        });
+      }
     });
   };
 

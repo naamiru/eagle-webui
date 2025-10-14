@@ -119,7 +119,7 @@ export type StoreInitializationState =
   | { status: "idle" }
   | { status: "loading" }
   | { status: "ready" }
-  | { status: "error"; message: string };
+  | { status: "error"; message: string; reason?: string };
 
 let storePromise: Promise<Store> | null = null;
 let storeState: StoreInitializationState = { status: "idle" };
@@ -138,10 +138,13 @@ export async function getStore(): Promise<Store> {
         storeState = { status: "ready" };
         return store;
       } catch (error) {
-        storePromise = null;
         const message =
           error instanceof Error ? error.message : "Unknown import error";
-        storeState = { status: "error", message };
+        const reason =
+          error instanceof Error && typeof error.name === "string"
+            ? error.name
+            : undefined;
+        storeState = { status: "error", message, reason };
         throw error;
       }
     })();

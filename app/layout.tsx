@@ -1,8 +1,7 @@
 import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
 
 import {
-  Alert,
-  Button,
   Center,
   ColorSchemeScript,
   Loader,
@@ -11,9 +10,9 @@ import {
   Text,
 } from "@mantine/core";
 import type { Metadata } from "next";
-import { reloadLibrary } from "@/actions/reloadLibrary";
 import { AppLayout } from "@/components/AppLayout";
 import { AppMantineProvider } from "@/components/AppMantineProvider";
+import { ImportErrorScreen } from "@/components/ImportErrorScreen";
 import { ImportLoader } from "@/components/ImportLoader";
 import {
   getStore,
@@ -62,7 +61,9 @@ function ImportStateContent({
     case "loading":
       return <ImportLoadingScreen />;
     case "error":
-      return <ImportErrorScreen message={state.message} />;
+      return (
+        <ImportErrorScreen message={state.message} reason={state.reason} />
+      );
     case "ready":
       return <ImportReadyLayout>{children}</ImportReadyLayout>;
     default:
@@ -81,28 +82,6 @@ function ImportLoadingScreen() {
         </Stack>
       </Center>
     </>
-  );
-}
-
-function ImportErrorScreen({ message }: { message: string }) {
-  return (
-    <Center h="100vh">
-      <Stack gap="md" align="center">
-        <Alert
-          color="red"
-          title="Library import failed"
-          radius="md"
-          variant="filled"
-        >
-          {message}
-        </Alert>
-        <form action={reloadLibrary}>
-          <Button type="submit" size="md">
-            Retry import
-          </Button>
-        </form>
-      </Stack>
-    </Center>
   );
 }
 
