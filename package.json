@@ -1,16 +1,46 @@
 {
   "name": "eagle-webui",
-  "version": "0.1.0",
-  "private": true,
+  "version": "2.0.0",
+  "keywords": [
+    "eagle",
+    "eagle-app",
+    "image-viewer",
+    "photo-gallery",
+    "web-interface",
+    "mobile-viewer",
+    "image-browser",
+    "media-server"
+  ],
+  "homepage": "https://github.com/naamiru/eagle-webui#readme",
+  "bugs": {
+    "url": "https://github.com/naamiru/eagle-webui/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/naamiru/eagle-webui.git"
+  },
+  "license": "CC0-1.0",
+  "author": "naamiru",
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "bin": {
+    "eagle-webui": "start.js"
+  },
+  "files": [
+    ".next/standalone",
+    "start.js"
+  ],
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build --turbopack && cp -r .next/static .next/standalone/.next/",
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
-    "test": "vitest"
+    "test": "vitest",
+    "prepublishOnly": "npm run build"
   },
-  "dependencies": {
+  "devDependencies": {
     "@mantine/core": "^8.3.4",
     "@mantine/hooks": "^8.3.4",
     "@mantine/notifications": "^8.3.4",
@@ -25,9 +55,7 @@
     "react-swipeable": "^7.0.2",
     "react-virtuoso": "^4.14.1",
     "swiper": "^12.0.2",
-    "zustand": "^5.0.8"
-  },
-  "devDependencies": {
+    "zustand": "^5.0.8",
     "@biomejs/biome": "2.2.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.0",
