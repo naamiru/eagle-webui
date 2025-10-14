@@ -52,6 +52,8 @@ export function AppNavbar({
   const folderTreeData = useMemo(() => buildFolderTreeData(folders), [folders]);
   const folderCount = folders.length;
   const isAllActive = pathname === "/";
+  const isUncategorizedActive = pathname === "/uncategorized";
+  const isTrashActive = pathname === "/trash";
 
   const activeFolderId = useMemo(() => {
     if (!pathname) {
@@ -79,6 +81,20 @@ export function AppNavbar({
 
   const handleAllSelect = () => {
     router.push("/");
+    if (mobileOpened) {
+      toggleMobile();
+    }
+  };
+
+  const handleUncategorizedSelect = () => {
+    router.push("/uncategorized");
+    if (mobileOpened) {
+      toggleMobile();
+    }
+  };
+
+  const handleTrashSelect = () => {
+    router.push("/trash");
     if (mobileOpened) {
       toggleMobile();
     }
@@ -151,7 +167,11 @@ export function AppNavbar({
             <Text size="sm">All</Text>
           </UnstyledButton>
 
-          <UnstyledButton className={classes.mainLink}>
+          <UnstyledButton
+            className={classes.mainLink}
+            aria-current={isUncategorizedActive ? "page" : undefined}
+            onClick={handleUncategorizedSelect}
+          >
             <IconFolderQuestion
               className={classes.mainLinkIcon}
               size={20}
@@ -160,7 +180,11 @@ export function AppNavbar({
             <Text size="sm">Uncategorized</Text>
           </UnstyledButton>
 
-          <UnstyledButton className={classes.mainLink}>
+          <UnstyledButton
+            className={classes.mainLink}
+            aria-current={isTrashActive ? "page" : undefined}
+            onClick={handleTrashSelect}
+          >
             <IconTrash className={classes.mainLinkIcon} size={20} stroke={1} />
             <Text size="sm">Trash</Text>
           </UnstyledButton>

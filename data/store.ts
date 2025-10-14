@@ -33,6 +33,29 @@ export class Store {
     return this.getItems().map((item) => item.id);
   }
 
+  getUncategorizedItems(): Item[] {
+    return this.getItems().filter((item) => item.folders.length === 0);
+  }
+
+  getUncategorizedItemIds(): string[] {
+    return this.getUncategorizedItems().map((item) => item.id);
+  }
+
+  getTrashItems(): Item[] {
+    const deletedItems = Array.from(this.items.values()).filter(
+      (item) => item.isDeleted,
+    );
+
+    return sortItems(deletedItems, {
+      orderBy: this.globalSortSettings.orderBy,
+      sortIncrease: this.globalSortSettings.sortIncrease,
+    });
+  }
+
+  getTrashItemIds(): string[] {
+    return this.getTrashItems().map((item) => item.id);
+  }
+
   getFolderItems(folderId: string): Item[] {
     const items: Item[] = [];
 
