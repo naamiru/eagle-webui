@@ -234,7 +234,8 @@ export function AppNavbar({
 
         <section>
           <Text size="xs" fw={500} c="dimmed" className={classes.sectionTitle}>
-            Folders ({folderCount})
+            Folders
+            {folders.length > 0 && `(${folderCount})`}
           </Text>
 
           <Tree
