@@ -69,7 +69,7 @@ export function useSingleTap(opts: SingleTapOptions) {
         movedRef.current = true; // Considered a swipe
       }
     },
-    [moveThreshold]
+    [moveThreshold],
   );
 
   const onPointerCancel = useCallback(
@@ -78,7 +78,7 @@ export function useSingleTap(opts: SingleTapOptions) {
         return;
       resetActive();
     },
-    [resetActive]
+    [resetActive],
   );
 
   const onPointerUp = useCallback(
@@ -131,7 +131,7 @@ export function useSingleTap(opts: SingleTapOptions) {
       tapMaxDuration,
       clearSingleTimer,
       resetActive,
-    ]
+    ],
   );
 
   return {

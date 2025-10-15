@@ -38,7 +38,7 @@ export function ItemSlider({
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
   const initialIndex = useMemo(
     () => Math.max(itemIds.indexOf(initialItemId), 0),
-    [initialItemId, itemIds]
+    [initialItemId, itemIds],
   );
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -79,7 +79,7 @@ export function ItemSlider({
         }
       }
     },
-    [items]
+    [items],
   );
 
   const handlePrevious = useCallback(() => {
@@ -91,6 +91,47 @@ export function ItemSlider({
     if (activeIndex === items.length - 1) return;
     swiperRef.current?.slideNext();
   }, [activeIndex, items.length]);
+
+  const slides = useMemo(
+    () =>
+      items.map((item, index) => (
+        <SwiperSlide key={item.id} virtualIndex={index}>
+          {item.duration > 0 ? (
+            <div className={classes.videoContainer}>
+              <div
+                className={classes.videoFitbox}
+                style={
+                  {
+                    "--ratio": `(${item.width}/${item.height})`,
+                  } as React.CSSProperties
+                }
+              >
+                {/** biome-ignore lint/a11y/useMediaCaption: simple video */}
+                <video
+                  className={classes.video}
+                  src={getImageUrl(item.id, libraryPath)}
+                  poster={getThumbnailUrl(item.id, libraryPath)}
+                  playsInline
+                  loop
+                  controls
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="swiper-zoom-container">
+              {/** biome-ignore lint/performance/noImgElement: use swiper */}
+              <img
+                src={getImageUrl(item.id, libraryPath)}
+                alt={item.id}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          )}
+        </SwiperSlide>
+      )),
+    [items, libraryPath],
+  );
 
   return (
     <>
@@ -143,42 +184,7 @@ export function ItemSlider({
         }}
         onSlideChange={playAndPauseVideo}
       >
-        {items.map((item, index) => (
-          <SwiperSlide key={item.id} virtualIndex={index}>
-            {item.duration > 0 ? (
-              <div className={classes.videoContainer}>
-                <div
-                  className={classes.videoFitbox}
-                  style={
-                    {
-                      "--ratio": `(${item.width}/${item.height})`,
-                    } as React.CSSProperties
-                  }
-                >
-                  {/** biome-ignore lint/a11y/useMediaCaption: simple video */}
-                  <video
-                    className={classes.video}
-                    src={getImageUrl(item.id, libraryPath)}
-                    poster={getThumbnailUrl(item.id, libraryPath)}
-                    playsInline
-                    loop
-                    controls
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="swiper-zoom-container">
-                {/** biome-ignore lint/performance/noImgElement: use swiper */}
-                <img
-                  src={getImageUrl(item.id, libraryPath)}
-                  alt={item.id}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            )}
-          </SwiperSlide>
-        ))}
+        {slides}
       </Swiper>
     </>
   );

@@ -41,7 +41,7 @@ export function MobileItemSlider({
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
   const initialIndex = useMemo(
     () => Math.max(itemIds.indexOf(initialItemId), 0),
-    [initialItemId, itemIds]
+    [initialItemId, itemIds],
   );
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -64,7 +64,7 @@ export function MobileItemSlider({
         }
       }
     },
-    [items]
+    [items],
   );
 
   const [isUIPresented, setIsUIPresented] = useState(true);
@@ -89,9 +89,64 @@ export function MobileItemSlider({
 
         setIsUIPresented(!isUIPresented);
       },
-      [isUIPresented]
+      [isUIPresented],
     ),
   });
+
+  const slides = useMemo(
+    () =>
+      items.map((item, index) => (
+        <SwiperSlide key={item.id} virtualIndex={index}>
+          {item.duration > 0 ? (
+            <MediaController style={{ width: "100%", height: "100%" }}>
+              {/** biome-ignore lint/a11y/useMediaCaption: simple video */}
+              <video
+                slot="media"
+                src={getImageUrl(item.id, libraryPath)}
+                poster={getThumbnailUrl(item.id, libraryPath)}
+                playsInline
+                loop
+                style={{
+                  objectFit: "contain",
+                  backgroundColor: "white",
+                }}
+              />
+              <MediaControlBar
+                style={
+                  {
+                    "--media-tooltip-display": "none",
+                    margin: "5px 15px",
+                  } as React.CSSProperties
+                }
+              >
+                <div
+                  className="no-swiping"
+                  style={{ display: "flex", flexGrow: "1" }}
+                >
+                  <MediaPlayButton style={{ borderRadius: "15px 0 0 15px" }} />
+                  <MediaTimeRange style={{ width: "100%" }} />
+                  <MediaTimeDisplay showDuration />
+                  <MediaFullscreenButton
+                    style={{ borderRadius: "0 15px 15px 0" }}
+                  />
+                </div>
+              </MediaControlBar>
+            </MediaController>
+          ) : (
+            <div className="swiper-zoom-container">
+              {/** biome-ignore lint/performance/noImgElement: use swiper */}
+              <img
+                src={getImageUrl(item.id, libraryPath)}
+                alt={item.id}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          )}
+        </SwiperSlide>
+      )),
+    [items, libraryPath],
+  );
 
   return (
     <Modal
@@ -152,58 +207,7 @@ export function MobileItemSlider({
               isZoomRef.current = isZoom;
             }}
           >
-            {items.map((item, index) => (
-              <SwiperSlide key={item.id} virtualIndex={index}>
-                {item.duration > 0 ? (
-                  <MediaController style={{ width: "100%", height: "100%" }}>
-                    {/** biome-ignore lint/a11y/useMediaCaption: simple video */}
-                    <video
-                      slot="media"
-                      src={getImageUrl(item.id, libraryPath)}
-                      poster={getThumbnailUrl(item.id, libraryPath)}
-                      playsInline
-                      loop
-                      style={{
-                        objectFit: "contain",
-                        backgroundColor: "white",
-                      }}
-                    />
-                    <MediaControlBar
-                      style={
-                        {
-                          "--media-tooltip-display": "none",
-                          margin: "5px 15px",
-                        } as React.CSSProperties
-                      }
-                    >
-                      <div
-                        className="no-swiping"
-                        style={{ display: "flex", flexGrow: "1" }}
-                      >
-                        <MediaPlayButton
-                          style={{ borderRadius: "15px 0 0 15px" }}
-                        />
-                        <MediaTimeRange style={{ width: "100%" }} />
-                        <MediaTimeDisplay showDuration />
-                        <MediaFullscreenButton
-                          style={{ borderRadius: "0 15px 15px 0" }}
-                        />
-                      </div>
-                    </MediaControlBar>
-                  </MediaController>
-                ) : (
-                  <div className="swiper-zoom-container">
-                    {/** biome-ignore lint/performance/noImgElement: use swiper */}
-                    <img
-                      src={getImageUrl(item.id, libraryPath)}
-                      alt={item.id}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
-                )}
-              </SwiperSlide>
-            ))}
+            {slides}
           </Swiper>
         </div>
       </div>
