@@ -128,3 +128,7 @@
   /* biome-ignore lint/complexity/noImportantStyles: override mantine */
   -webkit-tap-highlight-color: transparent !important;
 }
+
+.settingsSection {
+  margin-top: var(--mantine-spacing-lg);
+}

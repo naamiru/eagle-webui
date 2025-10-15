@@ -23,6 +23,7 @@ import {
   IconInbox,
   IconLayoutSidebarLeftCollapse,
   IconRefresh,
+  IconSettings,
   IconTrash,
 } from "@tabler/icons-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -318,6 +319,15 @@ export function AppNavbar({
                 </div>
               );
             }}
+          />
+        </section>
+
+        <section className={classes.settingsSection}>
+          <MainLinkButton
+            to="/settings"
+            icon={IconSettings}
+            label="Settings"
+            count={0}
           />
         </section>
       </AppShell.Section>
