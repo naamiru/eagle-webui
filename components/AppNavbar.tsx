@@ -81,6 +81,10 @@ export function AppNavbar({
     () => new Map(folders.map((folder) => [folder.id, folder.itemCount])),
     [folders]
   );
+  const aggregateFolderCounts = useMemo(
+    () => buildAggregateFolderCounts(folders),
+    [folders]
+  );
   const folderCount = folders.length;
 
   const handleReload = () => {
@@ -140,7 +144,7 @@ export function AppNavbar({
       >
         <IconComponent className={classes.mainLinkIcon} size={20} stroke={1} />
         <Text size="sm">{label}</Text>
-        {typeof count === "number" && (
+        {!!count && (
           <div className={classes.mainLinkTrailing}>
             <Text
               size="xs"
@@ -292,7 +296,13 @@ export function AppNavbar({
                       to={folderPath}
                       icon={folderIcon}
                       label={node.label}
-                      count={folderCounts.get(folderId) ?? 0}
+                      count={
+                        hasChildren && !expanded
+                          ? aggregateFolderCounts.get(folderId) ??
+                            folderCounts.get(folderId) ??
+                            0
+                          : folderCounts.get(folderId) ?? 0
+                      }
                       onMouseDown={(event) => {
                         if (event.detail === 2) {
                           event.preventDefault();
@@ -312,6 +322,51 @@ export function AppNavbar({
       </AppShell.Section>
     </AppShell.Navbar>
   );
+}
+
+export function buildAggregateFolderCounts(
+  folders: Folder[]
+): Map<string, number> {
+  const totals = new Map<string, number>();
+
+  if (folders.length === 0) {
+    return totals;
+  }
+
+  const foldersById = new Map(folders.map((folder) => [folder.id, folder]));
+  const processing = new Set<string>();
+
+  const accumulate = (folder: Folder): number => {
+    const cached = totals.get(folder.id);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    if (processing.has(folder.id)) {
+      totals.set(folder.id, folder.itemCount);
+      return folder.itemCount;
+    }
+
+    processing.add(folder.id);
+
+    let total = folder.itemCount;
+    for (const childId of folder.children) {
+      const child = foldersById.get(childId);
+      if (child) {
+        total += accumulate(child);
+      }
+    }
+
+    processing.delete(folder.id);
+    totals.set(folder.id, total);
+    return total;
+  };
+
+  folders.forEach((folder) => {
+    accumulate(folder);
+  });
+
+  return totals;
 }
 
 function buildFolderTreeData(folders: Folder[]): TreeNodeData[] {
