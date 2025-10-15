@@ -21,10 +21,16 @@ export default function CollectionPage({
   items,
 }: CollectionPageProps) {
   const [selectedItemId, setSelectedItemId] = useState<string>();
+  const [lastSelectedItemId, setLastSelectedItemId] = useState<string>();
 
+  const updateSelection = useCallback((itemId: string) => {
+    setSelectedItemId(itemId);
+    setLastSelectedItemId(itemId);
+  }, []);
   const dismiss = useCallback(() => setSelectedItemId(undefined), []);
 
   const isMobile = useIsMobile();
+  const listSelectedItemId = selectedItemId ?? lastSelectedItemId;
 
   if (selectedItemId && !isMobile) {
     return (
@@ -33,7 +39,7 @@ export default function CollectionPage({
         libraryPath={libraryPath}
         items={items}
         dismiss={dismiss}
-        onChangeActiveItem={setSelectedItemId}
+        onChangeActiveItem={updateSelection}
       />
     );
   }
@@ -47,7 +53,8 @@ export default function CollectionPage({
       <ItemList
         libraryPath={libraryPath}
         items={items}
-        onSelectItem={setSelectedItemId}
+        initialSelectedItemId={listSelectedItemId}
+        onSelectItem={updateSelection}
       />
 
       {selectedItemId && isMobile && (
@@ -56,7 +63,7 @@ export default function CollectionPage({
           libraryPath={libraryPath}
           items={items}
           dismiss={dismiss}
-          onChangeActiveItem={setSelectedItemId}
+          onChangeActiveItem={updateSelection}
         />
       )}
     </>

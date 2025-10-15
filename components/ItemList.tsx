@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { VirtuosoGrid } from "react-virtuoso";
 import type { ItemPreview } from "@/data/types";
 import { getThumbnailUrl } from "@/utils/item";
@@ -8,10 +9,24 @@ import classes from "./ItemList.module.css";
 interface ItemListProps {
   libraryPath: string;
   items: ItemPreview[];
+  initialSelectedItemId?: string;
   onSelectItem: (itemId: string) => void;
 }
 
-export function ItemList({ libraryPath, items, onSelectItem }: ItemListProps) {
+export function ItemList({
+  libraryPath,
+  items,
+  initialSelectedItemId,
+  onSelectItem,
+}: ItemListProps) {
+  const initialTopMostItemIndex = useMemo(() => {
+    if (!initialSelectedItemId) {
+      return undefined;
+    }
+    const index = items.findIndex(({ id }) => id === initialSelectedItemId);
+    return index === -1 ? undefined : index;
+  }, [items, initialSelectedItemId]);
+
   const itemContent = (index: number) => {
     const item = items[index];
     if (!item) {
@@ -38,6 +53,7 @@ export function ItemList({ libraryPath, items, onSelectItem }: ItemListProps) {
       itemClassName={classes.item}
       totalCount={items.length}
       itemContent={itemContent}
+      initialTopMostItemIndex={initialTopMostItemIndex}
       increaseViewportBy={200}
     />
   );
