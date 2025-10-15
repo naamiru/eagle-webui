@@ -42,14 +42,14 @@ export function ItemList({
         stateSnapshot: snapshot,
       });
     },
-    [onSelectItem]
+    [onSelectItem],
   );
 
   const handleSelect = useCallback(
     (itemId: string) => {
       emitSelection(itemId, latestStateRef.current);
     },
-    [emitSelection]
+    [emitSelection],
   );
 
   const itemContent = (index: number) => {

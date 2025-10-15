@@ -1,5 +1,6 @@
 "use client";
 
+import type { UnstyledButtonProps } from "@mantine/core";
 import {
   AppShell,
   Box,
@@ -25,6 +26,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { usePathname, useRouter } from "next/navigation";
+import type { ComponentPropsWithoutRef, ComponentType, ReactNode } from "react";
 import { useMemo, useTransition } from "react";
 import { useSwipeable } from "react-swipeable";
 import { reloadLibrary } from "@/actions/reloadLibrary";
@@ -42,6 +44,23 @@ type AppNavbarProps = {
   libraryName: string;
 };
 
+type MainLinkButtonProps = Omit<
+  UnstyledButtonProps,
+  "aria-current" | "className" | "children" | "onClick"
+> &
+  Omit<
+    ComponentPropsWithoutRef<"button">,
+    "aria-current" | "className" | "children" | "onClick"
+  > & {
+    to: string;
+    icon: ComponentType<{
+      className?: string;
+      size?: number;
+      stroke?: number;
+    }>;
+    label: ReactNode;
+  };
+
 export function AppNavbar({
   mobileOpened,
   toggleMobile,
@@ -56,26 +75,6 @@ export function AppNavbar({
   const reloadLabel = isReloading ? "Reloading library..." : "Reload library";
   const folderTreeData = useMemo(() => buildFolderTreeData(folders), [folders]);
   const folderCount = folders.length;
-  const isAllActive = pathname === "/";
-  const isUncategorizedActive = pathname === "/uncategorized";
-  const isTrashActive = pathname === "/trash";
-
-  const activeFolderId = useMemo(() => {
-    if (!pathname) {
-      return null;
-    }
-
-    const match = pathname.match(/^\/folders\/([^/]+)/);
-    if (!match) {
-      return null;
-    }
-
-    try {
-      return decodeURIComponent(match[1]);
-    } catch {
-      return match[1];
-    }
-  }, [pathname]);
 
   const handleReload = () => {
     startReload(async () => {
@@ -105,32 +104,36 @@ export function AppNavbar({
     });
   };
 
-  const handleAllSelect = () => {
-    router.push("/");
-    if (mobileOpened) {
-      toggleMobile();
-    }
-  };
+  const MainLinkButton = ({
+    to,
+    icon: IconComponent,
+    label,
+    ...props
+  }: MainLinkButtonProps) => {
+    const isActive =
+      pathname === to || (to !== "/" && pathname.startsWith(`${to}/`));
 
-  const handleUncategorizedSelect = () => {
-    router.push("/uncategorized");
-    if (mobileOpened) {
-      toggleMobile();
-    }
-  };
+    const handleClick = () => {
+      if (pathname !== to) {
+        router.push(to);
+      }
 
-  const handleTrashSelect = () => {
-    router.push("/trash");
-    if (mobileOpened) {
-      toggleMobile();
-    }
-  };
+      if (mobileOpened) {
+        toggleMobile();
+      }
+    };
 
-  const handleFolderSelect = (folderId: string) => {
-    router.push(`/folders/${encodeURIComponent(folderId)}`);
-    if (mobileOpened) {
-      toggleMobile();
-    }
+    return (
+      <UnstyledButton
+        className={classes.mainLink}
+        aria-current={isActive ? "page" : undefined}
+        onClick={handleClick}
+        {...props}
+      >
+        <IconComponent className={classes.mainLinkIcon} size={20} stroke={1} />
+        <Text size="sm">{label}</Text>
+      </UnstyledButton>
+    );
   };
   const swipeHandlers = useSwipeable({
     onSwipedLeft: toggleMobile,
@@ -184,36 +187,15 @@ export function AppNavbar({
         className={classes.scrollable}
       >
         <section>
-          <UnstyledButton
-            className={classes.mainLink}
-            aria-current={isAllActive ? "page" : undefined}
-            onClick={handleAllSelect}
-          >
-            <IconInbox className={classes.mainLinkIcon} size={20} stroke={1} />
-            <Text size="sm">All</Text>
-          </UnstyledButton>
+          <MainLinkButton to="/" icon={IconInbox} label="All" />
 
-          <UnstyledButton
-            className={classes.mainLink}
-            aria-current={isUncategorizedActive ? "page" : undefined}
-            onClick={handleUncategorizedSelect}
-          >
-            <IconFolderQuestion
-              className={classes.mainLinkIcon}
-              size={20}
-              stroke={1}
-            />
-            <Text size="sm">Uncategorized</Text>
-          </UnstyledButton>
+          <MainLinkButton
+            to="/uncategorized"
+            icon={IconFolderQuestion}
+            label="Uncategorized"
+          />
 
-          <UnstyledButton
-            className={classes.mainLink}
-            aria-current={isTrashActive ? "page" : undefined}
-            onClick={handleTrashSelect}
-          >
-            <IconTrash className={classes.mainLinkIcon} size={20} stroke={1} />
-            <Text size="sm">Trash</Text>
-          </UnstyledButton>
+          <MainLinkButton to="/trash" icon={IconTrash} label="Trash" />
         </section>
 
         <section>
@@ -232,7 +214,9 @@ export function AppNavbar({
               tree,
             }) => {
               const folderId = String(node.value);
-              const isActiveFolder = activeFolderId === folderId;
+              const folderPath = `/folders/${encodeURIComponent(folderId)}`;
+              const folderIcon =
+                hasChildren && expanded ? IconFolderOpen : IconFolder;
 
               return (
                 <div {...elementProps}>
@@ -274,12 +258,10 @@ export function AppNavbar({
                           />
                         </>
                       ))}
-                    <UnstyledButton
-                      className={classes.mainLink}
-                      aria-current={isActiveFolder ? "page" : undefined}
-                      onClick={() => {
-                        handleFolderSelect(folderId);
-                      }}
+                    <MainLinkButton
+                      to={folderPath}
+                      icon={folderIcon}
+                      label={node.label}
                       onMouseDown={(event) => {
                         if (event.detail === 2) {
                           event.preventDefault();
@@ -289,22 +271,7 @@ export function AppNavbar({
                         event.preventDefault();
                         tree.toggleExpanded(node.value);
                       }}
-                    >
-                      {hasChildren && expanded ? (
-                        <IconFolderOpen
-                          className={classes.mainLinkIcon}
-                          size={20}
-                          stroke={1}
-                        />
-                      ) : (
-                        <IconFolder
-                          className={classes.mainLinkIcon}
-                          size={20}
-                          stroke={1}
-                        />
-                      )}
-                      <Text size="sm">{node.label}</Text>
-                    </UnstyledButton>
+                    />
                   </div>
                 </div>
               );
