@@ -97,7 +97,7 @@ export function AppNavbar({
           title: "Library sync failed",
           message: resolveErrorMessage(
             error,
-            "Could not sync library. Please try again.",
+            "Could not sync library. Please try again."
           ),
         });
       }
@@ -132,6 +132,11 @@ export function AppNavbar({
       >
         <IconComponent className={classes.mainLinkIcon} size={20} stroke={1} />
         <Text size="sm">{label}</Text>
+        <div className={classes.mainLinkTrailing}>
+          <Text size="xs" c="dimmed" ff="var(--mantine-font-family-monospace)">
+            10
+          </Text>
+        </div>
       </UnstyledButton>
     );
   };
