@@ -8,8 +8,12 @@ import "swiper/css/zoom";
 import "swiper/css/virtual";
 import "swiper/css/keyboard";
 import { CloseButton, Text } from "@mantine/core";
-import { IconArrowLeft } from "@tabler/icons-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  IconArrowLeft,
+  IconChevronLeft,
+  IconChevronRight,
+} from "@tabler/icons-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ItemPreview } from "@/data/types";
 import { useSliderState } from "@/stores/slider-state";
 import { getImageUrl, getThumbnailUrl } from "@/utils/item";
@@ -38,6 +42,7 @@ export function ItemSlider({
   );
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const swiperRef = useRef<SwiperType | null>(null);
 
   // ESC to dismiss
   useEffect(() => {
@@ -77,6 +82,16 @@ export function ItemSlider({
     [items]
   );
 
+  const handlePrevious = useCallback(() => {
+    if (activeIndex === 0) return;
+    swiperRef.current?.slidePrev();
+  }, [activeIndex]);
+
+  const handleNext = useCallback(() => {
+    if (activeIndex === items.length - 1) return;
+    swiperRef.current?.slideNext();
+  }, [activeIndex, items.length]);
+
   return (
     <>
       <AppHeader>
@@ -84,6 +99,18 @@ export function ItemSlider({
         <Text size="sm">
           {activeIndex + 1} / {items.length}
         </Text>
+        <div className={classes.headerTrailing}>
+          <CloseButton
+            icon={<IconChevronLeft stroke={1.2} />}
+            disabled={activeIndex === 0}
+            onClick={handlePrevious}
+          />
+          <CloseButton
+            icon={<IconChevronRight stroke={1.2} />}
+            disabled={activeIndex === items.length - 1}
+            onClick={handleNext}
+          />
+        </div>
       </AppHeader>
 
       <Swiper
@@ -97,6 +124,9 @@ export function ItemSlider({
         initialSlide={initialIndex}
         className={classes.swiper}
         tabIndex={0}
+        onSwiper={(swiper) => {
+          swiperRef.current = swiper;
+        }}
         onActiveIndexChange={(swiper) => {
           const nextIndex = swiper.activeIndex;
           const nextItem = items[nextIndex];
@@ -106,6 +136,7 @@ export function ItemSlider({
           }
         }}
         onAfterInit={(swiper) => {
+          swiperRef.current = swiper;
           requestAnimationFrame(() => {
             playAndPauseVideo(swiper);
           });
