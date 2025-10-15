@@ -10,7 +10,7 @@ import {
   MediaTimeDisplay,
   MediaTimeRange,
 } from "media-chrome/react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Keyboard, Virtual, Zoom } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper/types";
@@ -19,6 +19,7 @@ import { getImageUrl, getThumbnailUrl } from "@/utils/item";
 import "swiper/css";
 import "swiper/css/zoom";
 import "swiper/css/virtual";
+import { useSwipeable } from "react-swipeable";
 import classes from "./MobileItemSlider.module.css";
 
 interface MobileItemSliderProps {
@@ -65,6 +66,15 @@ export function MobileItemSlider({
     [items]
   );
 
+  const isZoomRef = useRef(false);
+  const swipeHandlers = useSwipeable({
+    onSwipedDown() {
+      if (!isZoomRef.current) {
+        dismiss();
+      }
+    },
+  });
+
   return (
     <Modal
       opened={true}
@@ -85,77 +95,92 @@ export function MobileItemSlider({
         </Text>
       </header>
 
-      <Swiper
-        modules={[Zoom, Virtual, Keyboard]}
-        zoom={true}
-        virtual
-        keyboard={{
-          enabled: true,
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
         }}
-        spaceBetween={16}
-        initialSlide={initialIndex}
-        className={classes.swiper}
-        tabIndex={0}
-        noSwiping
-        noSwipingClass="no-swiping"
-        onActiveIndexChange={(swiper) => {
-          const nextIndex = swiper.activeIndex;
-          const nextItem = items[nextIndex];
-          if (nextItem) {
-            setActiveIndex(nextIndex);
-            onChangeActiveItem(nextItem.id);
-          }
-        }}
-        onSlideChange={pauseVideo}
+        {...swipeHandlers}
       >
-        {items.map((item, index) => (
-          <SwiperSlide key={item.id} virtualIndex={index}>
-            {item.duration > 0 ? (
-              <MediaController style={{ width: "100%", height: "100%" }}>
-                {/** biome-ignore lint/a11y/useMediaCaption: simple video */}
-                <video
-                  slot="media"
-                  src={getImageUrl(item.id, libraryPath)}
-                  poster={getThumbnailUrl(item.id, libraryPath)}
-                  playsInline
-                  loop
-                  style={{
-                    objectFit: "contain",
-                    backgroundColor: "white",
-                  }}
-                />
-                <MediaControlBar
-                  style={
-                    {
-                      "--media-tooltip-display": "none",
-                      margin: "5px 15px",
-                    } as React.CSSProperties
-                  }
-                >
-                  <MediaPlayButton style={{ borderRadius: "15px 0 0 15px" }} />
-                  <div className="no-swiping" style={{ flexGrow: "1" }}>
-                    <MediaTimeRange style={{ width: "100%" }} />
-                  </div>
-                  <MediaTimeDisplay showDuration />
-                  <MediaFullscreenButton
-                    style={{ borderRadius: "0 15px 15px 0" }}
+        <Swiper
+          modules={[Zoom, Virtual, Keyboard]}
+          zoom
+          virtual
+          keyboard={{
+            enabled: true,
+          }}
+          spaceBetween={16}
+          initialSlide={initialIndex}
+          className={classes.swiper}
+          tabIndex={0}
+          noSwiping
+          noSwipingClass="no-swiping"
+          onActiveIndexChange={(swiper) => {
+            const nextIndex = swiper.activeIndex;
+            const nextItem = items[nextIndex];
+            if (nextItem) {
+              setActiveIndex(nextIndex);
+              onChangeActiveItem(nextItem.id);
+            }
+
+            isZoomRef.current = false;
+          }}
+          onSlideChange={pauseVideo}
+          onZoomChange={(_, scale) => {
+            isZoomRef.current = scale > 1.01;
+          }}
+        >
+          {items.map((item, index) => (
+            <SwiperSlide key={item.id} virtualIndex={index}>
+              {item.duration > 0 ? (
+                <MediaController style={{ width: "100%", height: "100%" }}>
+                  {/** biome-ignore lint/a11y/useMediaCaption: simple video */}
+                  <video
+                    slot="media"
+                    src={getImageUrl(item.id, libraryPath)}
+                    poster={getThumbnailUrl(item.id, libraryPath)}
+                    playsInline
+                    loop
+                    style={{
+                      objectFit: "contain",
+                      backgroundColor: "white",
+                    }}
                   />
-                </MediaControlBar>
-              </MediaController>
-            ) : (
-              <div className="swiper-zoom-container">
-                {/** biome-ignore lint/performance/noImgElement: use swiper */}
-                <img
-                  src={getImageUrl(item.id, libraryPath)}
-                  alt={item.id}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            )}
-          </SwiperSlide>
-        ))}
-      </Swiper>
+                  <MediaControlBar
+                    style={
+                      {
+                        "--media-tooltip-display": "none",
+                        margin: "5px 15px",
+                      } as React.CSSProperties
+                    }
+                  >
+                    <MediaPlayButton
+                      style={{ borderRadius: "15px 0 0 15px" }}
+                    />
+                    <div className="no-swiping" style={{ flexGrow: "1" }}>
+                      <MediaTimeRange style={{ width: "100%" }} />
+                    </div>
+                    <MediaTimeDisplay showDuration />
+                    <MediaFullscreenButton
+                      style={{ borderRadius: "0 15px 15px 0" }}
+                    />
+                  </MediaControlBar>
+                </MediaController>
+              ) : (
+                <div className="swiper-zoom-container">
+                  {/** biome-ignore lint/performance/noImgElement: use swiper */}
+                  <img
+                    src={getImageUrl(item.id, libraryPath)}
+                    alt={item.id}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              )}
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
     </Modal>
   );
 }
