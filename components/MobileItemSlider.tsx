@@ -1,15 +1,24 @@
 "use client";
 
+import { CloseButton, FocusTrap, Modal, Text } from "@mantine/core";
+import { IconArrowLeft } from "@tabler/icons-react";
+import {
+  MediaControlBar,
+  MediaController,
+  MediaFullscreenButton,
+  MediaPlayButton,
+  MediaTimeDisplay,
+  MediaTimeRange,
+} from "media-chrome/react";
+import { useCallback, useMemo, useState } from "react";
 import { Keyboard, Virtual, Zoom } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper/types";
+import type { ItemPreview } from "@/data/types";
+import { getImageUrl, getThumbnailUrl } from "@/utils/item";
 import "swiper/css";
 import "swiper/css/zoom";
 import "swiper/css/virtual";
-import { ActionIcon, CloseButton, FocusTrap, Modal, Text } from "@mantine/core";
-import { IconArrowLeft, IconPlayerPlayFilled } from "@tabler/icons-react";
-import { useMemo, useState } from "react";
-import type { ItemPreview } from "@/data/types";
-import { getImageUrl } from "@/utils/item";
 import classes from "./MobileItemSlider.module.css";
 
 interface MobileItemSliderProps {
@@ -34,6 +43,27 @@ export function MobileItemSlider({
   );
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
+
+  const pauseVideo = useCallback(
+    (swiper: SwiperType) => {
+      if (!swiper.slides) return;
+      for (const slide of swiper.slides) {
+        const index = parseInt(slide.dataset.swiperSlideIndex ?? "", 10);
+        if (Number.isNaN(index)) continue;
+        const item = items[index];
+        if (!item || item.duration === 0) continue;
+        const video = slide.querySelector("video");
+        if (video) {
+          if (index !== swiper.activeIndex) {
+            if (!video.paused && !video.ended) {
+              video.pause();
+            }
+          }
+        }
+      }
+    },
+    [items]
+  );
 
   return (
     <Modal
@@ -66,6 +96,8 @@ export function MobileItemSlider({
         initialSlide={initialIndex}
         className={classes.swiper}
         tabIndex={0}
+        noSwiping
+        noSwipingClass="no-swiping"
         onActiveIndexChange={(swiper) => {
           const nextIndex = swiper.activeIndex;
           const nextItem = items[nextIndex];
@@ -74,58 +106,42 @@ export function MobileItemSlider({
             onChangeActiveItem(nextItem.id);
           }
         }}
+        onSlideChange={pauseVideo}
       >
         {items.map((item, index) => (
           <SwiperSlide key={item.id} virtualIndex={index}>
             {item.duration > 0 ? (
-              <div
-                style={{
-                  width: "100%",
-                  height: "100%",
-                }}
-              >
+              <MediaController style={{ width: "100%", height: "100%" }}>
                 {/** biome-ignore lint/a11y/useMediaCaption: simple video */}
                 <video
+                  slot="media"
                   src={getImageUrl(item.id, libraryPath)}
-                  playsInline={false}
-                  controls={false}
+                  poster={getThumbnailUrl(item.id, libraryPath)}
+                  playsInline
                   loop
                   style={{
-                    width: "100%",
-                    height: "100%",
+                    objectFit: "contain",
+                    backgroundColor: "white",
                   }}
                 />
-                <ActionIcon
-                  className={classes.videoPlayButton}
-                  variant="filled"
-                  size={60}
-                  radius="xl"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const slide = (e.currentTarget as HTMLElement)
-                      .parentElement;
-                    const video = slide?.querySelector(
-                      "video"
-                    ) as HTMLVideoElement | null;
-                    if (!video) return;
-
-                    video.setAttribute("playsinline", "");
-                    enterFullscreen(video).finally(() => {
-                      const p = video.play();
-                      p?.catch(() => {});
-                    });
-                  }}
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    zIndex: 2,
-                  }}
+                <MediaControlBar
+                  style={
+                    {
+                      "--media-tooltip-display": "none",
+                      margin: "5px 15px",
+                    } as React.CSSProperties
+                  }
                 >
-                  <IconPlayerPlayFilled />
-                </ActionIcon>
-              </div>
+                  <MediaPlayButton style={{ borderRadius: "15px 0 0 15px" }} />
+                  <div className="no-swiping" style={{ flexGrow: "1" }}>
+                    <MediaTimeRange style={{ width: "100%" }} />
+                  </div>
+                  <MediaTimeDisplay showDuration />
+                  <MediaFullscreenButton
+                    style={{ borderRadius: "0 15px 15px 0" }}
+                  />
+                </MediaControlBar>
+              </MediaController>
             ) : (
               <div className="swiper-zoom-container">
                 {/** biome-ignore lint/performance/noImgElement: use swiper */}
@@ -142,49 +158,4 @@ export function MobileItemSlider({
       </Swiper>
     </Modal>
   );
-}
-
-async function enterFullscreen(el: HTMLVideoElement | HTMLElement) {
-  const video = el as HTMLVideoElement;
-
-  // 1) Standard Fullscreen API (Android/Chromium/Firefox/Desktop Safari)
-  if (video.requestFullscreen) {
-    try {
-      await video.requestFullscreen();
-      return;
-    } catch (e) {
-      // e.g., NotAllowedError when not triggered by a user gesture
-      // fall through to other vendor-specific methods
-    }
-  }
-
-  // 2) iOS Safari (iPhone/iPad) – non-standard API
-  const anyVid = video as any;
-  if (typeof anyVid.webkitEnterFullscreen === "function") {
-    anyVid.webkitEnterFullscreen(); // Does not return a Promise
-    return;
-  }
-
-  // 3) Other Safari variants (e.g., iPad) – additional vendor APIs
-  if (typeof anyVid.webkitRequestFullscreen === "function") {
-    try {
-      anyVid.webkitRequestFullscreen();
-      return;
-    } catch {}
-  }
-  if (typeof anyVid.webkitSetPresentationMode === "function") {
-    try {
-      anyVid.webkitSetPresentationMode("fullscreen");
-      return;
-    } catch {}
-  }
-
-  // 4) Last resort: request fullscreen on the parent element
-  const parent = video.parentElement;
-  if (parent?.requestFullscreen) {
-    try {
-      await parent.requestFullscreen();
-      return;
-    } catch {}
-  }
 }

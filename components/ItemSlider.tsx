@@ -12,7 +12,7 @@ import { IconArrowLeft } from "@tabler/icons-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ItemPreview } from "@/data/types";
 import { useSliderState } from "@/stores/slider-state";
-import { getImageUrl } from "@/utils/item";
+import { getImageUrl, getThumbnailUrl } from "@/utils/item";
 import AppHeader from "./AppHeader";
 import classes from "./ItemSlider.module.css";
 
@@ -128,9 +128,10 @@ export function ItemSlider({
                   <video
                     className={classes.video}
                     src={getImageUrl(item.id, libraryPath)}
-                    controls
+                    poster={getThumbnailUrl(item.id, libraryPath)}
                     playsInline
                     loop
+                    controls
                   />
                 </div>
               </div>

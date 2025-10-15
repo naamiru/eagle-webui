@@ -21,3 +21,14 @@
 .swiper {
   height: 100%;
 }
+
+/* :global(media-controller media-control-bar) {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+:global(media-controller:not([userinactive]) media-control-bar) {
+  opacity: 1;
+  pointer-events: auto;
+} */
