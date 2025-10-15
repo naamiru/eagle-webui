@@ -25,7 +25,6 @@ interface ItemSliderProps {
   libraryPath: string;
   items: ItemPreview[];
   dismiss: () => void;
-  onChangeActiveItem: (itemId: string) => void;
 }
 
 export function ItemSlider({
@@ -33,7 +32,6 @@ export function ItemSlider({
   libraryPath,
   items,
   dismiss,
-  onChangeActiveItem,
 }: ItemSliderProps) {
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
   const initialIndex = useMemo(
@@ -172,7 +170,6 @@ export function ItemSlider({
           const nextIndex = swiper.activeIndex;
           const nextItem = items[nextIndex];
           if (nextItem) {
-            onChangeActiveItem(nextItem.id);
             setActiveIndex(nextIndex);
           }
         }}

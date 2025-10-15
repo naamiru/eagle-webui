@@ -1,31 +1,55 @@
 "use client";
 
-import { useMemo } from "react";
-import { VirtuosoGrid } from "react-virtuoso";
+import { useCallback, useEffect, useRef } from "react";
+import { type GridStateSnapshot, VirtuosoGrid } from "react-virtuoso";
 import type { ItemPreview } from "@/data/types";
 import { getThumbnailUrl } from "@/utils/item";
 import classes from "./ItemList.module.css";
 
+export interface ItemSelection {
+  itemId: string;
+  stateSnapshot: GridStateSnapshot | null;
+}
+
 interface ItemListProps {
   libraryPath: string;
   items: ItemPreview[];
-  initialSelectedItemId?: string;
-  onSelectItem: (itemId: string) => void;
+  initialState?: GridStateSnapshot | null;
+  onSelectItem: (selection: ItemSelection) => void;
 }
 
 export function ItemList({
   libraryPath,
   items,
-  initialSelectedItemId,
+  initialState,
   onSelectItem,
 }: ItemListProps) {
-  const initialTopMostItemIndex = useMemo(() => {
-    if (!initialSelectedItemId) {
-      return undefined;
-    }
-    const index = items.findIndex(({ id }) => id === initialSelectedItemId);
-    return index === -1 ? undefined : index;
-  }, [items, initialSelectedItemId]);
+  const latestStateRef = useRef<GridStateSnapshot | null>(initialState ?? null);
+
+  useEffect(() => {
+    latestStateRef.current = initialState ?? null;
+  }, [initialState]);
+
+  const handleStateChanged = useCallback((snapshot: GridStateSnapshot) => {
+    latestStateRef.current = snapshot;
+  }, []);
+
+  const emitSelection = useCallback(
+    (itemId: string, snapshot: GridStateSnapshot | null) => {
+      onSelectItem({
+        itemId,
+        stateSnapshot: snapshot,
+      });
+    },
+    [onSelectItem]
+  );
+
+  const handleSelect = useCallback(
+    (itemId: string) => {
+      emitSelection(itemId, latestStateRef.current);
+    },
+    [emitSelection]
+  );
 
   const itemContent = (index: number) => {
     const item = items[index];
@@ -40,7 +64,7 @@ export function ItemList({
         className={classes.image}
         src={getThumbnailUrl(id, libraryPath)}
         alt={id}
-        onClick={() => onSelectItem(id)}
+        onClick={() => handleSelect(id)}
         loading="lazy"
         decoding="async"
       />
@@ -53,7 +77,8 @@ export function ItemList({
       itemClassName={classes.item}
       totalCount={items.length}
       itemContent={itemContent}
-      initialTopMostItemIndex={initialTopMostItemIndex}
+      restoreStateFrom={initialState ?? undefined}
+      stateChanged={handleStateChanged}
       increaseViewportBy={200}
     />
   );

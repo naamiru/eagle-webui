@@ -3,7 +3,7 @@
 import { Text } from "@mantine/core";
 import { useCallback, useState } from "react";
 import AppHeader from "@/components/AppHeader";
-import { ItemList } from "@/components/ItemList";
+import { ItemList, type ItemSelection } from "@/components/ItemList";
 import type { ItemPreview } from "@/data/types";
 import { useIsMobile } from "@/utils/responsive";
 import { ItemSlider } from "./ItemSlider";
@@ -21,16 +21,16 @@ export default function CollectionPage({
   items,
 }: CollectionPageProps) {
   const [selectedItemId, setSelectedItemId] = useState<string>();
-  const [lastSelectedItemId, setLastSelectedItemId] = useState<string>();
+  const [listStateSnapshot, setListStateSnapshot] =
+    useState<ItemSelection["stateSnapshot"]>(null);
 
-  const updateSelection = useCallback((itemId: string) => {
-    setSelectedItemId(itemId);
-    setLastSelectedItemId(itemId);
+  const handleSelectItem = useCallback((selection: ItemSelection) => {
+    setSelectedItemId(selection.itemId);
+    setListStateSnapshot(selection.stateSnapshot ?? null);
   }, []);
   const dismiss = useCallback(() => setSelectedItemId(undefined), []);
 
   const isMobile = useIsMobile();
-  const listSelectedItemId = selectedItemId ?? lastSelectedItemId;
 
   if (selectedItemId && !isMobile) {
     return (
@@ -39,7 +39,6 @@ export default function CollectionPage({
         libraryPath={libraryPath}
         items={items}
         dismiss={dismiss}
-        onChangeActiveItem={updateSelection}
       />
     );
   }
@@ -53,8 +52,8 @@ export default function CollectionPage({
       <ItemList
         libraryPath={libraryPath}
         items={items}
-        initialSelectedItemId={listSelectedItemId}
-        onSelectItem={updateSelection}
+        initialState={listStateSnapshot}
+        onSelectItem={handleSelectItem}
       />
 
       {selectedItemId && isMobile && (
@@ -63,7 +62,6 @@ export default function CollectionPage({
           libraryPath={libraryPath}
           items={items}
           dismiss={dismiss}
-          onChangeActiveItem={updateSelection}
         />
       )}
     </>

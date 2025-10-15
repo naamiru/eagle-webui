@@ -28,7 +28,6 @@ interface MobileItemSliderProps {
   libraryPath: string;
   items: ItemPreview[];
   dismiss: () => void;
-  onChangeActiveItem: (itemId: string) => void;
 }
 
 export function MobileItemSlider({
@@ -36,7 +35,6 @@ export function MobileItemSlider({
   libraryPath,
   items,
   dismiss,
-  onChangeActiveItem,
 }: MobileItemSliderProps) {
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
   const initialIndex = useMemo(
@@ -188,7 +186,6 @@ export function MobileItemSlider({
               const nextItem = items[nextIndex];
               if (nextItem) {
                 setActiveIndex(nextIndex);
-                onChangeActiveItem(nextItem.id);
               }
 
               isZoomRef.current = false;
