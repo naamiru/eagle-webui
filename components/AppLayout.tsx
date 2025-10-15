@@ -4,7 +4,7 @@ import { AppShell, Burger, CloseButton, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconLayoutSidebarRightCollapse } from "@tabler/icons-react";
 import type { ReactNode } from "react";
-import type { Folder } from "@/data/types";
+import type { Folder, ItemCounts } from "@/data/types";
 import { useSliderState } from "@/stores/slider-state";
 import { HeaderSlotProvider, useHeaderSlot } from "./AppHeader";
 import classes from "./AppLayout.module.css";
@@ -14,6 +14,7 @@ type AppLayoutProps = {
   children: ReactNode;
   folders: Folder[];
   libraryName: string;
+  itemCounts: ItemCounts;
 };
 
 function HeaderOutlet() {
@@ -21,7 +22,12 @@ function HeaderOutlet() {
   return <>{header}</>;
 }
 
-export function AppLayout({ children, folders, libraryName }: AppLayoutProps) {
+export function AppLayout({
+  children,
+  folders,
+  libraryName,
+  itemCounts,
+}: AppLayoutProps) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
 
@@ -66,6 +72,7 @@ export function AppLayout({ children, folders, libraryName }: AppLayoutProps) {
           desktopOpened={desktopOpened}
           toggleDesktop={toggleDesktop}
           folders={folders}
+          itemCounts={itemCounts}
           libraryName={libraryName}
         />
 

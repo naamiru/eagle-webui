@@ -14,6 +14,7 @@ export type Folder = {
   children: string[];
   parentId?: string;
   manualOrder: number;
+  itemCount: number;
   modificationTime: number;
   tags: string[];
   password: string;
@@ -52,4 +53,10 @@ export type ItemPreview = {
   duration: number;
   width: number;
   height: number;
+};
+
+export type ItemCounts = {
+  all: number;
+  uncategorized: number;
+  trash: number;
 };

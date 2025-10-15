@@ -7,7 +7,7 @@ import { discoverLibraryPath } from "./library/discover-library-path";
 import { importLibraryMetadata } from "./library/import-metadata";
 import { type SortContext, sortItems } from "./sort-items";
 import type { GlobalSortOptions } from "./sort-options";
-import type { Folder, Item, ItemPreview } from "./types";
+import type { Folder, Item, ItemCounts, ItemPreview } from "./types";
 
 export class Store {
   constructor(
@@ -16,6 +16,7 @@ export class Store {
     public readonly folders: Map<string, Folder>,
     public readonly items: Map<string, Item>,
     public readonly globalSortSettings: GlobalSortOptions,
+    public readonly itemCounts: ItemCounts,
   ) {}
 
   getFolders(): Folder[] {
@@ -128,6 +129,66 @@ export class Store {
   }
 }
 
+export function computeItemCounts(
+  items: Map<string, Item>,
+  folders: Map<string, Folder>,
+): ItemCounts {
+  let all = 0;
+  let uncategorized = 0;
+  let trash = 0;
+
+  const folderCounts = new Map<string, number>();
+
+  for (const folderId of folders.keys()) {
+    folderCounts.set(folderId, 0);
+  }
+
+  for (const item of items.values()) {
+    if (item.isDeleted) {
+      trash += 1;
+      continue;
+    }
+
+    all += 1;
+
+    if (item.folders.length === 0) {
+      uncategorized += 1;
+      continue;
+    }
+
+    if (item.folders.length === 1) {
+      const folderId = item.folders[0];
+      const existing = folderCounts.get(folderId);
+      if (existing !== undefined) {
+        folderCounts.set(folderId, existing + 1);
+      }
+      continue;
+    }
+
+    const uniqueFolderIds = new Set(item.folders);
+
+    for (const folderId of uniqueFolderIds) {
+      const existing = folderCounts.get(folderId);
+      if (existing !== undefined) {
+        folderCounts.set(folderId, existing + 1);
+      }
+    }
+  }
+
+  for (const [folderId, count] of folderCounts) {
+    const folder = folders.get(folderId);
+    if (folder) {
+      folder.itemCount = count;
+    }
+  }
+
+  return {
+    all,
+    uncategorized,
+    trash,
+  };
+}
+
 export type StoreInitializationState =
   | { status: "idle" }
   | { status: "loading" }
@@ -179,6 +240,7 @@ async function initializeStore(): Promise<Store> {
   const libraryPath = await discoverLibraryPath();
   const data = await importLibraryMetadata(libraryPath);
   const globalSortSettings = await loadGlobalSortSettings();
+  const itemCounts = computeItemCounts(data.items, data.folders);
 
   return new Store(
     data.libraryPath,
@@ -186,6 +248,7 @@ async function initializeStore(): Promise<Store> {
     data.folders,
     data.items,
     globalSortSettings,
+    itemCounts,
   );
 }
 

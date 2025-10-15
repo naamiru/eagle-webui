@@ -8,7 +8,7 @@ import {
   DEFAULT_GLOBAL_SORT_OPTIONS,
   type GlobalSortOptions,
 } from "./sort-options";
-import { getStoreImportState, Store } from "./store";
+import { computeItemCounts, getStoreImportState, Store } from "./store";
 import type { Folder, Item } from "./types";
 
 vi.mock("./library/discover-library-path", () => ({
@@ -31,6 +31,7 @@ const mockFolder: Folder = {
   description: "",
   children: [],
   manualOrder: 0,
+  itemCount: 0,
   modificationTime: 0,
   tags: [],
   password: "",
@@ -106,12 +107,17 @@ describe("getStore", () => {
   });
 });
 function mockLibraryData(): Store {
+  const folders = new Map([["root", { ...mockFolder }]]);
+  const items = new Map([["item-1", { ...mockItem }]]);
+  const itemCounts = computeItemCounts(items, folders);
+
   return new Store(
     "C:/library",
     "4.0.0",
-    new Map([["root", mockFolder]]),
-    new Map([["item-1", mockItem]]),
+    folders,
+    items,
     { ...DEFAULT_GLOBAL_SORT_OPTIONS },
+    itemCounts,
   );
 }
 
@@ -254,6 +260,49 @@ describe("Store sorting", () => {
   });
 });
 
+describe("Store item counts", () => {
+  it("computes collection and folder counts from items", () => {
+    const folderA = createFolder({ id: "folder-a" });
+    const folderB = createFolder({ id: "folder-b" });
+    const folderC = createFolder({ id: "folder-c" });
+
+    const store = createStore({
+      folders: [folderA, folderB, folderC],
+      items: [
+        createItem({
+          id: "a-only",
+          folders: ["folder-a"],
+        }),
+        createItem({
+          id: "ab",
+          folders: ["folder-a", "folder-b"],
+        }),
+        createItem({
+          id: "duplicate",
+          folders: ["folder-a", "folder-a"],
+        }),
+        createItem({
+          id: "uncategorized",
+        }),
+        createItem({
+          id: "trashed",
+          isDeleted: true,
+          folders: ["folder-a"],
+        }),
+      ],
+    });
+
+    expect(store.itemCounts).toEqual({
+      all: 4,
+      uncategorized: 1,
+      trash: 1,
+    });
+    expect(store.folders.get("folder-a")?.itemCount).toBe(3);
+    expect(store.folders.get("folder-b")?.itemCount).toBe(1);
+    expect(store.folders.get("folder-c")?.itemCount).toBe(0);
+  });
+});
+
 function createStore(options: {
   libraryPath?: string;
   applicationVersion?: string;
@@ -269,12 +318,16 @@ function createStore(options: {
     globalSortSettings = DEFAULT_GLOBAL_SORT_OPTIONS,
   } = options;
 
+  const folderMap = new Map(folders.map((folder) => [folder.id, folder]));
+  const itemMap = new Map(items.map((item) => [item.id, item]));
+
   return new Store(
     libraryPath,
     applicationVersion,
-    new Map(folders.map((folder) => [folder.id, folder])),
-    new Map(items.map((item) => [item.id, item])),
+    folderMap,
+    itemMap,
     { ...globalSortSettings },
+    computeItemCounts(itemMap, folderMap),
   );
 }
 
@@ -288,6 +341,7 @@ function createFolder(overrides: Partial<Folder>): Folder {
     children: overrides.children ?? [],
     parentId: overrides.parentId,
     manualOrder: overrides.manualOrder ?? 0,
+    itemCount: overrides.itemCount ?? 0,
     modificationTime: overrides.modificationTime ?? 0,
     tags: overrides.tags ?? [],
     password: overrides.password ?? "",

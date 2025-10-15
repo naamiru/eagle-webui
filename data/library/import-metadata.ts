@@ -394,6 +394,7 @@ function traverseFolders(
       children: childIds,
       parentId,
       manualOrder: index,
+      itemCount: 0,
       modificationTime: toNumber(raw.modificationTime),
       tags: toStringArray(raw.tags),
       password: typeof raw.password === "string" ? raw.password : "",

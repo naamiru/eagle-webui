@@ -31,7 +31,7 @@ import { useMemo, useTransition } from "react";
 import { useSwipeable } from "react-swipeable";
 import { reloadLibrary } from "@/actions/reloadLibrary";
 import { getLibraryImportErrorMessage } from "@/data/errors";
-import type { Folder } from "@/data/types";
+import type { Folder, ItemCounts } from "@/data/types";
 import { resolveErrorMessage } from "@/utils/resolve-error-message";
 import classes from "./AppNavbar.module.css";
 
@@ -41,6 +41,7 @@ type AppNavbarProps = {
   desktopOpened: boolean;
   toggleDesktop: () => void;
   folders: Folder[];
+  itemCounts: ItemCounts;
   libraryName: string;
 };
 
@@ -59,6 +60,7 @@ type MainLinkButtonProps = Omit<
       stroke?: number;
     }>;
     label: ReactNode;
+    count?: number;
   };
 
 export function AppNavbar({
@@ -67,6 +69,7 @@ export function AppNavbar({
   desktopOpened,
   toggleDesktop,
   folders,
+  itemCounts,
   libraryName,
 }: AppNavbarProps) {
   const router = useRouter();
@@ -74,6 +77,10 @@ export function AppNavbar({
   const [isReloading, startReload] = useTransition();
   const reloadLabel = isReloading ? "Reloading library..." : "Reload library";
   const folderTreeData = useMemo(() => buildFolderTreeData(folders), [folders]);
+  const folderCounts = useMemo(
+    () => new Map(folders.map((folder) => [folder.id, folder.itemCount])),
+    [folders]
+  );
   const folderCount = folders.length;
 
   const handleReload = () => {
@@ -108,6 +115,7 @@ export function AppNavbar({
     to,
     icon: IconComponent,
     label,
+    count,
     ...props
   }: MainLinkButtonProps) => {
     const isActive =
@@ -132,11 +140,17 @@ export function AppNavbar({
       >
         <IconComponent className={classes.mainLinkIcon} size={20} stroke={1} />
         <Text size="sm">{label}</Text>
-        <div className={classes.mainLinkTrailing}>
-          <Text size="xs" c="dimmed" ff="var(--mantine-font-family-monospace)">
-            10
-          </Text>
-        </div>
+        {typeof count === "number" && (
+          <div className={classes.mainLinkTrailing}>
+            <Text
+              size="xs"
+              c="dimmed"
+              ff="var(--mantine-font-family-monospace)"
+            >
+              {count}
+            </Text>
+          </div>
+        )}
       </UnstyledButton>
     );
   };
@@ -192,15 +206,26 @@ export function AppNavbar({
         className={classes.scrollable}
       >
         <section>
-          <MainLinkButton to="/" icon={IconInbox} label="All" />
+          <MainLinkButton
+            to="/"
+            icon={IconInbox}
+            label="All"
+            count={itemCounts.all}
+          />
 
           <MainLinkButton
             to="/uncategorized"
             icon={IconFolderQuestion}
             label="Uncategorized"
+            count={itemCounts.uncategorized}
           />
 
-          <MainLinkButton to="/trash" icon={IconTrash} label="Trash" />
+          <MainLinkButton
+            to="/trash"
+            icon={IconTrash}
+            label="Trash"
+            count={itemCounts.trash}
+          />
         </section>
 
         <section>
@@ -267,6 +292,7 @@ export function AppNavbar({
                       to={folderPath}
                       icon={folderIcon}
                       label={node.label}
+                      count={folderCounts.get(folderId) ?? 0}
                       onMouseDown={(event) => {
                         if (event.detail === 2) {
                           event.preventDefault();

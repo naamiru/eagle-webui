@@ -91,7 +91,11 @@ async function ImportReadyLayout({ children }: { children: React.ReactNode }) {
   const libraryName = getLibraryName(store.libraryPath);
 
   return (
-    <AppLayout folders={store.getFolders()} libraryName={libraryName}>
+    <AppLayout
+      folders={store.getFolders()}
+      itemCounts={store.itemCounts}
+      libraryName={libraryName}
+    >
       {children}
     </AppLayout>
   );
