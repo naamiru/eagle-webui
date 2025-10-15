@@ -1,5 +1,6 @@
 "use client";
 
+import { Center, Text } from "@mantine/core";
 import { useCallback, useEffect, useRef } from "react";
 import { type GridStateSnapshot, VirtuosoGrid } from "react-virtuoso";
 import type { ItemPreview } from "@/data/types";
@@ -70,6 +71,15 @@ export function ItemList({
       />
     );
   };
+
+  if (items.length === 0) {
+    return (
+      <Center mih={240}>
+        <Text c="dimmed">No items</Text>
+      </Center>
+    );
+  }
+
   return (
     <VirtuosoGrid
       useWindowScroll
