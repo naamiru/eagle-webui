@@ -53,6 +53,7 @@ export type ItemPreview = {
   duration: number;
   width: number;
   height: number;
+  ext: string;
 };
 
 export type ItemCounts = {

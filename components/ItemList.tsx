@@ -59,7 +59,10 @@ export function ItemList({
     if (!item) {
       return null;
     }
-    const { id } = item;
+    const { id, ext, duration } = item;
+    const extensionLabel = ext.toUpperCase();
+    const isVideo =
+      duration > 0 || extensionLabel === "GIF" || extensionLabel === "WEBP";
     return (
       <>
         {/** biome-ignore lint/a11y/useKeyWithClickEvents: image grid */}
@@ -72,7 +75,9 @@ export function ItemList({
           loading="lazy"
           decoding="async"
         />
-        <div className={classes.typeBadge}>PNG</div>
+        {isVideo ? (
+          <div className={classes.typeBadge}>{extensionLabel}</div>
+        ) : null}
       </>
     );
   };
