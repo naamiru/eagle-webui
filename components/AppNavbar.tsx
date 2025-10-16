@@ -84,11 +84,11 @@ export function AppNavbar({
   const folderTreeData = useMemo(() => buildFolderTreeData(folders), [folders]);
   const folderCounts = useMemo(
     () => new Map(folders.map((folder) => [folder.id, folder.itemCount])),
-    [folders]
+    [folders],
   );
   const aggregateFolderCounts = useMemo(
     () => buildAggregateFolderCounts(folders),
-    [folders]
+    [folders],
   );
   const folderCount = folders.length;
 
@@ -113,7 +113,7 @@ export function AppNavbar({
           title: t("common.notifications.librarySyncFailedTitle"),
           message: resolveErrorMessage(
             error,
-            t("common.notifications.librarySyncFailedMessage")
+            t("common.notifications.librarySyncFailedMessage"),
           ),
         });
       }
@@ -306,10 +306,10 @@ export function AppNavbar({
                       label={node.label}
                       count={
                         hasChildren && !expanded
-                          ? aggregateFolderCounts.get(folderId) ??
+                          ? (aggregateFolderCounts.get(folderId) ??
                             folderCounts.get(folderId) ??
-                            0
-                          : folderCounts.get(folderId) ?? 0
+                            0)
+                          : (folderCounts.get(folderId) ?? 0)
                       }
                       onMouseDown={(event) => {
                         if (event.detail === 2) {
@@ -342,7 +342,7 @@ export function AppNavbar({
 }
 
 export function buildAggregateFolderCounts(
-  folders: Folder[]
+  folders: Folder[],
 ): Map<string, number> {
   const totals = new Map<string, number>();
 

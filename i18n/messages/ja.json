@@ -20,6 +20,10 @@
       "RATING": "評価",
       "DURATION": "再生時間",
       "RANDOM": "ランダム"
+    },
+    "sections": {
+      "subfolders": "サブフォルダ",
+      "contents": "コンテンツ"
     }
   },
   "navbar": {

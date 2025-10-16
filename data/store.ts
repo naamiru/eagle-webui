@@ -98,6 +98,20 @@ export class Store {
     return this.toItemPreviews(this.getFolderItems(folderId));
   }
 
+  getFirstFolderItem(folderId: string): Item | undefined {
+    for (const item of this.items.values()) {
+      if (item.isDeleted) {
+        continue;
+      }
+
+      if (item.folders.includes(folderId)) {
+        return item;
+      }
+    }
+
+    return undefined;
+  }
+
   private resolveFolderSortContext(folder: Folder | undefined): SortContext {
     if (!folder || folder.orderBy === "GLOBAL") {
       return {

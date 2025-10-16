@@ -12,6 +12,7 @@ import { ItemList, type ItemSelection } from "@/components/ItemList";
 import { ListScaleControl } from "@/components/ListScaleControl";
 import type { FolderSortOptions, GlobalSortOptions } from "@/data/sort-options";
 import type { ItemPreview } from "@/data/types";
+import { useTranslations } from "@/i18n/client";
 import { useIsMobile } from "@/utils/responsive";
 import classes from "./CollectionPage.module.css";
 import { ItemSlider } from "./ItemSlider";
@@ -20,6 +21,7 @@ import {
   GlobalListSortControl,
 } from "./ListSortControl";
 import { MobileItemSlider } from "./MobileItemSlider";
+import { type Subfolder, SubfolderList } from "./SubfolderList";
 
 export type CollectionSortState =
   | {
@@ -38,6 +40,7 @@ interface CollectionPageProps {
   items: ItemPreview[];
   initialListScale: number;
   sortState: CollectionSortState;
+  subfolders: Subfolder[];
 }
 
 export default function CollectionPage({
@@ -46,6 +49,7 @@ export default function CollectionPage({
   items,
   initialListScale,
   sortState,
+  subfolders,
 }: CollectionPageProps) {
   const [selectedItemId, setSelectedItemId] = useState<string>();
   const [listStateSnapshot, setListStateSnapshot] =
@@ -53,13 +57,14 @@ export default function CollectionPage({
   const [listScale, setListScale] = useState<number>(initialListScale);
   const persistListScale = useDebouncedCallback(updateListScale, 300);
   const router = useRouter();
+  const tSections = useTranslations("collection.sections");
 
   const handleListScaleChange = useCallback(
     (scale: number) => {
       setListScale(scale);
       persistListScale(scale);
     },
-    [persistListScale]
+    [persistListScale],
   );
 
   const handleSelectItem = useCallback((selection: ItemSelection) => {
@@ -91,7 +96,7 @@ export default function CollectionPage({
         router.refresh();
       })();
     },
-    [router, sortState]
+    [router, sortState],
   );
 
   const handleGlobalSortChange = useCallback(
@@ -114,7 +119,7 @@ export default function CollectionPage({
         router.refresh();
       })();
     },
-    [router, sortState]
+    [router, sortState],
   );
 
   if (selectedItemId && !isMobile) {
@@ -153,13 +158,35 @@ export default function CollectionPage({
         </div>
       </AppHeader>
 
-      <ItemList
-        libraryPath={libraryPath}
-        items={items}
-        initialState={listStateSnapshot}
-        onSelectItem={handleSelectItem}
-        listScale={listScale}
-      />
+      {subfolders.length > 0 && (
+        <div className={classes.section}>
+          <div className={classes.sectionTitle}>
+            {tSections("subfolders")} ({subfolders.length})
+          </div>
+          <SubfolderList
+            libraryPath={libraryPath}
+            subfolders={subfolders}
+            listScale={listScale}
+          />
+        </div>
+      )}
+
+      {(items.length > 0 || subfolders.length === 0) && (
+        <div className={classes.section}>
+          {subfolders.length > 0 && (
+            <div className={classes.sectionTitle}>
+              {tSections("contents")} ({items.length})
+            </div>
+          )}
+          <ItemList
+            libraryPath={libraryPath}
+            items={items}
+            initialState={listStateSnapshot}
+            onSelectItem={handleSelectItem}
+            listScale={listScale}
+          />
+        </div>
+      )}
 
       {selectedItemId && isMobile && (
         <MobileItemSlider

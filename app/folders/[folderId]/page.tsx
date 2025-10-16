@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import CollectionPage from "@/components/CollectionPage";
+import type { Subfolder } from "@/components/SubfolderList";
 import { loadListScaleSetting } from "@/data/settings";
 import { getStore } from "@/data/store";
 
@@ -24,6 +25,26 @@ export default async function FolderPage({ params }: FolderPageProps) {
   }
 
   const items = store.getFolderItemPreviews(folderId);
+  const subfolders: Subfolder[] = [];
+
+  for (const childId of folder.children) {
+    const child = store.folders.get(childId);
+    if (!child) {
+      continue;
+    }
+
+    let coverId = child.coverId;
+    if (!coverId) {
+      const fallbackItem = store.getFirstFolderItem(child.id);
+      coverId = fallbackItem?.id;
+    }
+
+    subfolders.push({
+      id: child.id,
+      name: child.name,
+      coverId: coverId ?? undefined,
+    });
+  }
 
   return (
     <CollectionPage
@@ -31,6 +52,7 @@ export default async function FolderPage({ params }: FolderPageProps) {
       libraryPath={store.libraryPath}
       items={items}
       initialListScale={listScale}
+      subfolders={subfolders}
       sortState={{
         kind: "folder",
         folderId,

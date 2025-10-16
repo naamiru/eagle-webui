@@ -19,3 +19,15 @@
   gap: var(--mantine-spacing-md);
   margin-left: var(--mantine-spacing-sm);
 }
+
+.section {
+  & + .section {
+    margin-top: var(--mantine-spacing-lg);
+  }
+}
+
+.sectionTitle {
+  margin-bottom: var(--mantine-spacing-sm);
+  font-size: var(--mantine-font-size-xs);
+  color: var(--mantine-color-gray-6);
+}

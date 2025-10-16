@@ -19,6 +19,7 @@ export default async function TrashPage() {
       libraryPath={store.libraryPath}
       items={items}
       initialListScale={listScale}
+      subfolders={[]}
       sortState={{
         kind: "global",
         value: store.globalSortSettings,
