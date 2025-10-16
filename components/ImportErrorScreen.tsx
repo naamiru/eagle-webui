@@ -15,9 +15,10 @@ import {
   type ImportErrorRetryFailure,
 } from "@/components/ImportErrorActions";
 import {
-  getLibraryImportErrorMessage,
+  getLibraryImportErrorMessageKey,
   type LibraryImportErrorCode,
 } from "@/data/errors";
+import { useTranslations } from "@/i18n/client";
 
 type ImportErrorScreenProps = {
   code: LibraryImportErrorCode;
@@ -27,6 +28,7 @@ const LIBRARY_PATH_NOT_FOUND: LibraryImportErrorCode = "LIBRARY_PATH_NOT_FOUND";
 
 export function ImportErrorScreen({ code }: ImportErrorScreenProps) {
   const [errorCode, setErrorCode] = useState<LibraryImportErrorCode>(code);
+  const t = useTranslations();
 
   useEffect(() => {
     setErrorCode(code);
@@ -36,14 +38,14 @@ export function ImportErrorScreen({ code }: ImportErrorScreenProps) {
     setErrorCode(nextCode);
   };
 
-  const message = getLibraryImportErrorMessage(errorCode);
+  const message = t(getLibraryImportErrorMessageKey(errorCode));
   const showSetupInstructions = errorCode === LIBRARY_PATH_NOT_FOUND;
 
   return (
     <Container>
       <Center h="100vh">
         <Stack align="center" gap="lg">
-          <Title>Library sync failed.</Title>
+          <Title>{t("import.error.title")}</Title>
           <Text c="dimmed" size="lg" ta="center">
             {message}
           </Text>
@@ -56,10 +58,9 @@ export function ImportErrorScreen({ code }: ImportErrorScreenProps) {
             >
               <Stack gap="xs">
                 <Text size="sm" c="dimmed">
-                  Make sure that Eagle and the Eagle WebUI server are both
-                  running on the same machine. <br />
-                  Alternatively, start the server with an explicit library path,
-                  such as:
+                  {t.rich("import.error.instructions", {
+                    br: () => <br />,
+                  })}
                 </Text>
                 <Text
                   component="code"
@@ -71,8 +72,7 @@ export function ImportErrorScreen({ code }: ImportErrorScreenProps) {
                     fontFamily: "var(--mantine-font-family-monospace)",
                   }}
                 >
-                  npx @naamiru/eagle-webui --eagle-library-path
-                  "/path/to/MyPhotos.library"
+                  {t("import.error.commandExample")}
                 </Text>
               </Stack>
             </Paper>

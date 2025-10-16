@@ -4,6 +4,7 @@ import { Center, Text } from "@mantine/core";
 import { useCallback, useEffect, useRef } from "react";
 import { type GridStateSnapshot, VirtuosoGrid } from "react-virtuoso";
 import type { ItemPreview } from "@/data/types";
+import { useTranslations } from "@/i18n/client";
 import { getThumbnailUrl } from "@/utils/item";
 import classes from "./ItemList.module.css";
 
@@ -25,6 +26,7 @@ export function ItemList({
   initialState,
   onSelectItem,
 }: ItemListProps) {
+  const t = useTranslations();
   const latestStateRef = useRef<GridStateSnapshot | null>(initialState ?? null);
 
   useEffect(() => {
@@ -75,7 +77,7 @@ export function ItemList({
   if (items.length === 0) {
     return (
       <Center mih={240}>
-        <Text c="dimmed">No items</Text>
+        <Text c="dimmed">{t("common.status.noItems")}</Text>
       </Center>
     );
   }

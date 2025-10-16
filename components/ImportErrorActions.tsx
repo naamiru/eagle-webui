@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { reloadLibrary } from "@/actions/reloadLibrary";
 import {
-  getLibraryImportErrorMessage,
+  getLibraryImportErrorMessageKey,
   type LibraryImportErrorCode,
 } from "@/data/errors";
+import { useTranslations } from "@/i18n/client";
 import { resolveErrorMessage } from "@/utils/resolve-error-message";
 
 export type ImportErrorRetryFailure = {
@@ -22,6 +23,7 @@ type ImportErrorActionsProps = {
 export function ImportErrorActions({ onRetryFailed }: ImportErrorActionsProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const t = useTranslations();
 
   const handleRetry = () => {
     startTransition(async () => {
@@ -33,11 +35,11 @@ export function ImportErrorActions({ onRetryFailed }: ImportErrorActionsProps) {
           return;
         }
 
-        const failureMessage = getLibraryImportErrorMessage(result.code);
+        const failureMessage = t(getLibraryImportErrorMessageKey(result.code));
 
         notifications.show({
           color: "red",
-          title: "Library sync failed",
+          title: t("common.notifications.librarySyncFailedTitle"),
           message: failureMessage,
         });
 
@@ -45,12 +47,12 @@ export function ImportErrorActions({ onRetryFailed }: ImportErrorActionsProps) {
       } catch (error) {
         const failureMessage = resolveErrorMessage(
           error,
-          getLibraryImportErrorMessage("UNKNOWN_ERROR"),
+          t(getLibraryImportErrorMessageKey("UNKNOWN_ERROR")),
         );
 
         notifications.show({
           color: "red",
-          title: "Library sync failed",
+          title: t("common.notifications.librarySyncFailedTitle"),
           message: failureMessage,
         });
 
@@ -61,7 +63,7 @@ export function ImportErrorActions({ onRetryFailed }: ImportErrorActionsProps) {
 
   return (
     <Button type="button" size="md" loading={isPending} onClick={handleRetry}>
-      {isPending ? "Retrying..." : "Retry sync"}
+      {isPending ? t("common.actions.retryPending") : t("common.actions.retry")}
     </Button>
   );
 }

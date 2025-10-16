@@ -31,8 +31,9 @@ import type { ComponentPropsWithoutRef, ComponentType, ReactNode } from "react";
 import { useMemo, useTransition } from "react";
 import { useSwipeable } from "react-swipeable";
 import { reloadLibrary } from "@/actions/reloadLibrary";
-import { getLibraryImportErrorMessage } from "@/data/errors";
+import { getLibraryImportErrorMessageKey } from "@/data/errors";
 import type { Folder, ItemCounts } from "@/data/types";
+import { useTranslations } from "@/i18n/client";
 import { resolveErrorMessage } from "@/utils/resolve-error-message";
 import classes from "./AppNavbar.module.css";
 
@@ -73,10 +74,13 @@ export function AppNavbar({
   itemCounts,
   libraryName,
 }: AppNavbarProps) {
+  const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
   const [isReloading, startReload] = useTransition();
-  const reloadLabel = isReloading ? "Reloading library..." : "Reload library";
+  const reloadLabel = isReloading
+    ? t("common.library.reloading")
+    : t("common.library.reload");
   const folderTreeData = useMemo(() => buildFolderTreeData(folders), [folders]);
   const folderCounts = useMemo(
     () => new Map(folders.map((folder) => [folder.id, folder.itemCount])),
@@ -100,16 +104,16 @@ export function AppNavbar({
 
         notifications.show({
           color: "red",
-          title: "Library sync failed",
-          message: getLibraryImportErrorMessage(result.code),
+          title: t("common.notifications.librarySyncFailedTitle"),
+          message: t(getLibraryImportErrorMessageKey(result.code)),
         });
       } catch (error) {
         notifications.show({
           color: "red",
-          title: "Library sync failed",
+          title: t("common.notifications.librarySyncFailedTitle"),
           message: resolveErrorMessage(
             error,
-            "Could not sync library. Please try again.",
+            t("common.notifications.librarySyncFailedMessage"),
           ),
         });
       }
@@ -214,28 +218,28 @@ export function AppNavbar({
           <MainLinkButton
             to="/"
             icon={IconInbox}
-            label="All"
+            label={t("collection.all")}
             count={itemCounts.all}
           />
 
           <MainLinkButton
             to="/uncategorized"
             icon={IconFolderQuestion}
-            label="Uncategorized"
+            label={t("collection.uncategorized")}
             count={itemCounts.uncategorized}
           />
 
           <MainLinkButton
             to="/trash"
             icon={IconTrash}
-            label="Trash"
+            label={t("collection.trash")}
             count={itemCounts.trash}
           />
         </section>
 
         <section>
           <Text size="xs" fw={500} c="dimmed" className={classes.sectionTitle}>
-            Folders
+            {t("navbar.folders")}
             {folders.length > 0 && `(${folderCount})`}
           </Text>
 
@@ -326,7 +330,7 @@ export function AppNavbar({
           <MainLinkButton
             to="/settings"
             icon={IconSettings}
-            label="Settings"
+            label={t("navbar.settings")}
             count={0}
           />
         </section>

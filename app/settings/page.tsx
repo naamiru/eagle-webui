@@ -6,17 +6,23 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { updateLocale } from "@/actions/updateLocale";
 import AppHeader from "@/components/AppHeader";
-import { useLocale } from "@/i18n/client";
-import { type AppLocale, DEFAULT_LOCALE, isAppLocale } from "@/i18n/config";
+import { useLocale, useTranslations } from "@/i18n/client";
+import {
+  type AppLocale,
+  DEFAULT_LOCALE,
+  isAppLocale,
+  SUPPORTED_LOCALES,
+} from "@/i18n/config";
 
-const LANGUAGE_OPTIONS = [
-  { label: "English", value: "en" },
-  { label: "日本語", value: "ja" },
-];
+const LANGUAGE_LABELS: Record<AppLocale, string> = {
+  en: "English",
+  ja: "日本語",
+};
 
 export default function SettingsPage() {
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations();
   const normalizedLocale = isAppLocale(locale) ? locale : DEFAULT_LOCALE;
   const [selectedLocale, setSelectedLocale] =
     useState<AppLocale>(normalizedLocale);
@@ -52,22 +58,30 @@ export default function SettingsPage() {
       setSelectedLocale(previousLocale);
       notifications.show({
         color: "red",
-        title: "Language update failed",
-        message: result.error,
+        title: t("settings.language.updateFailedTitle"),
+        message:
+          result.error === "INVALID_LOCALE"
+            ? t("common.errors.invalidLocale")
+            : t("settings.language.updateFailedMessage"),
       });
     });
   };
 
+  const languageOptions = SUPPORTED_LOCALES.map((localeCode) => ({
+    label: LANGUAGE_LABELS[localeCode],
+    value: localeCode,
+  }));
+
   return (
     <>
       <AppHeader>
-        <Text>Settings</Text>
+        <Text>{t("settings.title")}</Text>
       </AppHeader>
 
       <Container size="xs" mt="lg">
         <Select
-          label="Display language"
-          data={LANGUAGE_OPTIONS}
+          label={t("settings.language.label")}
+          data={languageOptions}
           value={selectedLocale}
           allowDeselect={false}
           onChange={handleChange}

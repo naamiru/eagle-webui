@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { AppLayout } from "@/components/AppLayout";
 import { AppMantineProvider } from "@/components/AppMantineProvider";
 import { ImportErrorScreen } from "@/components/ImportErrorScreen";
@@ -38,6 +38,8 @@ export default async function RootLayout({
   void getStore().catch(() => undefined);
   const importState = getStoreImportState();
   const locale = await getLocale();
+  const t = await getTranslations();
+  const loadingLabel = t("import.loading");
 
   return (
     <html lang={locale} {...mantineHtmlProps}>
@@ -47,7 +49,7 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider>
           <AppMantineProvider>
-            <ImportStateContent state={importState}>
+            <ImportStateContent state={importState} loadingLabel={loadingLabel}>
               {children}
             </ImportStateContent>
           </AppMantineProvider>
@@ -59,15 +61,17 @@ export default async function RootLayout({
 
 function ImportStateContent({
   state,
+  loadingLabel,
   children,
 }: {
   state: StoreInitializationState;
+  loadingLabel: string;
   children: React.ReactNode;
 }) {
   switch (state.status) {
     case "idle":
     case "loading":
-      return <ImportLoadingScreen />;
+      return <ImportLoadingScreen label={loadingLabel} />;
     case "error":
       return <ImportErrorScreen code={state.code} />;
     case "ready":
@@ -77,14 +81,14 @@ function ImportStateContent({
   }
 }
 
-function ImportLoadingScreen() {
+function ImportLoadingScreen({ label }: { label: string }) {
   return (
     <>
       <ImportLoader />
       <Center h="100vh">
         <Stack gap="sm" align="center">
           <Loader size="lg" color="gray" />
-          <Text>Importing Eagle library…</Text>
+          <Text>{label}</Text>
         </Stack>
       </Center>
     </>

@@ -1,13 +1,16 @@
 import { Center, Container, Stack, Text, Title } from "@mantine/core";
+import { getTranslations } from "next-intl/server";
 
-export default function NotFound() {
+export default async function NotFound() {
+  const t = await getTranslations();
+
   return (
     <Container>
       <Center h="100vh">
         <Stack align="center" gap="lg">
-          <Title>404 Not Found</Title>
+          <Title>{t("notFound.title")}</Title>
           <Text c="dimmed" size="lg" ta="center">
-            Page you are trying to open does not exist.
+            {t("notFound.description")}
           </Text>
         </Stack>
       </Center>
