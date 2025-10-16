@@ -12,6 +12,8 @@
         minmax(var(--item-min-width-mobile, 48px), 1fr)
       );
     gap: var(--mantine-spacing-xs);
+    margin-left: var(--mantine-spacing-sm);
+    margin-right: var(--mantine-spacing-sm);
   }
 }
 
