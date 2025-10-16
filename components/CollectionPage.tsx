@@ -20,6 +20,7 @@ import {
   GlobalListSortControl,
 } from "./ListSortControl";
 import { MobileItemSlider } from "./MobileItemSlider";
+import { type Subfolder, SubfolderList } from "./SubfolderList";
 
 export type CollectionSortState =
   | {
@@ -38,6 +39,7 @@ interface CollectionPageProps {
   items: ItemPreview[];
   initialListScale: number;
   sortState: CollectionSortState;
+  subfolders: Subfolder[];
 }
 
 export default function CollectionPage({
@@ -46,6 +48,7 @@ export default function CollectionPage({
   items,
   initialListScale,
   sortState,
+  subfolders,
 }: CollectionPageProps) {
   const [selectedItemId, setSelectedItemId] = useState<string>();
   const [listStateSnapshot, setListStateSnapshot] =
@@ -59,7 +62,7 @@ export default function CollectionPage({
       setListScale(scale);
       persistListScale(scale);
     },
-    [persistListScale]
+    [persistListScale],
   );
 
   const handleSelectItem = useCallback((selection: ItemSelection) => {
@@ -91,7 +94,7 @@ export default function CollectionPage({
         router.refresh();
       })();
     },
-    [router, sortState]
+    [router, sortState],
   );
 
   const handleGlobalSortChange = useCallback(
@@ -114,7 +117,7 @@ export default function CollectionPage({
         router.refresh();
       })();
     },
-    [router, sortState]
+    [router, sortState],
   );
 
   if (selectedItemId && !isMobile) {
@@ -127,14 +130,6 @@ export default function CollectionPage({
       />
     );
   }
-
-  const subfolders = [
-    {
-      id: "folderId",
-      name: "folder name",
-      coverId: "coverItemId",
-    },
-  ];
 
   return (
     <>
@@ -162,30 +157,34 @@ export default function CollectionPage({
       </AppHeader>
 
       {subfolders.length > 0 && (
-        <>
+        <div className={classes.section}>
           <div className={classes.sectionTitle}>
-            Subfolder ({subfolders.length})
+            Subfolders ({subfolders.length})
           </div>
-          <div>
-            {subfolders.map((folder) => (
-              <a key={folder.id} href={`/folders/${folder.id}`}>
-                <img src="thumbnail/url/to/folder.coverId" />
-                <div>{folder.name}</div>
-              </a>
-            ))}
-          </div>
-
-          <div className={classes.sectionTitle}>Contents ({items.length})</div>
-        </>
+          <SubfolderList
+            libraryPath={libraryPath}
+            subfolders={subfolders}
+            listScale={listScale}
+          />
+        </div>
       )}
 
-      <ItemList
-        libraryPath={libraryPath}
-        items={items}
-        initialState={listStateSnapshot}
-        onSelectItem={handleSelectItem}
-        listScale={listScale}
-      />
+      {(items.length > 0 || subfolders.length === 0) && (
+        <div className={classes.section}>
+          {subfolders.length > 0 && (
+            <div className={classes.sectionTitle}>
+              Contents ({items.length})
+            </div>
+          )}
+          <ItemList
+            libraryPath={libraryPath}
+            items={items}
+            initialState={listStateSnapshot}
+            onSelectItem={handleSelectItem}
+            listScale={listScale}
+          />
+        </div>
+      )}
 
       {selectedItemId && isMobile && (
         <MobileItemSlider

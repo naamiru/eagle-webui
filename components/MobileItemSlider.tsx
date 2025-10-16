@@ -39,7 +39,7 @@ export function MobileItemSlider({
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
   const initialIndex = useMemo(
     () => Math.max(itemIds.indexOf(initialItemId), 0),
-    [initialItemId, itemIds]
+    [initialItemId, itemIds],
   );
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -62,7 +62,7 @@ export function MobileItemSlider({
         }
       }
     },
-    [items]
+    [items],
   );
 
   const [isUIPresented, setIsUIPresented] = useState(true);
@@ -87,7 +87,7 @@ export function MobileItemSlider({
 
         setIsUIPresented(!isUIPresented);
       },
-      [isUIPresented]
+      [isUIPresented],
     ),
   });
 
@@ -143,7 +143,7 @@ export function MobileItemSlider({
           )}
         </SwiperSlide>
       )),
-    [items, libraryPath]
+    [items, libraryPath],
   );
 
   return (
