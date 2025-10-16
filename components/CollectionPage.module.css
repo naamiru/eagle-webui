@@ -30,4 +30,10 @@
   margin-bottom: var(--mantine-spacing-sm);
   font-size: var(--mantine-font-size-xs);
   color: var(--mantine-color-gray-6);
+
+  @media (max-width: 48em) {
+    margin-top: var(--mantine-spacing-sm);
+    margin-left: var(--mantine-spacing-sm);
+    margin-right: var(--mantine-spacing-sm);
+  }
 }
