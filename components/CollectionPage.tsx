@@ -128,6 +128,14 @@ export default function CollectionPage({
     );
   }
 
+  const subfolders = [
+    {
+      id: "folderId",
+      name: "folder name",
+      coverId: "coverItemId",
+    },
+  ];
+
   return (
     <>
       <AppHeader>
@@ -152,6 +160,24 @@ export default function CollectionPage({
           )}
         </div>
       </AppHeader>
+
+      {subfolders.length > 0 && (
+        <>
+          <div className={classes.sectionTitle}>
+            Subfolder ({subfolders.length})
+          </div>
+          <div>
+            {subfolders.map((folder) => (
+              <a key={folder.id} href={`/folders/${folder.id}`}>
+                <img src="thumbnail/url/to/folder.coverId" />
+                <div>{folder.name}</div>
+              </a>
+            ))}
+          </div>
+
+          <div className={classes.sectionTitle}>Contents ({items.length})</div>
+        </>
+      )}
 
       <ItemList
         libraryPath={libraryPath}
