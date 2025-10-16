@@ -47,7 +47,7 @@ export async function loadSettings(): Promise<SettingsFile> {
 }
 
 export async function saveSettings(
-  partial: Partial<SettingsFile>,
+  partial: Partial<SettingsFile>
 ): Promise<void> {
   await fs.mkdir(SETTINGS_DIR, { recursive: true });
 
@@ -84,7 +84,7 @@ export async function loadGlobalSortSettings(): Promise<GlobalSortOptions> {
 }
 
 export async function saveGlobalSortSettings(
-  settings: GlobalSortOptions,
+  settings: GlobalSortOptions
 ): Promise<void> {
   const normalized: GlobalSortOptions = {
     orderBy: sanitizeOrderBy(settings.orderBy),
@@ -94,7 +94,7 @@ export async function saveGlobalSortSettings(
   await saveSettings({ globalSort: normalized });
 }
 
-const DEFAULT_LIST_SCALE = 0;
+const DEFAULT_LIST_SCALE = 50;
 const MIN_LIST_SCALE = 0;
 const MAX_LIST_SCALE = 100;
 
@@ -117,7 +117,7 @@ function isFileNotFoundError(error: unknown): error is NodeJS.ErrnoException {
     error &&
       typeof error === "object" &&
       "code" in error &&
-      (error as NodeJS.ErrnoException).code === "ENOENT",
+      (error as NodeJS.ErrnoException).code === "ENOENT"
   );
 }
 

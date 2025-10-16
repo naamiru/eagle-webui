@@ -1,11 +1,12 @@
 "use client";
 
-import { ActionIcon, Group, Slider } from "@mantine/core";
+import { CloseButton, Group, Slider } from "@mantine/core";
+import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { useCallback, useMemo } from "react";
 
 export const LIST_SCALE_MIN = 0;
 export const LIST_SCALE_MAX = 100;
-const BUTTON_STEP = 5;
+const BUTTON_STEP = 10;
 
 export function clampListScale(value: number | undefined): number {
   if (typeof value !== "number" || !Number.isFinite(value)) {
@@ -50,14 +51,13 @@ export function ListScaleControl({ value, onChange }: ListScaleControlProps) {
 
   return (
     <Group gap="xs" wrap="nowrap" align="center">
-      <ActionIcon
-        variant="subtle"
+      <CloseButton
+        icon={<IconMinus stroke={1} />}
+        size="xs"
         aria-label="Zoom out"
         onClick={handleDecrement}
         disabled={!canDecrease}
-      >
-        <span aria-hidden>-</span>
-      </ActionIcon>
+      />
       <Slider
         aria-label="Scale"
         min={LIST_SCALE_MIN}
@@ -65,17 +65,18 @@ export function ListScaleControl({ value, onChange }: ListScaleControlProps) {
         step={1}
         value={safeValue}
         onChange={handleSliderChange}
-        w={160}
+        w={85}
         label={null}
+        color="gray"
+        size="xs"
       />
-      <ActionIcon
-        variant="subtle"
+      <CloseButton
+        icon={<IconPlus stroke={1} />}
+        size="xs"
         aria-label="Zoom in"
         onClick={handleIncrement}
         disabled={!canIncrease}
-      >
-        <span aria-hidden>+</span>
-      </ActionIcon>
+      />
     </Group>
   );
 }

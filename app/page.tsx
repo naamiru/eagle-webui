@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import CollectionPage from "@/components/CollectionPage";
-import { getStore } from "@/data/store";
 import { loadListScaleSetting } from "@/data/settings";
+import { getStore } from "@/data/store";
 
 export const dynamic = "force-dynamic";
 
