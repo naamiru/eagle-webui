@@ -20,6 +20,10 @@
       "RATING": "评分",
       "DURATION": "时长",
       "RANDOM": "随机模式"
+    },
+    "sections": {
+      "subfolders": "子文件夹",
+      "contents": "内容"
     }
   },
   "navbar": {

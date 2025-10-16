@@ -20,6 +20,10 @@
       "RATING": "Rating",
       "DURATION": "Duration",
       "RANDOM": "Random"
+    },
+    "sections": {
+      "subfolders": "Subfolders",
+      "contents": "Contents"
     }
   },
   "navbar": {

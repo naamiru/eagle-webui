@@ -12,6 +12,7 @@ import { ItemList, type ItemSelection } from "@/components/ItemList";
 import { ListScaleControl } from "@/components/ListScaleControl";
 import type { FolderSortOptions, GlobalSortOptions } from "@/data/sort-options";
 import type { ItemPreview } from "@/data/types";
+import { useTranslations } from "@/i18n/client";
 import { useIsMobile } from "@/utils/responsive";
 import classes from "./CollectionPage.module.css";
 import { ItemSlider } from "./ItemSlider";
@@ -56,6 +57,7 @@ export default function CollectionPage({
   const [listScale, setListScale] = useState<number>(initialListScale);
   const persistListScale = useDebouncedCallback(updateListScale, 300);
   const router = useRouter();
+  const tSections = useTranslations("collection.sections");
 
   const handleListScaleChange = useCallback(
     (scale: number) => {
@@ -159,7 +161,7 @@ export default function CollectionPage({
       {subfolders.length > 0 && (
         <div className={classes.section}>
           <div className={classes.sectionTitle}>
-            Subfolders ({subfolders.length})
+            {tSections("subfolders")} ({subfolders.length})
           </div>
           <SubfolderList
             libraryPath={libraryPath}
@@ -173,7 +175,7 @@ export default function CollectionPage({
         <div className={classes.section}>
           {subfolders.length > 0 && (
             <div className={classes.sectionTitle}>
-              Contents ({items.length})
+              {tSections("contents")} ({items.length})
             </div>
           )}
           <ItemList

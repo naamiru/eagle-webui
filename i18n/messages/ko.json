@@ -20,6 +20,10 @@
       "RATING": "평가",
       "DURATION": "지속 기간",
       "RANDOM": "무작위"
+    },
+    "sections": {
+      "subfolders": "하위 폴더",
+      "contents": "콘텐츠"
     }
   },
   "navbar": {
