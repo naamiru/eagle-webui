@@ -40,11 +40,7 @@ function ListSortControl<SortMethod extends string>({
   return (
     <Popover width={200} position="bottom" withArrow shadow="md">
       <Popover.Target>
-        <CloseButton
-          icon={<IconArrowsUpDown stroke={1.2} />}
-          size="xs"
-          aria-label="Sort"
-        />
+        <CloseButton icon={<IconArrowsUpDown stroke={1} />} aria-label="Sort" />
       </Popover.Target>
       <Popover.Dropdown className={classes.dropdown}>
         <SegmentedControl

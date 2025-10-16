@@ -39,7 +39,7 @@ export function MobileItemSlider({
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
   const initialIndex = useMemo(
     () => Math.max(itemIds.indexOf(initialItemId), 0),
-    [initialItemId, itemIds],
+    [initialItemId, itemIds]
   );
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -62,7 +62,7 @@ export function MobileItemSlider({
         }
       }
     },
-    [items],
+    [items]
   );
 
   const [isUIPresented, setIsUIPresented] = useState(true);
@@ -87,7 +87,7 @@ export function MobileItemSlider({
 
         setIsUIPresented(!isUIPresented);
       },
-      [isUIPresented],
+      [isUIPresented]
     ),
   });
 
@@ -143,7 +143,7 @@ export function MobileItemSlider({
           )}
         </SwiperSlide>
       )),
-    [items, libraryPath],
+    [items, libraryPath]
   );
 
   return (
@@ -160,7 +160,7 @@ export function MobileItemSlider({
       <FocusTrap.InitialFocus />
 
       <header className={classes.header} data-ui-visible={isUIPresented}>
-        <CloseButton icon={<IconArrowLeft stroke={1.2} />} onClick={dismiss} />
+        <CloseButton icon={<IconArrowLeft stroke={1} />} onClick={dismiss} />
         <Text size="sm">
           {activeIndex + 1} / {items.length}
         </Text>

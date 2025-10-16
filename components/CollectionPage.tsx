@@ -59,7 +59,7 @@ export default function CollectionPage({
       setListScale(scale);
       persistListScale(scale);
     },
-    [persistListScale],
+    [persistListScale]
   );
 
   const handleSelectItem = useCallback((selection: ItemSelection) => {
@@ -91,7 +91,7 @@ export default function CollectionPage({
         router.refresh();
       })();
     },
-    [router, sortState],
+    [router, sortState]
   );
 
   const handleGlobalSortChange = useCallback(
@@ -114,7 +114,7 @@ export default function CollectionPage({
         router.refresh();
       })();
     },
-    [router, sortState],
+    [router, sortState]
   );
 
   if (selectedItemId && !isMobile) {
@@ -131,7 +131,7 @@ export default function CollectionPage({
   return (
     <>
       <AppHeader>
-        <Text>{title}</Text>
+        <Text className={classes.headerTitle}>{title}</Text>
         <div className={classes.headerCenter}>
           <ListScaleControl
             value={listScale}

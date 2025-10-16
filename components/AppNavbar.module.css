@@ -8,8 +8,7 @@
   display: flex;
   align-items: center;
   gap: var(--mantine-spacing-sm);
-  padding: var(--mantine-spacing-md) var(--mantine-spacing-md)
-    var(--mantine-spacing-sm) var(--mantine-spacing-md);
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
 }
 
 .headerMain {
@@ -63,6 +62,7 @@
   display: flex;
   align-items: center;
   width: stretch;
+  min-width: 0;
   margin-left: var(--mantine-spacing-md);
   margin-bottom: 1px;
   padding: var(--mantine-spacing-xxxs);
@@ -87,11 +87,22 @@
 }
 
 .mainLinkIcon {
+  flex-shrink: 0;
   margin-right: var(--mantine-spacing-xxs);
 }
 
+.mainLinkLabel {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .mainLinkTrailing {
-  flex-grow: 1;
+  flex: 0 0 auto;
+  margin-left: auto;
+  margin-right: var(--mantine-spacing-xxs);
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -101,6 +112,7 @@
 .folderLink {
   display: flex;
   align-items: center;
+  min-width: 0;
   -webkit-tap-highlight-color: transparent;
 
   &[data-has-children] {

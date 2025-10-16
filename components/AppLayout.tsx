@@ -36,7 +36,7 @@ export function AppLayout({
   return (
     <AppShell
       layout="alt"
-      header={{ height: 60 }}
+      header={{ height: 50 }}
       navbar={{
         width: 240,
         breakpoint: "sm",
@@ -46,12 +46,12 @@ export function AppLayout({
     >
       <HeaderSlotProvider>
         <AppShell.Header>
-          <Group h="100%" px="md">
+          <Group h="100%" px="md" wrap="nowrap">
             <Burger
               opened={mobileOpened}
               onClick={toggleMobile}
               hiddenFrom="sm"
-              size="sm"
+              lineSize={1}
             />
 
             {!desktopOpened && (
