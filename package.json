@@ -1,6 +1,7 @@
 {
-  "name": "eagle-webui",
+  "name": "@naamiru/eagle-webui",
   "version": "2.0.0",
+  "description": "A web interface for Eagle image viewer - browse your Eagle library from any device",
   "keywords": [
     "eagle",
     "eagle-app",
@@ -11,7 +12,7 @@
     "image-browser",
     "media-server"
   ],
-  "homepage": "https://github.com/naamiru/eagle-webui#readme",
+  "homepage": "https://github.com/naamiru/eagle-webui",
   "bugs": {
     "url": "https://github.com/naamiru/eagle-webui/issues"
   },
@@ -33,7 +34,7 @@
   ],
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "pkill -f 'next dev' || true && rm -rf .next && next build --turbopack && cp -r .next/static .next/standalone/.next/",
+    "build": "next build --turbopack && cp -r .next/static .next/standalone/.next/",
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
