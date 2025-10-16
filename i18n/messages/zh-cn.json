@@ -1,0 +1,66 @@
+{
+  "app": {
+    "title": "Eagle WebUI",
+    "description": "适用于 Eagle 图像查看器的网页界面"
+  },
+  "collection": {
+    "all": "全部",
+    "uncategorized": "未分类",
+    "trash": "回收站"
+  },
+  "navbar": {
+    "folders": "文件夹",
+    "settings": "设置"
+  },
+  "common": {
+    "library": {
+      "reload": "重新加载库",
+      "reloading": "正在重新加载库…"
+    },
+    "notifications": {
+      "librarySyncFailedTitle": "库同步失败",
+      "librarySyncFailedMessage": "无法同步库，请稍后再试。"
+    },
+    "actions": {
+      "retry": "重新尝试同步",
+      "retryPending": "正在重新尝试…"
+    },
+    "status": {
+      "noItems": "没有项目"
+    },
+    "errors": {
+      "generic": "发生了一些问题",
+      "invalidLocale": "不支持所选语言。"
+    }
+  },
+  "settings": {
+    "title": "设置",
+    "language": {
+      "label": "显示语言",
+      "note": "选择 Eagle WebUI 的显示语言。",
+      "updateFailedTitle": "语言更新失败",
+      "updateFailedMessage": "无法更新语言设置，请重试。"
+    }
+  },
+  "import": {
+    "loading": "正在导入 Eagle 库…",
+    "error": {
+      "title": "库同步失败。",
+      "instructions": "请确保 Eagle 与 Eagle WebUI 服务器运行在同一台设备上。<br></br>或者按以下方式指定库路径后再启动服务器：",
+      "commandExample": "npx @naamiru/eagle-webui --eagle-library-path \"/path/to/MyPhotos.library\""
+    }
+  },
+  "errors": {
+    "libraryImport": {
+      "LIBRARY_PATH_NOT_FOUND": "无法找到 Eagle 库",
+      "INVALID_APPLICATION_VERSION": "需要 Eagle 应用 4.x",
+      "METADATA_READ_FAILURE": "无法读取库的元数据",
+      "MTIME_READ_FAILURE": "无法读取修改时间数据",
+      "UNKNOWN_ERROR": "发生未知错误"
+    }
+  },
+  "notFound": {
+    "title": "404 未找到页面",
+    "description": "您访问的页面不存在或已被移除。"
+  }
+}

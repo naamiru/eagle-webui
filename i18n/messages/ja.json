@@ -37,6 +37,7 @@
     "title": "設定",
     "language": {
       "label": "表示言語",
+      "note": "Eagle WebUI の表示言語を選択します。",
       "updateFailedTitle": "言語の更新に失敗しました",
       "updateFailedMessage": "言語設定を更新できませんでした。もう一度お試しください。"
     }

@@ -1,0 +1,66 @@
+{
+  "app": {
+    "title": "Eagle WebUI",
+    "description": "Eagle 圖像檢視器的網頁介面"
+  },
+  "collection": {
+    "all": "全部",
+    "uncategorized": "未分類",
+    "trash": "垃圾桶"
+  },
+  "navbar": {
+    "folders": "資料夾",
+    "settings": "設定"
+  },
+  "common": {
+    "library": {
+      "reload": "重新載入資料庫",
+      "reloading": "正在重新載入資料庫…"
+    },
+    "notifications": {
+      "librarySyncFailedTitle": "資料庫同步失敗",
+      "librarySyncFailedMessage": "無法同步資料庫，請稍後再試。"
+    },
+    "actions": {
+      "retry": "重新嘗試同步",
+      "retryPending": "重新嘗試中…"
+    },
+    "status": {
+      "noItems": "沒有項目"
+    },
+    "errors": {
+      "generic": "發生錯誤",
+      "invalidLocale": "不支援所選語言。"
+    }
+  },
+  "settings": {
+    "title": "設定",
+    "language": {
+      "label": "顯示語言",
+      "note": "選擇 Eagle WebUI 的顯示語言。",
+      "updateFailedTitle": "語言更新失敗",
+      "updateFailedMessage": "無法更新語言設定，請再試一次。"
+    }
+  },
+  "import": {
+    "loading": "正在匯入 Eagle 資料庫…",
+    "error": {
+      "title": "資料庫同步失敗。",
+      "instructions": "請確認 Eagle 與 Eagle WebUI 伺服器在同一台機器上執行。<br></br>或是以下列方式指定資料庫路徑後啟動伺服器：",
+      "commandExample": "npx @naamiru/eagle-webui --eagle-library-path \"/path/to/MyPhotos.library\""
+    }
+  },
+  "errors": {
+    "libraryImport": {
+      "LIBRARY_PATH_NOT_FOUND": "找不到 Eagle 資料庫",
+      "INVALID_APPLICATION_VERSION": "需要 Eagle 應用程式 4.x",
+      "METADATA_READ_FAILURE": "無法讀取資料庫的中繼資料",
+      "MTIME_READ_FAILURE": "無法讀取修改時間資料",
+      "UNKNOWN_ERROR": "發生未知錯誤"
+    }
+  },
+  "notFound": {
+    "title": "404 找不到頁面",
+    "description": "您要查看的頁面不存在或已被移動。"
+  }
+}

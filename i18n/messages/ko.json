@@ -1,0 +1,66 @@
+{
+  "app": {
+    "title": "Eagle WebUI",
+    "description": "Eagle 이미지 뷰어 애플리케이션을 위한 웹 인터페이스"
+  },
+  "collection": {
+    "all": "전체",
+    "uncategorized": "미분류",
+    "trash": "휴지통"
+  },
+  "navbar": {
+    "folders": "폴더",
+    "settings": "설정"
+  },
+  "common": {
+    "library": {
+      "reload": "라이브러리 다시 불러오기",
+      "reloading": "라이브러리를 다시 불러오는 중…"
+    },
+    "notifications": {
+      "librarySyncFailedTitle": "라이브러리 동기화 실패",
+      "librarySyncFailedMessage": "라이브러리를 동기화할 수 없습니다. 다시 시도해 주세요."
+    },
+    "actions": {
+      "retry": "동기화 다시 시도",
+      "retryPending": "다시 시도 중…"
+    },
+    "status": {
+      "noItems": "항목이 없습니다"
+    },
+    "errors": {
+      "generic": "문제가 발생했습니다",
+      "invalidLocale": "선택한 언어는 지원되지 않습니다."
+    }
+  },
+  "settings": {
+    "title": "설정",
+    "language": {
+      "label": "표시 언어",
+      "note": "Eagle WebUI가 표시될 언어를 선택합니다.",
+      "updateFailedTitle": "언어 변경 실패",
+      "updateFailedMessage": "언어 설정을 변경할 수 없습니다. 다시 시도해 주세요."
+    }
+  },
+  "import": {
+    "loading": "Eagle 라이브러리를 가져오는 중…",
+    "error": {
+      "title": "라이브러리 동기화 실패.",
+      "instructions": "Eagle과 Eagle WebUI 서버가 동일한 컴퓨터에서 실행 중인지 확인하세요.<br></br>또는 다음과 같이 라이브러리 경로를 지정하여 서버를 시작하세요:",
+      "commandExample": "npx @naamiru/eagle-webui --eagle-library-path \"/path/to/MyPhotos.library\""
+    }
+  },
+  "errors": {
+    "libraryImport": {
+      "LIBRARY_PATH_NOT_FOUND": "Eagle 라이브러리를 찾을 수 없습니다",
+      "INVALID_APPLICATION_VERSION": "Eagle 앱 4.x가 필요합니다",
+      "METADATA_READ_FAILURE": "라이브러리 메타데이터를 읽을 수 없습니다",
+      "MTIME_READ_FAILURE": "수정 시간 데이터를 읽을 수 없습니다",
+      "UNKNOWN_ERROR": "예기치 않은 오류가 발생했습니다"
+    }
+  },
+  "notFound": {
+    "title": "404 페이지를 찾을 수 없습니다",
+    "description": "찾으려는 페이지가 없거나 다른 위치로 이동했습니다."
+  }
+}

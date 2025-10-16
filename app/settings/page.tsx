@@ -17,6 +17,9 @@ import {
 const LANGUAGE_LABELS: Record<AppLocale, string> = {
   en: "English",
   ja: "日本語",
+  ko: "한국어",
+  "zh-cn": "简体中文",
+  "zh-tw": "繁體中文",
 };
 
 export default function SettingsPage() {
@@ -81,6 +84,7 @@ export default function SettingsPage() {
       <Container size="xs" mt="lg">
         <Select
           label={t("settings.language.label")}
+          description={t("settings.language.note")}
           data={languageOptions}
           value={selectedLocale}
           allowDeselect={false}

@@ -37,6 +37,7 @@
     "title": "Settings",
     "language": {
       "label": "Display language",
+      "note": "Choose how Eagle WebUI appears.",
       "updateFailedTitle": "Language update failed",
       "updateFailedMessage": "Could not update your language preference. Try again."
     }
