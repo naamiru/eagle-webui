@@ -1,6 +1,6 @@
 {
   "name": "@naamiru/eagle-webui",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A web interface for Eagle image viewer - browse your Eagle library from any device",
   "keywords": [
     "eagle",
@@ -12,7 +12,7 @@
     "image-browser",
     "media-server"
   ],
-  "homepage": "https://github.com/naamiru/eagle-webui",
+  "homepage": "https://github.com/naamiru/eagle-webui#readme",
   "bugs": {
     "url": "https://github.com/naamiru/eagle-webui/issues"
   },
@@ -30,7 +30,8 @@
   },
   "files": [
     ".next/standalone",
-    "start.js"
+    "start.js",
+    "README.md"
   ],
   "scripts": {
     "dev": "next dev --turbopack",
