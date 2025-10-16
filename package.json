@@ -54,6 +54,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.0.4",
+    "accept-language": "^3.0.20",
     "ajv": "^8.17.1",
     "etag": "^1.8.1",
     "jsdom": "^27.0.0",

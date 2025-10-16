@@ -1,7 +1,11 @@
+import acceptLanguage from "accept-language";
+
 export const SUPPORTED_LOCALES = ["en", "zh-cn", "zh-tw", "ja", "ko"] as const;
 export const DEFAULT_LOCALE = "en";
 
 export type AppLocale = (typeof SUPPORTED_LOCALES)[number];
+
+acceptLanguage.languages(Array.from(SUPPORTED_LOCALES));
 
 export function isAppLocale(locale: unknown): locale is AppLocale {
   return (
@@ -10,21 +14,11 @@ export function isAppLocale(locale: unknown): locale is AppLocale {
   );
 }
 
-type ResolveLocaleInput = {
-  persisted?: string;
-  requestLocale?: string;
-};
+export function getPreferredLocale(header?: string | null): AppLocale {
+  const matched = acceptLanguage.get(header);
 
-export function resolveLocale({
-  persisted,
-  requestLocale,
-}: ResolveLocaleInput = {}): AppLocale {
-  if (isAppLocale(persisted)) {
-    return persisted;
-  }
-
-  if (isAppLocale(requestLocale)) {
-    return requestLocale;
+  if (isAppLocale(matched)) {
+    return matched;
   }
 
   return DEFAULT_LOCALE;

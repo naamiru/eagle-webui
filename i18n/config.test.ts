@@ -4,8 +4,8 @@
 import { describe, expect, it } from "vitest";
 import {
   DEFAULT_LOCALE,
+  getPreferredLocale,
   isAppLocale,
-  resolveLocale,
   SUPPORTED_LOCALES,
 } from "./config";
 
@@ -25,20 +25,26 @@ describe("isAppLocale", () => {
 
 describe("resolveLocale", () => {
   it("prefers the persisted locale when available", () => {
-    expect(resolveLocale({ persisted: "ja", requestLocale: "en" })).toBe("ja");
+    expect(getPreferredLocale("ja")).toBe("ja");
   });
 
   it("falls back to the request locale when persisted is invalid", () => {
-    expect(resolveLocale({ persisted: "fr", requestLocale: "ja" })).toBe("ja");
+    expect(getPreferredLocale("ja, en;q=0.8")).toBe("ja");
   });
 
   it("uses the default locale when neither value is supported", () => {
-    expect(resolveLocale({ persisted: "fr", requestLocale: "it" })).toBe(
-      DEFAULT_LOCALE,
-    );
+    expect(getPreferredLocale("it")).toBe(DEFAULT_LOCALE);
   });
 
   it("uses the default locale when inputs are missing", () => {
-    expect(resolveLocale()).toBe(DEFAULT_LOCALE);
+    expect(getPreferredLocale()).toBe(DEFAULT_LOCALE);
+  });
+
+  it("honors Accept-Language weighting", () => {
+    expect(getPreferredLocale("es;q=0.7, zh-CN;q=0.9, en;q=0.5")).toBe("zh-cn");
+  });
+
+  it("falls back to the default locale when only unsupported values are present", () => {
+    expect(getPreferredLocale("fr-CA, fr;q=0.8")).toBe(DEFAULT_LOCALE);
   });
 });
