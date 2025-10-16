@@ -1,14 +1,10 @@
 import { getRequestConfig } from "next-intl/server";
+import { loadLocaleSetting } from "@/data/settings";
 import { resolveLocale } from "./config";
-
-async function loadPersistedLocale(): Promise<string | undefined> {
-  // Locale persistence will be introduced with the settings helpers.
-  return undefined;
-}
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const [persisted, request] = await Promise.all([
-    loadPersistedLocale(),
+    loadLocaleSetting(),
     requestLocale,
   ]);
   const locale = resolveLocale({ persisted, requestLocale: request });
