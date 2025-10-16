@@ -1,0 +1,45 @@
+.headerTrailing {
+  height: 100%;
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--mantine-spacing-xs);
+}
+
+.swiper {
+  height: 100%;
+}
+
+.videoContainer {
+  container-type: size;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.videoFitbox {
+  --ratio: 1;
+  aspect-ratio: var(--ratio);
+
+  inline-size: min(100cqw, calc(100cqh * var(--ratio)));
+  block-size: min(100cqh, calc(100cqw / var(--ratio)));
+
+  position: relative;
+}
+
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+
+  &:focus {
+    outline: none;
+  }
+}

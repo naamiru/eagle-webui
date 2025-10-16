@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { parseArgs } = require("node:util");
-const path = require("path");
+const path = require("node:path");
 
 function parseCliArgs() {
   const options = {
@@ -14,6 +14,10 @@ function parseCliArgs() {
       type: "string",
       short: "p",
       default: "34917",
+    },
+    "eagle-library-path": {
+      type: "string",
+      default: "",
     },
     "eagle-api-url": {
       type: "string",
@@ -54,13 +58,14 @@ Usage: npx @naamiru/eagle-webui [options]
 Options:
   --hostname HOST, -H HOST     Bind server to specific hostname or IP address (default: localhost)
   --port PORT, -p PORT         Server port number (default: 34917)
-  --eagle-api-url URL          Eagle API endpoint for image management (default: http://localhost:41595)
+  --eagle-library-path PATH    Path to the Eagle library folder (if omitted, detected automatically via Eagle API)
+  --eagle-api-url URL          Eagle API endpoint for library detection (default: http://localhost:41595)
   --help, -h                   Display this help message
 
 Examples:
-  npx @naamiru/eagle-webui                                             # Default settings
-  npx @naamiru/eagle-webui --hostname 0.0.0.0                          # Allow external access
-  npx @naamiru/eagle-webui --eagle-api-url http://192.168.1.200:41595  # Custom Eagle API endpoint
+  npx @naamiru/eagle-webui                                                 # Default settings
+  npx @naamiru/eagle-webui --hostname 0.0.0.0                              # Allow external access
+  npx @naamiru/eagle-webui --eagle-library-path /path/to/MyPhotos.library  # Specify library path explicitly
   `);
 }
 
@@ -68,6 +73,7 @@ const args = parseCliArgs();
 
 process.env.HOSTNAME = args.hostname;
 process.env.PORT = args.port;
+process.env.EAGLE_LIBRARY_PATH = args["eagle-library-path"];
 process.env.EAGLE_API_URL = args["eagle-api-url"];
 
-require(path.join(__dirname, ".next/standalone/server.js"));
+require(path.resolve(__dirname, ".next/standalone/server.js"));

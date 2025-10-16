@@ -1,13 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
-import mime from "mime";
+import { promises as fs } from "node:fs";
+import path from "node:path";
 import etag from "etag";
-import { after } from "next/server";
+import mime from "mime";
+import { after, type NextRequest, NextResponse } from "next/server";
 
 async function findImageFile(
   itemDir: string,
-  preferThumbnail: boolean
+  preferThumbnail: boolean,
 ): Promise<string | null> {
   const files = await fs.readdir(itemDir);
 
@@ -19,7 +18,7 @@ async function findImageFile(
   }
 
   const originalFile = files.find(
-    (file) => !file.includes("_thumbnail.") && file !== "metadata.json"
+    (file) => !file.includes("_thumbnail.") && file !== "metadata.json",
   );
 
   return originalFile ? path.join(itemDir, originalFile) : null;
@@ -27,7 +26,7 @@ async function findImageFile(
 
 export async function handleImageRequest(
   request: NextRequest,
-  preferThumbnail: boolean
+  preferThumbnail: boolean,
 ): Promise<NextResponse> {
   const searchParams = request.nextUrl.searchParams;
   const id = searchParams.get("id");
@@ -36,7 +35,7 @@ export async function handleImageRequest(
   if (!id || !libraryPath) {
     return NextResponse.json(
       { error: "Missing required parameters" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -51,14 +50,14 @@ export async function handleImageRequest(
 
     const stats = await fs.stat(imagePath);
     const etagValue = etag(stats);
-    
+
     // Check If-None-Match header
     const ifNoneMatch = request.headers.get("if-none-match");
     if (ifNoneMatch && ifNoneMatch === etagValue) {
       return new NextResponse(null, {
         status: 304,
         headers: {
-          "ETag": etagValue,
+          ETag: etagValue,
           "Cache-Control": "public, max-age=31536000, immutable",
         },
       });
@@ -76,7 +75,7 @@ export async function handleImageRequest(
       headers: {
         "Content-Type": contentType,
         "Content-Length": stats.size.toString(),
-        "ETag": etagValue,
+        ETag: etagValue,
         "Cache-Control": "public, max-age=31536000, immutable",
       },
     });

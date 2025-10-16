@@ -1,0 +1,21 @@
+.headerTitle {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.headerCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mantine-spacing-md);
+  margin-left: var(--mantine-spacing-sm);
+}
+
+.headerTrailing {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-md);
+  margin-left: var(--mantine-spacing-sm);
+}

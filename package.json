@@ -1,7 +1,7 @@
 {
   "name": "@naamiru/eagle-webui",
-  "version": "0.1.4",
-  "description": "A mobile-friendly web interface for Eagle image viewer - browse your Eagle library from any device",
+  "version": "2.0.0",
+  "description": "A web interface for Eagle image viewer - browse your Eagle library from any device",
   "keywords": [
     "eagle",
     "eagle-app",
@@ -12,7 +12,7 @@
     "image-browser",
     "media-server"
   ],
-  "homepage": "https://github.com/naamiru/eagle-webui#readme",
+  "homepage": "https://github.com/naamiru/eagle-webui",
   "bugs": {
     "url": "https://github.com/naamiru/eagle-webui/issues"
   },
@@ -20,7 +20,7 @@
     "type": "git",
     "url": "https://github.com/naamiru/eagle-webui.git"
   },
-  "license": "The Unlicense",
+  "license": "CC0-1.0",
   "author": "naamiru",
   "engines": {
     "node": ">=18.18.0"
@@ -34,31 +34,47 @@
   ],
   "scripts": {
     "dev": "next dev --turbopack",
-    "lint": "next lint",
-    "build": "next build && cp -r .next/static .next/standalone/.next/",
-    "start": "node start.js --hostname 0.0.0.0 --port 3000",
+    "build": "next build --turbopack && cp -r .next/static .next/standalone/.next/",
+    "start": "next start",
+    "lint": "biome check",
+    "format": "biome format --write",
+    "test": "vitest",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
+    "@biomejs/biome": "2.2.0",
+    "@mantine/core": "^8.3.4",
+    "@mantine/hooks": "^8.3.4",
+    "@mantine/notifications": "^8.3.4",
+    "@tabler/icons-react": "^3.35.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.0",
     "@types/etag": "^1.8.4",
-    "@types/mime": "^3.0.4",
     "@types/node": "^20",
+    "@types/ospath": "^1.2.3",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "env-paths": "^3.0.0",
-    "eslint": "^9",
-    "eslint-config-next": "15.4.6",
+    "@vitejs/plugin-react": "^5.0.4",
+    "accept-language": "^3.0.20",
+    "ajv": "^8.17.1",
     "etag": "^1.8.1",
-    "lowdb": "^7.0.1",
-    "mime": "^4.0.7",
-    "next": "^15.4.6",
-    "next-intl": "^4.3.4",
-    "react": "^19.1.1",
-    "react-bootstrap-icons": "^1.11.6",
-    "react-dom": "^19.1.1",
-    "react-intersection-observer": "^9.16.0",
-    "react-photoswipe-gallery": "^3.1.1",
-    "typescript": "^5"
+    "jsdom": "^27.0.0",
+    "media-chrome": "^4.14.0",
+    "mime": "^4.1.0",
+    "next": "15.5.4",
+    "next-intl": "^4.3.12",
+    "ospath": "^1.2.2",
+    "postcss": "^8.5.6",
+    "postcss-preset-mantine": "^1.18.0",
+    "postcss-simple-vars": "^7.0.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-swipeable": "^7.0.2",
+    "react-virtuoso": "^4.14.1",
+    "swiper": "^12.0.2",
+    "typescript": "^5",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4",
+    "zustand": "^5.0.8"
   }
 }

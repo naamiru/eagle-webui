@@ -1,0 +1,80 @@
+{
+  "app": {
+    "title": "Eagle WebUI",
+    "description": "A web interface for the Eagle image viewer application"
+  },
+  "collection": {
+    "all": "All",
+    "uncategorized": "Uncategorized",
+    "trash": "Trash",
+    "sortLabels": {
+      "GLOBAL": "Global Settings",
+      "MANUAL": "Manual",
+      "IMPORT": "Date Added",
+      "MTIME": "Date Modified",
+      "BTIME": "Date Created",
+      "NAME": "Title",
+      "EXT": "Extension",
+      "FILESIZE": "File Size",
+      "RESOLUTION": "Dimensions",
+      "RATING": "Rating",
+      "DURATION": "Duration",
+      "RANDOM": "Random"
+    }
+  },
+  "navbar": {
+    "folders": "Folders",
+    "settings": "Settings"
+  },
+  "common": {
+    "library": {
+      "reload": "Reload library",
+      "reloading": "Reloading library..."
+    },
+    "notifications": {
+      "librarySyncFailedTitle": "Library sync failed",
+      "librarySyncFailedMessage": "Could not sync library. Please try again."
+    },
+    "actions": {
+      "retry": "Retry sync",
+      "retryPending": "Retrying..."
+    },
+    "status": {
+      "noItems": "No items"
+    },
+    "errors": {
+      "generic": "Something went wrong",
+      "invalidLocale": "Selected language is not supported."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "language": {
+      "label": "Display language",
+      "note": "Choose how Eagle WebUI appears.",
+      "updateFailedTitle": "Language update failed",
+      "updateFailedMessage": "Could not update your language preference. Try again."
+    }
+  },
+  "import": {
+    "loading": "Importing Eagle library…",
+    "error": {
+      "title": "Library sync failed.",
+      "instructions": "Make sure that Eagle and the Eagle WebUI server are both running on the same machine.<br></br>Alternatively, start the server with an explicit library path, such as:",
+      "commandExample": "npx @naamiru/eagle-webui --eagle-library-path \"/path/to/MyPhotos.library\""
+    }
+  },
+  "errors": {
+    "libraryImport": {
+      "LIBRARY_PATH_NOT_FOUND": "Unable to locate the Eagle library",
+      "INVALID_APPLICATION_VERSION": "Eagle app 4.x is required",
+      "METADATA_READ_FAILURE": "Unable to read the library metadata",
+      "MTIME_READ_FAILURE": "Unable to read modification data",
+      "UNKNOWN_ERROR": "An unexpected error occurred"
+    }
+  },
+  "notFound": {
+    "title": "404 Not found",
+    "description": "The page you were looking for could not be found."
+  }
+}

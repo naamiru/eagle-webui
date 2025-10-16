@@ -1,0 +1,80 @@
+{
+  "app": {
+    "title": "Eagle WebUI",
+    "description": "Eagle Web インターフェース"
+  },
+  "collection": {
+    "all": "すべて",
+    "uncategorized": "未分類",
+    "trash": "ゴミ箱",
+    "sortLabels": {
+      "GLOBAL": "グローバル",
+      "MANUAL": "マニュアル",
+      "IMPORT": "追加日",
+      "MTIME": "変更日",
+      "BTIME": "作成日",
+      "NAME": "タイトル",
+      "EXT": "拡張子",
+      "FILESIZE": "ファイルサイズ",
+      "RESOLUTION": "解像度",
+      "RATING": "評価",
+      "DURATION": "再生時間",
+      "RANDOM": "ランダム"
+    }
+  },
+  "navbar": {
+    "folders": "フォルダ",
+    "settings": "設定"
+  },
+  "common": {
+    "library": {
+      "reload": "ライブラリを再読み込み",
+      "reloading": "ライブラリを再読み込み中…"
+    },
+    "notifications": {
+      "librarySyncFailedTitle": "ライブラリの同期に失敗しました",
+      "librarySyncFailedMessage": "ライブラリを同期できませんでした。もう一度お試しください。"
+    },
+    "actions": {
+      "retry": "同期を再試行",
+      "retryPending": "再試行中…"
+    },
+    "status": {
+      "noItems": "画像がありません"
+    },
+    "errors": {
+      "generic": "問題が発生しました",
+      "invalidLocale": "選択された言語はサポートされていません。"
+    }
+  },
+  "settings": {
+    "title": "設定",
+    "language": {
+      "label": "表示言語",
+      "note": "Eagle WebUI の表示言語を選択します。",
+      "updateFailedTitle": "言語の更新に失敗しました",
+      "updateFailedMessage": "言語設定を更新できませんでした。もう一度お試しください。"
+    }
+  },
+  "import": {
+    "loading": "Eagle ライブラリを読み込み中…",
+    "error": {
+      "title": "ライブラリの同期に失敗しました。",
+      "instructions": "Eagle と Eagle WebUI サーバーが同じマシン上で動作していることを確認してください。<br></br>または次のように、ライブラリのパスを指定してサーバーを起動してください。",
+      "commandExample": "npx @naamiru/eagle-webui --eagle-library-path \"/path/to/MyPhotos.library\""
+    }
+  },
+  "errors": {
+    "libraryImport": {
+      "LIBRARY_PATH_NOT_FOUND": "Eagle ライブラリを見つけられませんでした",
+      "INVALID_APPLICATION_VERSION": "Eagle アプリ 4.x が必要です",
+      "METADATA_READ_FAILURE": "ライブラリのメタデータを読み取れませんでした",
+      "MTIME_READ_FAILURE": "更新日時のデータを読み取れませんでした",
+      "UNKNOWN_ERROR": "予期しないエラーが発生しました"
+    }
+  },
+  "notFound": {
+    "title": "404 ページが見つかりません",
+    "description": "お探しのページは存在しないか、移動した可能性があります。"
+  }
+}

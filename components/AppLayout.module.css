@@ -1,0 +1,15 @@
+.main {
+  min-height: 0;
+
+  @media (max-width: 48em) {
+    padding: calc(var(--app-shell-header-offset, 0rem))
+      calc(var(--app-shell-aside-offset, 0rem))
+      calc(var(--app-shell-footer-offset, 0rem))
+      /* biome-ignore lint/complexity/noImportantStyles: override mantine */
+      calc(var(--app-shell-navbar-offset, 0rem)) !important;
+  }
+
+  &[data-with-slider="true"] {
+    height: 100dvh;
+  }
+}

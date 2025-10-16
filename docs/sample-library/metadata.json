@@ -1,0 +1,43 @@
+{
+  "folders": [
+    {
+      "id": "MGH4XR6AZBGR7",
+      "name": "video",
+      "description": "",
+      "children": [],
+      "modificationTime": 1759876345810,
+      "tags": [],
+      "password": "",
+      "passwordTips": ""
+    },
+    {
+      "id": "MGH4XZ1OQCGZD",
+      "name": "animal",
+      "description": "",
+      "children": [
+        {
+          "id": "MGMYHH92HHXFJ",
+          "name": "dog",
+          "description": "",
+          "children": [],
+          "modificationTime": 1760228305814,
+          "tags": [],
+          "password": "",
+          "passwordTips": "",
+          "coverId": "MGH59PCN4CCES",
+          "orderBy": "MANUAL",
+          "sortIncrease": true
+        }
+      ],
+      "modificationTime": 1759876356012,
+      "tags": [],
+      "password": "",
+      "passwordTips": ""
+    }
+  ],
+  "smartFolders": [],
+  "quickAccess": [],
+  "tagsGroups": [],
+  "modificationTime": 1760231728179,
+  "applicationVersion": "4.0.0"
+}

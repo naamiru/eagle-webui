@@ -1,0 +1,23 @@
+.dropdown {
+  padding: 0 0 var(--mantine-spacing-xs) 0;
+}
+
+.sortAscending {
+  margin: var(--mantine-spacing-xs);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  padding: var(--mantine-spacing-xxs) var(--mantine-spacing-md);
+  gap: var(--mantine-spacing-xs);
+  font-size: var(--mantine-font-size-sm);
+
+  &:hover {
+    background-color: var(--mantine-color-gray-1);
+  }
+}
+
+.itemLabel {
+  flex-grow: 1;
+}
