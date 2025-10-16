@@ -44,14 +44,14 @@ export function ItemList({
         stateSnapshot: snapshot,
       });
     },
-    [onSelectItem],
+    [onSelectItem]
   );
 
   const handleSelect = useCallback(
     (itemId: string) => {
       emitSelection(itemId, latestStateRef.current);
     },
-    [emitSelection],
+    [emitSelection]
   );
 
   const itemContent = (index: number) => {
@@ -61,16 +61,19 @@ export function ItemList({
     }
     const { id } = item;
     return (
-      // biome-ignore lint/performance/noImgElement: image grid
-      // biome-ignore lint/a11y/useKeyWithClickEvents: image grid
-      <img
-        className={classes.image}
-        src={getThumbnailUrl(id, libraryPath)}
-        alt={id}
-        onClick={() => handleSelect(id)}
-        loading="lazy"
-        decoding="async"
-      />
+      <>
+        {/** biome-ignore lint/a11y/useKeyWithClickEvents: image grid */}
+        {/** biome-ignore lint/performance/noImgElement: image grid */}
+        <img
+          className={classes.image}
+          src={getThumbnailUrl(id, libraryPath)}
+          alt={id}
+          onClick={() => handleSelect(id)}
+          loading="lazy"
+          decoding="async"
+        />
+        <div className={classes.typeBadge}>PNG</div>
+      </>
     );
   };
 
