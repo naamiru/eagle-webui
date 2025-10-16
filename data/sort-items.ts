@@ -27,11 +27,20 @@ export function sortItems(
   }
 
   const direction = getDirectionMultiplier(orderBy, sortIncrease);
+  const tieBreakDirection = getDirectionMultiplier("IMPORT", sortIncrease);
 
   sorted.sort((left, right) => {
     const comparison = compareByMethod(left, right, orderBy, context.folderId);
     if (comparison !== 0) {
       return comparison * direction;
+    }
+
+    const tieBreak = compareNumbers(
+      left.modificationTime,
+      right.modificationTime,
+    );
+    if (tieBreak !== 0) {
+      return tieBreak * tieBreakDirection;
     }
 
     return left.id.localeCompare(right.id, undefined, { sensitivity: "base" });

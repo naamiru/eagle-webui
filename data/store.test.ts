@@ -168,6 +168,30 @@ describe("Store sorting", () => {
     expect(result.map((item) => item.id)).toEqual(["item-2", "item-10"]);
   });
 
+  it("uses modification time as a secondary key when primary values match", () => {
+    const store = createStore({
+      items: [
+        createItem({
+          id: "older",
+          name: "Screenshot",
+          modificationTime: 10,
+        }),
+        createItem({
+          id: "newer",
+          name: "Screenshot",
+          modificationTime: 20,
+        }),
+      ],
+      globalSortSettings: {
+        orderBy: "NAME",
+        sortIncrease: true,
+      },
+    });
+
+    const result = store.getItems();
+    expect(result.map((item) => item.id)).toEqual(["newer", "older"]);
+  });
+
   it("uses manual ordering for folder items when available", () => {
     const folderId = "manual-folder";
     const store = createStore({
