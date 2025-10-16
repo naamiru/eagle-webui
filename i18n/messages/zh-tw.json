@@ -6,7 +6,21 @@
   "collection": {
     "all": "全部",
     "uncategorized": "未分類",
-    "trash": "垃圾桶"
+    "trash": "垃圾桶",
+    "sortLabels": {
+      "GLOBAL": "使用全域設定",
+      "MANUAL": "自訂排序",
+      "IMPORT": "加入日期",
+      "MTIME": "修改日期",
+      "BTIME": "建立日期",
+      "NAME": "標題",
+      "EXT": "副檔名",
+      "FILESIZE": "檔案大小",
+      "RESOLUTION": "尺寸",
+      "RATING": "評分",
+      "DURATION": "時長",
+      "RANDOM": "隨機模式"
+    }
   },
   "navbar": {
     "folders": "資料夾",

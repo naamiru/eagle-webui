@@ -49,3 +49,17 @@ export const NEWEST_FIRST_METHODS = new Set<FolderSortMethod>([
   "MTIME",
   "BTIME",
 ]);
+
+export function isFolderSortMethod(value: unknown): value is FolderSortMethod {
+  return (
+    typeof value === "string" &&
+    (FOLDER_SORT_METHODS as readonly string[]).includes(value)
+  );
+}
+
+export function isGlobalSortMethod(value: unknown): value is GlobalSortMethod {
+  return (
+    typeof value === "string" &&
+    (GLOBAL_SORT_METHODS as readonly string[]).includes(value)
+  );
+}

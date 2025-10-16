@@ -11,7 +11,7 @@ export type SortContext = FolderSortOptions & {
 
 export function sortItems(
   items: readonly Item[],
-  context: SortContext
+  context: SortContext,
 ): Item[] {
   const { orderBy, sortIncrease } = context;
 
@@ -44,13 +44,13 @@ function compareByMethod(
   left: Item,
   right: Item,
   orderBy: Exclude<FolderSortMethod, "GLOBAL">,
-  folderId?: string
+  folderId?: string,
 ): number {
   switch (orderBy) {
     case "MANUAL":
       return compareNumbers(
         getManualPosition(left, folderId),
-        getManualPosition(right, folderId)
+        getManualPosition(right, folderId),
       );
     case "IMPORT":
       return compareNumbers(left.modificationTime, right.modificationTime);
@@ -63,7 +63,7 @@ function compareByMethod(
     case "RESOLUTION":
       return compareNumbers(
         left.width * left.height,
-        right.width * right.height
+        right.width * right.height,
       );
     case "RATING":
       return compareNumbers(left.star, right.star);
@@ -108,7 +108,7 @@ function compareStrings(left: string, right: string): number {
 
 function getDirectionMultiplier(
   orderBy: FolderSortMethod,
-  sortIncrease: boolean
+  sortIncrease: boolean,
 ): number {
   if (NEWEST_FIRST_METHODS.has(orderBy)) {
     return sortIncrease ? -1 : 1;

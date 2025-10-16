@@ -31,14 +31,14 @@ export function ListScaleControl({ value, onChange }: ListScaleControlProps) {
       const clamped = clampListScale(next);
       onChange(clamped);
     },
-    [onChange]
+    [onChange],
   );
 
   const handleSliderChange = useCallback(
     (next: number) => {
       emitChange(next);
     },
-    [emitChange]
+    [emitChange],
   );
 
   const handleDecrement = useCallback(() => {

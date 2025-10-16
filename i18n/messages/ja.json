@@ -6,7 +6,21 @@
   "collection": {
     "all": "すべて",
     "uncategorized": "未分類",
-    "trash": "ゴミ箱"
+    "trash": "ゴミ箱",
+    "sortLabels": {
+      "GLOBAL": "グローバル",
+      "MANUAL": "マニュアル",
+      "IMPORT": "追加日",
+      "MTIME": "変更日",
+      "BTIME": "作成日",
+      "NAME": "タイトル",
+      "EXT": "拡張子",
+      "FILESIZE": "ファイルサイズ",
+      "RESOLUTION": "解像度",
+      "RATING": "評価",
+      "DURATION": "再生時間",
+      "RANDOM": "ランダム"
+    }
   },
   "navbar": {
     "folders": "フォルダ",

@@ -23,13 +23,13 @@ import {
   __resetSettingsCacheForTests,
   getSettingsFilePath,
   loadGlobalSortSettings,
-  loadLocaleSetting,
   loadListScaleSetting,
+  loadLocaleSetting,
   loadSettings,
   type SettingsFile,
   saveGlobalSortSettings,
-  saveLocaleSetting,
   saveListScaleSetting,
+  saveLocaleSetting,
   saveSettings,
 } from "./settings";
 import { DEFAULT_GLOBAL_SORT_OPTIONS } from "./sort-options";

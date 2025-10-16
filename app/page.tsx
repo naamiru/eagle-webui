@@ -18,6 +18,10 @@ export default async function HomePage() {
       libraryPath={store.libraryPath}
       items={items}
       initialListScale={listScale}
+      sortState={{
+        kind: "global",
+        value: store.globalSortSettings,
+      }}
     />
   );
 }

@@ -54,14 +54,14 @@ export function ItemList({
         stateSnapshot: snapshot,
       });
     },
-    [onSelectItem]
+    [onSelectItem],
   );
 
   const handleSelect = useCallback(
     (itemId: string) => {
       emitSelection(itemId, latestStateRef.current);
     },
-    [emitSelection]
+    [emitSelection],
   );
 
   const itemContent = (index: number) => {
@@ -133,10 +133,10 @@ function computeGridStyle(scale: number): GridStyle {
   const eased = progress ** 1.6;
 
   const desktopWidth = Math.round(
-    DESKTOP_MIN_WIDTH + (DESKTOP_MAX_WIDTH - DESKTOP_MIN_WIDTH) * eased
+    DESKTOP_MIN_WIDTH + (DESKTOP_MAX_WIDTH - DESKTOP_MIN_WIDTH) * eased,
   );
   const mobileWidth = Math.round(
-    MOBILE_MIN_WIDTH + (MOBILE_MAX_WIDTH - MOBILE_MIN_WIDTH) * eased
+    MOBILE_MIN_WIDTH + (MOBILE_MAX_WIDTH - MOBILE_MIN_WIDTH) * eased,
   );
 
   return {

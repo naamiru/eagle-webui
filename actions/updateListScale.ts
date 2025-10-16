@@ -2,9 +2,7 @@
 
 import { saveListScaleSetting } from "@/data/settings";
 
-export type UpdateListScaleResult =
-  | { ok: true }
-  | { ok: false; error: string };
+export type UpdateListScaleResult = { ok: true } | { ok: false; error: string };
 
 export async function updateListScale(
   scale: unknown,

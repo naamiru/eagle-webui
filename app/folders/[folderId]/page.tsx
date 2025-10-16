@@ -31,6 +31,11 @@ export default async function FolderPage({ params }: FolderPageProps) {
       libraryPath={store.libraryPath}
       items={items}
       initialListScale={listScale}
+      sortState={{
+        kind: "folder",
+        folderId,
+        value: folder,
+      }}
     />
   );
 }

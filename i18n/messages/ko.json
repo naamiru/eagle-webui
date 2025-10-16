@@ -6,7 +6,21 @@
   "collection": {
     "all": "전체",
     "uncategorized": "미분류",
-    "trash": "휴지통"
+    "trash": "휴지통",
+    "sortLabels": {
+      "GLOBAL": "기본",
+      "MANUAL": "사용자 정의",
+      "IMPORT": "가져오기 날짜",
+      "MTIME": "수정한 날짜",
+      "BTIME": "만든 날짜",
+      "NAME": "제목",
+      "EXT": "확장",
+      "FILESIZE": "파일 크기",
+      "RESOLUTION": "규격",
+      "RATING": "평가",
+      "DURATION": "지속 기간",
+      "RANDOM": "무작위"
+    }
   },
   "navbar": {
     "folders": "폴더",

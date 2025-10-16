@@ -6,7 +6,21 @@
   "collection": {
     "all": "All",
     "uncategorized": "Uncategorized",
-    "trash": "Trash"
+    "trash": "Trash",
+    "sortLabels": {
+      "GLOBAL": "Global Settings",
+      "MANUAL": "Manual",
+      "IMPORT": "Date Added",
+      "MTIME": "Date Modified",
+      "BTIME": "Date Created",
+      "NAME": "Title",
+      "EXT": "Extension",
+      "FILESIZE": "File Size",
+      "RESOLUTION": "Dimensions",
+      "RATING": "Rating",
+      "DURATION": "Duration",
+      "RANDOM": "Random"
+    }
   },
   "navbar": {
     "folders": "Folders",

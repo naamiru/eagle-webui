@@ -2,23 +2,42 @@
 
 import { Text } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
+import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
+import { updateFolderSortOptions } from "@/actions/updateFolderSortOptions";
+import { updateGlobalSortOptions } from "@/actions/updateGlobalSortOptions";
 import { updateListScale } from "@/actions/updateListScale";
 import AppHeader from "@/components/AppHeader";
 import { ItemList, type ItemSelection } from "@/components/ItemList";
 import { ListScaleControl } from "@/components/ListScaleControl";
+import type { FolderSortOptions, GlobalSortOptions } from "@/data/sort-options";
 import type { ItemPreview } from "@/data/types";
 import { useIsMobile } from "@/utils/responsive";
 import classes from "./CollectionPage.module.css";
 import { ItemSlider } from "./ItemSlider";
-import { FolderListSortControl } from "./ListSortControl";
+import {
+  FolderListSortControl,
+  GlobalListSortControl,
+} from "./ListSortControl";
 import { MobileItemSlider } from "./MobileItemSlider";
+
+export type CollectionSortState =
+  | {
+      kind: "folder";
+      folderId: string;
+      value: FolderSortOptions;
+    }
+  | {
+      kind: "global";
+      value: GlobalSortOptions;
+    };
 
 interface CollectionPageProps {
   title: string;
   libraryPath: string;
   items: ItemPreview[];
   initialListScale: number;
+  sortState: CollectionSortState;
 }
 
 export default function CollectionPage({
@@ -26,19 +45,21 @@ export default function CollectionPage({
   libraryPath,
   items,
   initialListScale,
+  sortState,
 }: CollectionPageProps) {
   const [selectedItemId, setSelectedItemId] = useState<string>();
   const [listStateSnapshot, setListStateSnapshot] =
     useState<ItemSelection["stateSnapshot"]>(null);
   const [listScale, setListScale] = useState<number>(initialListScale);
   const persistListScale = useDebouncedCallback(updateListScale, 300);
+  const router = useRouter();
 
   const handleListScaleChange = useCallback(
     (scale: number) => {
       setListScale(scale);
       persistListScale(scale);
     },
-    [persistListScale]
+    [persistListScale],
   );
 
   const handleSelectItem = useCallback((selection: ItemSelection) => {
@@ -48,6 +69,53 @@ export default function CollectionPage({
   const dismiss = useCallback(() => setSelectedItemId(undefined), []);
 
   const isMobile = useIsMobile();
+
+  const handleFolderSortChange = useCallback(
+    (next: FolderSortOptions) => {
+      if (sortState.kind !== "folder") {
+        return;
+      }
+
+      void (async () => {
+        const result = await updateFolderSortOptions({
+          folderId: sortState.folderId,
+          orderBy: next.orderBy,
+          sortIncrease: next.sortIncrease,
+        });
+
+        if (!result.ok) {
+          console.error("[collection] Failed to update folder sort:", result);
+          return;
+        }
+
+        router.refresh();
+      })();
+    },
+    [router, sortState],
+  );
+
+  const handleGlobalSortChange = useCallback(
+    (next: GlobalSortOptions) => {
+      if (sortState.kind !== "global") {
+        return;
+      }
+
+      void (async () => {
+        const result = await updateGlobalSortOptions({
+          orderBy: next.orderBy,
+          sortIncrease: next.sortIncrease,
+        });
+
+        if (!result.ok) {
+          console.error("[collection] Failed to update global sort:", result);
+          return;
+        }
+
+        router.refresh();
+      })();
+    },
+    [router, sortState],
+  );
 
   if (selectedItemId && !isMobile) {
     return (
@@ -71,10 +139,17 @@ export default function CollectionPage({
           />
         </div>
         <div className={classes.headerTrailing}>
-          <FolderListSortControl
-            value={{ orderBy: "IMPORT", sortIncrease: true }}
-            onChange={() => {}}
-          />
+          {sortState.kind === "folder" ? (
+            <FolderListSortControl
+              value={sortState.value}
+              onChange={handleFolderSortChange}
+            />
+          ) : (
+            <GlobalListSortControl
+              value={sortState.value}
+              onChange={handleGlobalSortChange}
+            />
+          )}
         </div>
       </AppHeader>
 

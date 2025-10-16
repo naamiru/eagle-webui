@@ -6,7 +6,21 @@
   "collection": {
     "all": "全部",
     "uncategorized": "未分类",
-    "trash": "回收站"
+    "trash": "回收站",
+    "sortLabels": {
+      "GLOBAL": "使用全局设置",
+      "MANUAL": "自定义排序",
+      "IMPORT": "添加日期",
+      "MTIME": "修改日期",
+      "BTIME": "创建日期",
+      "NAME": "标题",
+      "EXT": "扩展名",
+      "FILESIZE": "文件大小",
+      "RESOLUTION": "尺寸",
+      "RATING": "评分",
+      "DURATION": "时长",
+      "RANDOM": "随机模式"
+    }
   },
   "navbar": {
     "folders": "文件夹",
