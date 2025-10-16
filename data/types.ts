@@ -1,4 +1,4 @@
-import type { SortMethod } from "./sort-options";
+import type { FolderSortMethod } from "./sort-options";
 
 export type Palette = {
   color: [number, number, number];
@@ -20,7 +20,7 @@ export type Folder = {
   password: string;
   passwordTips: string;
   coverId?: string;
-  orderBy: SortMethod;
+  orderBy: FolderSortMethod;
   sortIncrease: boolean;
 };
 
