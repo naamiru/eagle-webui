@@ -1,12 +1,18 @@
 .list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(var(--item-min-width, 140px), 1fr)
+  );
   max-width: 1400px;
   margin: 0;
   gap: var(--mantine-spacing-sm);
 
   @media (max-width: 48em) {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(var(--item-min-width-mobile, 100px), 1fr)
+    );
     gap: 2px;
   }
 }

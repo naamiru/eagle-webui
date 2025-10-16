@@ -18,6 +18,7 @@ const SETTINGS_FILE = path.join(SETTINGS_DIR, "settings.json");
 export type SettingsFile = {
   globalSort?: Partial<GlobalSortOptions>;
   locale?: AppLocale;
+  listScale?: number;
 };
 
 let cachedSettings: SettingsFile | null = null;
@@ -93,6 +94,19 @@ export async function saveGlobalSortSettings(
   await saveSettings({ globalSort: normalized });
 }
 
+const DEFAULT_LIST_SCALE = 0;
+const MIN_LIST_SCALE = 0;
+const MAX_LIST_SCALE = 100;
+
+export async function loadListScaleSetting(): Promise<number> {
+  const settings = await loadSettings();
+  return sanitizeListScale(settings.listScale);
+}
+
+export async function saveListScaleSetting(scale: number): Promise<void> {
+  await saveSettings({ listScale: sanitizeListScale(scale) });
+}
+
 export function __resetSettingsCacheForTests(): void {
   cachedSettings = null;
   pendingSettings = null;
@@ -130,6 +144,15 @@ function sanitizeSortIncrease(value: unknown): boolean {
   return typeof value === "boolean"
     ? value
     : DEFAULT_GLOBAL_SORT_OPTIONS.sortIncrease;
+}
+
+function sanitizeListScale(value: unknown): number {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    const rounded = Math.round(value);
+    const clamped = Math.min(Math.max(rounded, MIN_LIST_SCALE), MAX_LIST_SCALE);
+    return clamped;
+  }
+  return DEFAULT_LIST_SCALE;
 }
 
 function isGlobalSortMethod(value: unknown): value is GlobalSortMethod {

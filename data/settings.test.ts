@@ -24,10 +24,12 @@ import {
   getSettingsFilePath,
   loadGlobalSortSettings,
   loadLocaleSetting,
+  loadListScaleSetting,
   loadSettings,
   type SettingsFile,
   saveGlobalSortSettings,
   saveLocaleSetting,
+  saveListScaleSetting,
   saveSettings,
 } from "./settings";
 import { DEFAULT_GLOBAL_SORT_OPTIONS } from "./sort-options";
@@ -123,5 +125,23 @@ describe("settings helpers", () => {
       orderBy: "MTIME",
       sortIncrease: false,
     });
+  });
+
+  it("defaults the list scale to zero when missing or invalid", async () => {
+    expect(await loadListScaleSetting()).toBe(0);
+
+    await saveSettings({ listScale: "noop" as unknown as number });
+    expect(await loadListScaleSetting()).toBe(0);
+  });
+
+  it("rounds and clamps the list scale before persisting", async () => {
+    await saveListScaleSetting(12.6);
+    expect(await loadListScaleSetting()).toBe(13);
+
+    await saveListScaleSetting(250);
+    expect(await loadListScaleSetting()).toBe(100);
+
+    await saveListScaleSetting(-30);
+    expect(await loadListScaleSetting()).toBe(0);
   });
 });

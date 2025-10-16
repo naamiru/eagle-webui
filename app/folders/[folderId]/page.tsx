@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import CollectionPage from "@/components/CollectionPage";
+import { loadListScaleSetting } from "@/data/settings";
 import { getStore } from "@/data/store";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +13,10 @@ type FolderPageProps = {
 
 export default async function FolderPage({ params }: FolderPageProps) {
   const { folderId } = await params;
-  const store = await getStore();
+  const [store, listScale] = await Promise.all([
+    getStore(),
+    loadListScaleSetting(),
+  ]);
   const folder = store.folders.get(folderId);
 
   if (!folder) {
@@ -26,6 +30,7 @@ export default async function FolderPage({ params }: FolderPageProps) {
       title={folder.name}
       libraryPath={store.libraryPath}
       items={items}
+      initialListScale={listScale}
     />
   );
 }
