@@ -10,6 +10,8 @@ import {
   Text,
 } from "@mantine/core";
 import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 import { AppLayout } from "@/components/AppLayout";
 import { AppMantineProvider } from "@/components/AppMantineProvider";
 import { ImportErrorScreen } from "@/components/ImportErrorScreen";
@@ -35,18 +37,21 @@ export default async function RootLayout({
 }>) {
   void getStore().catch(() => undefined);
   const importState = getStoreImportState();
+  const locale = await getLocale();
 
   return (
-    <html lang="en" {...mantineHtmlProps}>
+    <html lang={locale} {...mantineHtmlProps}>
       <head>
         <ColorSchemeScript />
       </head>
       <body>
-        <AppMantineProvider>
-          <ImportStateContent state={importState}>
-            {children}
-          </ImportStateContent>
-        </AppMantineProvider>
+        <NextIntlClientProvider>
+          <AppMantineProvider>
+            <ImportStateContent state={importState}>
+              {children}
+            </ImportStateContent>
+          </AppMantineProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
