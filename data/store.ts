@@ -2,9 +2,9 @@ import {
   type LibraryImportErrorCode,
   toLibraryImportErrorCode,
 } from "./errors";
-import { loadGlobalSortSettings } from "./global-sort-settings";
 import { discoverLibraryPath } from "./library/discover-library-path";
 import { importLibraryMetadata } from "./library/import-metadata";
+import { loadGlobalSortSettings } from "./settings";
 import { type SortContext, sortItems } from "./sort-items";
 import type { GlobalSortOptions } from "./sort-options";
 import type { Folder, Item, ItemCounts, ItemPreview } from "./types";

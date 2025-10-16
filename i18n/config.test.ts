@@ -23,12 +23,12 @@ describe("isAppLocale", () => {
   });
 });
 
-describe("resolveLocale", () => {
-  it("prefers the persisted locale when available", () => {
+describe("getPreferredLocale", () => {
+  it("returns the requested locale when header matches", () => {
     expect(getPreferredLocale("ja")).toBe("ja");
   });
 
-  it("falls back to the request locale when persisted is invalid", () => {
+  it("falls back to the best matching locale based on weighting", () => {
     expect(getPreferredLocale("ja, en;q=0.8")).toBe("ja");
   });
 

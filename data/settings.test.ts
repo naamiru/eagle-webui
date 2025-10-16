@@ -20,13 +20,17 @@ vi.mock("ospath", () => ({
 
 import { DEFAULT_LOCALE } from "@/i18n/config";
 import {
+  __resetSettingsCacheForTests,
   getSettingsFilePath,
+  loadGlobalSortSettings,
   loadLocaleSetting,
   loadSettings,
   type SettingsFile,
+  saveGlobalSortSettings,
   saveLocaleSetting,
   saveSettings,
 } from "./settings";
+import { DEFAULT_GLOBAL_SORT_OPTIONS } from "./sort-options";
 
 describe("settings helpers", () => {
   const settingsPath = getSettingsFilePath();
@@ -34,10 +38,12 @@ describe("settings helpers", () => {
 
   beforeEach(async () => {
     await fs.rm(sandboxRoot, { recursive: true, force: true });
+    __resetSettingsCacheForTests();
   });
 
   afterEach(async () => {
     await fs.rm(sandboxRoot, { recursive: true, force: true });
+    __resetSettingsCacheForTests();
   });
 
   it("returns an empty object when the file is missing", async () => {
@@ -90,14 +96,32 @@ describe("settings helpers", () => {
   });
 
   it("reads the default locale when it is stored", async () => {
-    await saveSettings({});
-
-    await fs.writeFile(
-      settingsPath,
-      `${JSON.stringify({ locale: DEFAULT_LOCALE }, null, 2)}\n`,
-      "utf8",
-    );
-
+    await saveLocaleSetting(DEFAULT_LOCALE);
     expect(await loadLocaleSetting()).toBe(DEFAULT_LOCALE);
+  });
+
+  it("returns default global sort settings when missing", async () => {
+    expect(await loadGlobalSortSettings()).toEqual(DEFAULT_GLOBAL_SORT_OPTIONS);
+  });
+
+  it("normalizes persisted global sort settings", async () => {
+    await saveSettings({
+      globalSort: {
+        orderBy: "UNKNOWN",
+        sortIncrease: "nope" as unknown as boolean,
+      },
+    });
+
+    expect(await loadGlobalSortSettings()).toEqual(DEFAULT_GLOBAL_SORT_OPTIONS);
+
+    await saveGlobalSortSettings({
+      orderBy: "MTIME",
+      sortIncrease: false,
+    });
+
+    expect(await loadGlobalSortSettings()).toEqual({
+      orderBy: "MTIME",
+      sortIncrease: false,
+    });
   });
 });
