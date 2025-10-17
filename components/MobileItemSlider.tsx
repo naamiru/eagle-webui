@@ -283,7 +283,7 @@ function MobileUrlContent({ item, libraryPath }: MobileContentProps) {
     const itemName = metadata.name || metadata.url || "Untitled item";
     metaContent = hasUrl ? (
       <Anchor
-        className={classes.urlText}
+        className={`${classes.urlText} no-swiping`}
         target={target}
         href={itemUrl}
         rel={rel}
@@ -300,7 +300,12 @@ function MobileUrlContent({ item, libraryPath }: MobileContentProps) {
 
   return (
     <div className={classes.urlContent}>
-      <a className={classes.urlImage} target={target} href={itemUrl} rel={rel}>
+      <a
+        className={`${classes.urlImage} no-swiping`}
+        target={target}
+        href={itemUrl}
+        rel={rel}
+      >
         {/** biome-ignore lint/performance/noImgElement: url thumbnail */}
         <img src={getThumbnailUrl(item.id, libraryPath)} alt="thumbnail" />
       </a>
