@@ -54,7 +54,6 @@ SmartFolder := {
   conditions: SmartFolderCondition[];
   children: SmartFolder[];
   parentId?: string;
-  itemIds: string[]; // precomputed, sorted item ids
   rawCoverId?: string;
 }
 
@@ -65,7 +64,7 @@ SmartFolderCondition := {
 }
 ```
 
-`SmartFolderRule` retains the JSON shape for supported properties while attaching any derived helpers needed for evaluation (e.g. precompiled regex). This internal type may be accompanied by helper data (e.g. cached previews), but the primary store structure is the tree of `SmartFolder` objects with precomputed `itemIds`.
+`SmartFolderRule` retains the JSON shape for supported properties while attaching any derived helpers needed for evaluation (e.g. precompiled regex). The store will hold the tree of `SmartFolder` objects and maintain a separate lookup map for evaluated item ids.
 
 ## Rule Evaluation
 - Evaluate rules against `Store.items`, ignoring any item where `isDeleted` is true.
@@ -98,27 +97,9 @@ SmartFolderCondition := {
   - `"regex"` ➜ compile a case-insensitive `RegExp`. If compilation fails, drop the rule. Run `test` on the raw name.
 
 ## Derived Fields
-- Precompute and cache a sorted `itemIds` array for every smart folder. Use the folder’s resolved sort order (fall back to global sort when `orderBy === "GLOBAL"`).
-- Derive `imageCount` as `itemIds.length` whenever needed.
-- Determine cover images dynamically from `itemIds[0]` (if present) or, when available, prefer the `rawCoverId` captured from metadata if that id still exists in the array.
-- Build lightweight preview objects (see below) to avoid repeated traversal in the UI.
-
-### Smart Folder Preview Model
-
-Expose a compact preview shape for client components:
-
-```
-SmartFolderPreview := {
-  id: string;
-  name: string;
-  itemCount: number;
-  coverId?: string;
-  children: SmartFolderPreview[];
-}
-```
-
-- Derive `itemCount` and `coverId` from the associated `SmartFolder.itemIds` when constructing previews.
-- Generate previews alongside the smart folder tree so navigation components can consume them without additional computation.
+- Precompute and cache a sorted array of item ids per smart folder. Use the folder’s resolved sort order (fall back to global sort when `orderBy === "GLOBAL"`). Keep the mapping internally so the store can resolve previews quickly, but do not hydrate the entire map to the client.
+- Populate `itemCount` directly on each `SmartFolder` as the length of the evaluated item id list.
+- Set `coverId` while normalizing: prefer the metadata-provided value when it still belongs to the folder, otherwise fall back to the first item id in the list.
 
 ## Store API
 Extend the data layer as follows while keeping the public smart folder objects shape-compatible with Eagle:
@@ -129,28 +110,27 @@ Extend the data layer as follows while keeping the public smart folder objects s
   - `bpm: number;` (default `0`)
   - `medium: string;` (default `""`)
 - Add helper utilities (e.g. `data/smart-folders.ts`) to:
-  - Traverse the raw tree, clone/sanitize nodes into `SmartFolder`, and build lookup maps keyed by id when helpful for internal processing.
-  - Evaluate membership and precompute sorted `itemIds` for each folder.
+  - Traverse the raw tree, clone/sanitize nodes into `SmartFolder`, and evaluate membership against non-deleted items.
+  - Precompute sorted `itemIds` for each folder and retain them in a `Map<string, string[]>` for store lookups.
 - Update `Store` to:
   - Accept smart folders in the constructor.
   - Expose `getSmartFolders(): SmartFolder[]` (top-level array with nested children) and `getSmartFolder(id: string)`.
-  - Provide `getSmartFolderItemPreviews(id: string)` and `getFirstSmartFolderItem(id: string)` mirroring folder APIs, using precomputed `itemIds`.
-  - Expose `getSmartFolderPreviews(): SmartFolderPreview[]` (matching the tree structure) for UI consumption.
-  - Optionally cache derived evaluation results (e.g. `SmartFolderPreview` objects), but a dedicated map of folders by id is not required; simple traversal is acceptable due to the expected small size.
+  - Provide `getSmartFolderItemPreviews(id: string)` and `getFirstSmartFolderItem(id: string)` mirroring folder APIs, using the internal item id map.
+  - Surface helpers for `itemCount`, `coverId`, and raw item ids without returning the full map to the client.
 
 ## UI Integration
 1. **App layout**
-   - Pass smart folder previews (see below) into `AppLayout` and `AppNavbar`.
+   - Pass smart folders and the derived count/cover data into `AppLayout` and `AppNavbar`.
 2. **Navigation**
    - Insert a “Smart Folders (N)” section above “Folders (N)”.
-   - Present the tree using the same `Tree` component. Display the derived `itemCount` on the right; when a node has collapsed children, sum the counts of all descendants for the badge.
+   - Present the tree using the same `Tree` component. Display each folder’s `itemCount` on the right; when a node has collapsed children, sum the counts of all descendants using the tree data already in memory (no client-side map hydration).
    - Clicking a node navigates to `/smartfolder/[id]`.
 3. **Collection page**
    - Create `app/smartfolder/[smartFolderId]/page.tsx` that:
      - Loads the store and list scale.
      - Looks up the smart folder by id; call `notFound()` if missing.
-     - Retrieves sorted items and builds child cards (id, name, coverId) using preview data.
-     - Renders `CollectionPage` with a new `sortState` variant `{ kind: "smart-folder"; value: FolderSortOptions }` that is read-only (no update action).
+     - Retrieves sorted items and builds child cards (id, name, coverId) using store helpers (which rely on the internal item id map).
+     - Renders `CollectionPage` with a new `sortState` variant `{ kind: "smart-folder"; smartFolderId: string; value: FolderSortOptions }` that wires up a dedicated server action (`updateSmartFolderSortOptions`) so users can change sorting inline.
    - Update `SubfolderList` so the caller can provide the link base path (`/folders/` vs `/smartfolder/`).
 
 ## Error Handling
@@ -164,7 +144,6 @@ Extend the data layer as follows while keeping the public smart folder objects s
 ## Testing Strategy
 - Unit tests for:
   - Smart folder normalization (defaults, skipping invalid nodes while keeping child structure).
-  - Rule evaluation combinations (`type`, `name`, boolean `"FALSE"`, hierarchy filtering).
-  - Preview generation from `itemIds` (counts, cover selection).
+- Rule evaluation combinations (`type`, `name`, boolean `"FALSE"`, hierarchy filtering) that assert the resulting item id cache entries and `itemCount`/`coverId` values.
   - `Store.getSmartFolderItemPreviews` including sort fallback.
 - Integration-style test extending `import-metadata.test.ts` to ensure smart folders import and invalid nodes are skipped without aborting.

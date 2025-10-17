@@ -5,8 +5,9 @@ import {
 import { discoverLibraryPath } from "./library/discover-library-path";
 import { importLibraryMetadata } from "./library/import-metadata";
 import { loadGlobalSortSettings } from "./settings";
+import type { SmartFolder, SmartFolderItemMap } from "./smart-folders";
 import { type SortContext, sortItems } from "./sort-items";
-import type { GlobalSortOptions } from "./sort-options";
+import type { FolderSortMethod, GlobalSortOptions } from "./sort-options";
 import type { Folder, Item, ItemCounts, ItemPreview } from "./types";
 
 export class Store {
@@ -15,6 +16,8 @@ export class Store {
     public readonly applicationVersion: string,
     public readonly folders: Map<string, Folder>,
     public readonly items: Map<string, Item>,
+    public readonly smartFolders: SmartFolder[],
+    public readonly smartFolderItemIds: SmartFolderItemMap,
     public readonly globalSortSettings: GlobalSortOptions,
     public readonly itemCounts: ItemCounts,
   ) {}
@@ -75,6 +78,114 @@ export class Store {
     return this.toItemPreviews(this.getTrashItems());
   }
 
+  getSmartFolders(): SmartFolder[] {
+    return this.smartFolders;
+  }
+
+  getSmartFolder(id: string): SmartFolder | undefined {
+    return this.findSmartFolder(this.smartFolders, id);
+  }
+
+  getSmartFolderItemIds(id: string): string[] {
+    const itemIds = this.smartFolderItemIds.get(id);
+    return itemIds ? [...itemIds] : [];
+  }
+
+  getSmartFolderItemCount(id: string): number {
+    const folder = this.getSmartFolder(id);
+    return folder?.itemCount ?? 0;
+  }
+
+  getSmartFolderCoverId(id: string): string | undefined {
+    const folder = this.getSmartFolder(id);
+    return folder?.coverId;
+  }
+
+  updateSmartFolderSortOptions(
+    smartFolderId: string,
+    orderBy: FolderSortMethod,
+    sortIncrease: boolean,
+  ): boolean {
+    const folder = this.getSmartFolder(smartFolderId);
+    if (!folder) {
+      return false;
+    }
+
+    folder.orderBy = orderBy;
+    folder.sortIncrease = sortIncrease;
+
+    const existingIds = this.smartFolderItemIds.get(smartFolderId) ?? [];
+    const resolvedItems: Item[] = [];
+
+    for (const itemId of existingIds) {
+      const item = this.items.get(itemId);
+      if (item && !item.isDeleted) {
+        resolvedItems.push(item);
+      }
+    }
+
+    const resolvedOrderBy =
+      orderBy === "GLOBAL" ? this.globalSortSettings.orderBy : orderBy;
+    const resolvedSortIncrease =
+      orderBy === "GLOBAL"
+        ? this.globalSortSettings.sortIncrease
+        : sortIncrease;
+
+    let sortedItems: Item[];
+    try {
+      sortedItems = sortItems(resolvedItems, {
+        orderBy: resolvedOrderBy,
+        sortIncrease: resolvedSortIncrease,
+        folderId: smartFolderId,
+      });
+    } catch {
+      sortedItems = resolvedItems;
+    }
+
+    const sortedIds = sortedItems.map((item) => item.id);
+    this.smartFolderItemIds.set(smartFolderId, sortedIds);
+    folder.itemCount = sortedIds.length;
+
+    if (sortedIds.length === 0) {
+      folder.coverId = undefined;
+      return true;
+    }
+
+    if (folder.coverId && sortedIds.includes(folder.coverId)) {
+      return true;
+    }
+
+    folder.coverId = sortedIds[0];
+    return true;
+  }
+
+  getSmartFolderItemPreviews(id: string): ItemPreview[] {
+    const folder = this.getSmartFolder(id);
+    if (!folder) {
+      return [];
+    }
+
+    const itemIds = this.smartFolderItemIds.get(id) ?? [];
+    const items = this.collectItemsByIds(itemIds);
+    return this.toItemPreviews(items);
+  }
+
+  getFirstSmartFolderItem(id: string): Item | undefined {
+    const itemIds = this.smartFolderItemIds.get(id);
+    if (!itemIds) {
+      return undefined;
+    }
+
+    for (const itemId of itemIds) {
+      const item = this.items.get(itemId);
+      if (item && !item.isDeleted) {
+        return item;
+      }
+    }
+
+    return undefined;
+  }
+
   getFolderItems(folderId: string): Item[] {
     const items: Item[] = [];
 
@@ -131,6 +242,37 @@ export class Store {
       orderBy: this.globalSortSettings.orderBy,
       sortIncrease: this.globalSortSettings.sortIncrease,
     };
+  }
+
+  private findSmartFolder(
+    nodes: SmartFolder[],
+    id: string,
+  ): SmartFolder | undefined {
+    for (const node of nodes) {
+      if (node.id === id) {
+        return node;
+      }
+
+      const child = this.findSmartFolder(node.children, id);
+      if (child) {
+        return child;
+      }
+    }
+
+    return undefined;
+  }
+
+  private collectItemsByIds(itemIds: string[]): Item[] {
+    const collected: Item[] = [];
+
+    for (const itemId of itemIds) {
+      const item = this.items.get(itemId);
+      if (item && !item.isDeleted) {
+        collected.push(item);
+      }
+    }
+
+    return collected;
   }
 
   private toItemPreviews(items: Item[]): ItemPreview[] {
@@ -253,8 +395,8 @@ export async function waitForStoreInitialization(): Promise<void> {
 
 async function initializeStore(): Promise<Store> {
   const libraryPath = await discoverLibraryPath();
-  const data = await importLibraryMetadata(libraryPath);
   const globalSortSettings = await loadGlobalSortSettings();
+  const data = await importLibraryMetadata(libraryPath, globalSortSettings);
   const itemCounts = computeItemCounts(data.items, data.folders);
 
   return new Store(
@@ -262,6 +404,8 @@ async function initializeStore(): Promise<Store> {
     data.applicationVersion,
     data.folders,
     data.items,
+    data.smartFolders,
+    data.smartFolderItemIds,
     globalSortSettings,
     itemCounts,
   );

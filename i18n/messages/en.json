@@ -28,7 +28,8 @@
   },
   "navbar": {
     "folders": "Folders",
-    "settings": "Settings"
+    "settings": "Settings",
+    "smartFolders": "Smart Folders"
   },
   "common": {
     "library": {

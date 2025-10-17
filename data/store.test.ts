@@ -4,6 +4,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LibraryImportError } from "./errors";
 import { computeNameForSort } from "./name-for-sort";
+import type { SmartFolder, SmartFolderItemMap } from "./smart-folders";
 import {
   DEFAULT_GLOBAL_SORT_OPTIONS,
   type GlobalSortOptions,
@@ -19,6 +20,7 @@ vi.mock("./library/import-metadata", () => ({
 }));
 
 import { discoverLibraryPath } from "./library/discover-library-path";
+import type { LibraryImportPayload } from "./library/import-metadata";
 import { importLibraryMetadata } from "./library/import-metadata";
 import { __resetStoreForTests, getStore } from "./store";
 
@@ -61,6 +63,9 @@ const mockItem: Item = {
   duration: 0,
   star: 0,
   order: {},
+  fontMetas: undefined,
+  bpm: 0,
+  medium: "",
 };
 describe("getStore", () => {
   beforeEach(() => {
@@ -106,19 +111,17 @@ describe("getStore", () => {
     expect(importLibraryMetadataMock).toHaveBeenCalledTimes(2);
   });
 });
-function mockLibraryData(): Store {
+function mockLibraryData(): LibraryImportPayload {
   const folders = new Map([["root", { ...mockFolder }]]);
   const items = new Map([["item-1", { ...mockItem }]]);
-  const itemCounts = computeItemCounts(items, folders);
-
-  return new Store(
-    "C:/library",
-    "4.0.0",
+  return {
+    libraryPath: "C:/library",
+    applicationVersion: "4.0.0",
     folders,
     items,
-    { ...DEFAULT_GLOBAL_SORT_OPTIONS },
-    itemCounts,
-  );
+    smartFolders: [],
+    smartFolderItemIds: new Map(),
+  };
 }
 
 describe("Store sorting", () => {
@@ -327,12 +330,116 @@ describe("Store item counts", () => {
   });
 });
 
+describe("Store smart folders", () => {
+  it("exposes smart folder trees and item previews", () => {
+    const items = [
+      createItem({ id: "item-1", ext: "png" }),
+      createItem({ id: "item-2", ext: "png" }),
+    ];
+    const smartFolder = createSmartFolder({
+      id: "sf-root",
+      name: "Root",
+      itemCount: 2,
+      coverId: "item-1",
+    });
+    const itemIdMap: SmartFolderItemMap = new Map([
+      ["sf-root", ["item-1", "item-2"]],
+    ]);
+
+    const store = createStore({
+      items,
+      smartFolders: [smartFolder],
+      smartFolderItemIds: itemIdMap,
+    });
+
+    expect(store.getSmartFolders()).toEqual([smartFolder]);
+    expect(store.getSmartFolder("sf-root")).toEqual(smartFolder);
+
+    const previews = store.getSmartFolderItemPreviews("sf-root");
+    expect(previews.map((entry) => entry.id)).toEqual(["item-1", "item-2"]);
+    expect(store.getFirstSmartFolderItem("sf-root")?.id).toBe("item-1");
+    expect(store.getSmartFolderItemIds("sf-root")).toEqual([
+      "item-1",
+      "item-2",
+    ]);
+    expect(store.getSmartFolderItemCount("sf-root")).toBe(2);
+    expect(store.getSmartFolderCoverId("sf-root")).toBe("item-1");
+  });
+
+  it("respects raw cover id when still present", () => {
+    const items = [createItem({ id: "item-1" }), createItem({ id: "item-2" })];
+    const smartFolder = createSmartFolder({
+      id: "sf-root",
+      itemCount: 2,
+      coverId: "item-2",
+    });
+    const itemIdMap: SmartFolderItemMap = new Map([
+      ["sf-root", ["item-1", "item-2"]],
+    ]);
+
+    const store = createStore({
+      items,
+      smartFolders: [smartFolder],
+      smartFolderItemIds: itemIdMap,
+    });
+
+    expect(store.getSmartFolderCoverId("sf-root")).toBe("item-2");
+  });
+
+  it("updates smart folder sort options", () => {
+    const items = [
+      createItem({ id: "item-a", name: "Alpha", ext: "png" }),
+      createItem({ id: "item-b", name: "Bravo", ext: "png" }),
+    ];
+    const smartFolder = createSmartFolder({
+      id: "sf-root",
+      name: "Root",
+      itemCount: 2,
+      coverId: "item-a",
+    });
+    const itemIdMap: SmartFolderItemMap = new Map([
+      ["sf-root", ["item-a", "item-b"]],
+    ]);
+
+    const store = createStore({
+      items,
+      smartFolders: [smartFolder],
+      smartFolderItemIds: itemIdMap,
+    });
+
+    const updated = store.updateSmartFolderSortOptions(
+      "sf-root",
+      "NAME",
+      false,
+    );
+
+    expect(updated).toBe(true);
+    expect(store.getSmartFolderItemIds("sf-root")).toEqual([
+      "item-b",
+      "item-a",
+    ]);
+    expect(store.getSmartFolderCoverId("sf-root")).toBe("item-a");
+    expect(store.getSmartFolderItemCount("sf-root")).toBe(2);
+  });
+
+  it("returns empty results for missing smart folders", () => {
+    const store = createStore({});
+    expect(store.getSmartFolderItemPreviews("missing")).toEqual([]);
+    expect(store.getFirstSmartFolderItem("missing")).toBeUndefined();
+    expect(store.getSmartFolderItemIds("missing")).toEqual([]);
+    expect(store.getSmartFolderItemCount("missing")).toBe(0);
+    expect(store.getSmartFolderCoverId("missing")).toBeUndefined();
+  });
+});
+
 function createStore(options: {
   libraryPath?: string;
   applicationVersion?: string;
   folders?: Folder[];
   items?: Item[];
   globalSortSettings?: GlobalSortOptions;
+  smartFolders?: SmartFolder[];
+  smartFolderItemIds?: SmartFolderItemMap;
 }): Store {
   const {
     libraryPath = "",
@@ -340,16 +447,21 @@ function createStore(options: {
     folders = [],
     items = [],
     globalSortSettings = DEFAULT_GLOBAL_SORT_OPTIONS,
+    smartFolders = [],
+    smartFolderItemIds,
   } = options;
 
   const folderMap = new Map(folders.map((folder) => [folder.id, folder]));
   const itemMap = new Map(items.map((item) => [item.id, item]));
+  const itemIdMap = smartFolderItemIds ?? new Map<string, string[]>();
 
   return new Store(
     libraryPath,
     applicationVersion,
     folderMap,
     itemMap,
+    smartFolders,
+    itemIdMap,
     { ...globalSortSettings },
     computeItemCounts(itemMap, folderMap),
   );
@@ -400,5 +512,22 @@ function createItem(overrides: Partial<Item>): Item {
     duration: overrides.duration ?? 0,
     star: overrides.star ?? 0,
     order: { ...(overrides.order ?? {}) },
+    fontMetas: overrides.fontMetas,
+    bpm: overrides.bpm ?? 0,
+    medium: overrides.medium ?? "",
+  };
+}
+
+function createSmartFolder(overrides: Partial<SmartFolder>): SmartFolder {
+  return {
+    id: overrides.id ?? "smart-folder-id",
+    name: overrides.name ?? "Smart Folder",
+    orderBy: overrides.orderBy ?? "GLOBAL",
+    sortIncrease: overrides.sortIncrease ?? true,
+    itemCount: overrides.itemCount ?? 0,
+    coverId: overrides.coverId,
+    conditions: overrides.conditions ?? [],
+    children: overrides.children ?? [],
+    parentId: overrides.parentId,
   };
 }

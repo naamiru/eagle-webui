@@ -7,6 +7,7 @@ import { useCallback, useState } from "react";
 import { updateFolderSortOptions } from "@/actions/updateFolderSortOptions";
 import { updateGlobalSortOptions } from "@/actions/updateGlobalSortOptions";
 import { updateListScale } from "@/actions/updateListScale";
+import { updateSmartFolderSortOptions } from "@/actions/updateSmartFolderSortOptions";
 import AppHeader from "@/components/AppHeader";
 import { ItemList, type ItemSelection } from "@/components/ItemList";
 import { ListScaleControl } from "@/components/ListScaleControl";
@@ -32,6 +33,11 @@ export type CollectionSortState =
   | {
       kind: "global";
       value: GlobalSortOptions;
+    }
+  | {
+      kind: "smart-folder";
+      smartFolderId: string;
+      value: FolderSortOptions;
     };
 
 interface CollectionPageProps {
@@ -41,6 +47,7 @@ interface CollectionPageProps {
   initialListScale: number;
   sortState: CollectionSortState;
   subfolders: Subfolder[];
+  subfolderBasePath?: string;
 }
 
 export default function CollectionPage({
@@ -50,6 +57,7 @@ export default function CollectionPage({
   initialListScale,
   sortState,
   subfolders,
+  subfolderBasePath = "/folders",
 }: CollectionPageProps) {
   const [selectedItemId, setSelectedItemId] = useState<string>();
   const [listStateSnapshot, setListStateSnapshot] =
@@ -122,6 +130,33 @@ export default function CollectionPage({
     [router, sortState],
   );
 
+  const handleSmartFolderSortChange = useCallback(
+    (next: FolderSortOptions) => {
+      if (sortState.kind !== "smart-folder") {
+        return;
+      }
+
+      void (async () => {
+        const result = await updateSmartFolderSortOptions({
+          smartFolderId: sortState.smartFolderId,
+          orderBy: next.orderBy,
+          sortIncrease: next.sortIncrease,
+        });
+
+        if (!result.ok) {
+          console.error(
+            "[collection] Failed to update smart folder sort:",
+            result,
+          );
+          return;
+        }
+
+        router.refresh();
+      })();
+    },
+    [router, sortState],
+  );
+
   if (selectedItemId && !isMobile) {
     return (
       <ItemSlider
@@ -144,12 +179,19 @@ export default function CollectionPage({
           />
         </div>
         <div className={classes.headerTrailing}>
-          {sortState.kind === "folder" ? (
+          {sortState.kind === "folder" && (
             <FolderListSortControl
               value={sortState.value}
               onChange={handleFolderSortChange}
             />
-          ) : (
+          )}
+          {sortState.kind === "smart-folder" && (
+            <FolderListSortControl
+              value={sortState.value}
+              onChange={handleSmartFolderSortChange}
+            />
+          )}
+          {sortState.kind === "global" && (
             <GlobalListSortControl
               value={sortState.value}
               onChange={handleGlobalSortChange}
@@ -167,6 +209,7 @@ export default function CollectionPage({
             libraryPath={libraryPath}
             subfolders={subfolders}
             listScale={listScale}
+            basePath={subfolderBasePath}
           />
         </div>
       )}

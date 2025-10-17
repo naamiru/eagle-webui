@@ -9,6 +9,8 @@ import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 
 import { LibraryImportError } from "../errors";
 import { computeNameForSort } from "../name-for-sort";
+import type { GlobalSortOptions } from "../sort-options";
+import { DEFAULT_GLOBAL_SORT_OPTIONS } from "../sort-options";
 import { importLibraryMetadata } from "./import-metadata";
 
 const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {
@@ -35,7 +37,10 @@ describe("importLibraryMetadata", () => {
 
   it("imports folders and items from the generated library", async () => {
     const libraryPath = await createSampleLibrary();
-    const data = await importLibraryMetadata(libraryPath);
+    const data = await importLibraryMetadata(
+      libraryPath,
+      DEFAULT_GLOBAL_SORT_OPTIONS,
+    );
 
     expect(data.applicationVersion).toBe("4.0.0");
 
@@ -66,6 +71,9 @@ describe("importLibraryMetadata", () => {
     expect(item?.palettes[0]?.color).toEqual([221, 218, 210]);
     expect(item?.nameForSort).toBe(computeNameForSort("Bird"));
 
+    expect(data.smartFolders).toEqual([]);
+    expect(data.smartFolderItemIds.size).toBe(0);
+
     // Missing item metadata files are reported but do not stop import.
     expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
   });
@@ -93,11 +101,115 @@ describe("importLibraryMetadata", () => {
       },
     });
 
-    const data = await importLibraryMetadata(libraryPath);
+    const data = await importLibraryMetadata(
+      libraryPath,
+      DEFAULT_GLOBAL_SORT_OPTIONS,
+    );
     const item = data.items.get("ITEM_WITH_STRING_DURATION");
 
     expect(item?.duration).toBe(100.5);
     expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it("imports smart folders and precomputes item ids", async () => {
+    const libraryPath = await createLibrary({
+      metadata: {
+        applicationVersion: "4.2.0",
+        modificationTime: 0,
+        folders: [],
+        smartFolders: [
+          {
+            id: "ROOT",
+            name: "Root",
+            conditions: [
+              {
+                match: "AND",
+                boolean: "TRUE",
+                rules: [
+                  {
+                    property: "name",
+                    method: "contain",
+                    value: "alpha",
+                  },
+                ],
+              },
+            ],
+            children: [
+              {
+                id: "VIDEOS",
+                name: "Videos",
+                coverId: "ITEM_ALPHA_VIDEO",
+                conditions: [
+                  {
+                    match: "AND",
+                    boolean: "TRUE",
+                    rules: [
+                      {
+                        property: "type",
+                        method: "equal",
+                        value: "video",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        quickAccess: [],
+        tagsGroups: [],
+      },
+      mtime: {
+        ITEM_ALPHA_STILL: 1,
+        ITEM_ALPHA_VIDEO: 2,
+        ITEM_OTHER: 3,
+        all: 3,
+      },
+      items: {
+        ITEM_ALPHA_STILL: {
+          id: "ITEM_ALPHA_STILL",
+          name: "Alpha Still",
+          ext: "PNG",
+          folders: [],
+          isDeleted: false,
+          modificationTime: 10,
+        },
+        ITEM_ALPHA_VIDEO: {
+          id: "ITEM_ALPHA_VIDEO",
+          name: "Alpha Video",
+          duration: 15,
+          ext: "mp4",
+          folders: [],
+          isDeleted: false,
+          modificationTime: 20,
+        },
+        ITEM_OTHER: {
+          id: "ITEM_OTHER",
+          name: "Beta",
+          ext: "jpg",
+          folders: [],
+          isDeleted: false,
+          modificationTime: 30,
+        },
+      },
+    });
+
+    const globalSort: GlobalSortOptions = {
+      orderBy: "NAME",
+      sortIncrease: true,
+    };
+    const data = await importLibraryMetadata(libraryPath, globalSort);
+
+    expect(data.smartFolders).toHaveLength(1);
+    const root = data.smartFolders[0];
+    expect(root?.children).toHaveLength(1);
+    expect(root?.children[0]?.id).toBe("VIDEOS");
+
+    expect(data.smartFolderItemIds.get("ROOT")).toEqual([
+      "ITEM_ALPHA_STILL",
+      "ITEM_ALPHA_VIDEO",
+    ]);
+    expect(data.smartFolderItemIds.get("VIDEOS")).toEqual(["ITEM_ALPHA_VIDEO"]);
   });
 
   it("throws when the Eagle application version is incompatible", async () => {
@@ -114,9 +226,9 @@ describe("importLibraryMetadata", () => {
       items: {},
     });
 
-    await expect(importLibraryMetadata(libraryPath)).rejects.toBeInstanceOf(
-      LibraryImportError,
-    );
+    await expect(
+      importLibraryMetadata(libraryPath, DEFAULT_GLOBAL_SORT_OPTIONS),
+    ).rejects.toBeInstanceOf(LibraryImportError);
   });
 });
 

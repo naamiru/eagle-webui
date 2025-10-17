@@ -15,12 +15,14 @@ type SubfolderListProps = {
   libraryPath: string;
   subfolders: Subfolder[];
   listScale: number;
+  basePath?: string;
 };
 
 export function SubfolderList({
   libraryPath,
   subfolders,
   listScale,
+  basePath = "/folders",
 }: SubfolderListProps) {
   const listStyle = useMemo(() => computeGridStyle(listScale), [listScale]);
 
@@ -32,8 +34,9 @@ export function SubfolderList({
     <div className={classes.list} style={listStyle}>
       {subfolders.map((folder) => {
         const { id, name, coverId } = folder;
+        const href = `${basePath}/${id}`;
         return (
-          <Link key={id} href={`/folders/${id}`} className={classes.item}>
+          <Link key={id} href={href} className={classes.item}>
             <div className={classes.thumbnail}>
               {coverId ? (
                 // biome-ignore lint/performance/noImgElement: simple thumbnail grid

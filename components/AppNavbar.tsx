@@ -32,6 +32,7 @@ import { useMemo, useTransition } from "react";
 import { useSwipeable } from "react-swipeable";
 import { reloadLibrary } from "@/actions/reloadLibrary";
 import { getLibraryImportErrorMessageKey } from "@/data/errors";
+import type { SmartFolder } from "@/data/smart-folders";
 import type { Folder, ItemCounts } from "@/data/types";
 import { useTranslations } from "@/i18n/client";
 import { resolveErrorMessage } from "@/utils/resolve-error-message";
@@ -45,6 +46,7 @@ type AppNavbarProps = {
   folders: Folder[];
   itemCounts: ItemCounts;
   libraryName: string;
+  smartFolders: SmartFolder[];
 };
 
 type MainLinkButtonProps = Omit<
@@ -73,6 +75,7 @@ export function AppNavbar({
   folders,
   itemCounts,
   libraryName,
+  smartFolders,
 }: AppNavbarProps) {
   const t = useTranslations();
   const router = useRouter();
@@ -91,6 +94,22 @@ export function AppNavbar({
     [folders],
   );
   const folderCount = folders.length;
+  const smartFolderTreeData = useMemo(
+    () => buildSmartFolderTreeData(smartFolders),
+    [smartFolders],
+  );
+  const smartFolderCounts = useMemo(
+    () => new Map(smartFolders.map((folder) => [folder.id, folder.itemCount])),
+    [smartFolders],
+  );
+  const aggregateSmartFolderCounts = useMemo(
+    () => buildAggregateSmartFolderCounts(smartFolders, smartFolderCounts),
+    [smartFolders, smartFolderCounts],
+  );
+  const smartFolderCount = useMemo(
+    () => countSmartFolderNodes(smartFolders),
+    [smartFolders],
+  );
 
   const handleReload = () => {
     startReload(async () => {
@@ -236,6 +255,95 @@ export function AppNavbar({
             icon={IconTrash}
             label={t("collection.trash")}
             count={itemCounts.trash}
+          />
+        </section>
+
+        <section>
+          <Text size="xs" fw={500} c="dimmed" className={classes.sectionTitle}>
+            {t("navbar.smartFolders")}
+            {smartFolderCount > 0 && `(${smartFolderCount})`}
+          </Text>
+
+          <Tree
+            data={smartFolderTreeData}
+            expandOnClick={false}
+            renderNode={({
+              node,
+              expanded,
+              hasChildren,
+              elementProps,
+              tree,
+            }) => {
+              const folderId = String(node.value);
+              const folderPath = `/smartfolder/${encodeURIComponent(folderId)}`;
+              const folderIcon =
+                hasChildren && expanded ? IconFolderOpen : IconFolder;
+
+              const directCount = smartFolderCounts.get(folderId) ?? 0;
+              const aggregateCount =
+                aggregateSmartFolderCounts.get(folderId) ?? directCount;
+
+              return (
+                <div {...elementProps}>
+                  <div
+                    className={classes.folderLink}
+                    {...(hasChildren && { "data-has-children": "" })}
+                  >
+                    {hasChildren &&
+                      (expanded ? (
+                        <>
+                          <Box visibleFrom="sm">
+                            <IconCaretDownFilled
+                              className={classes.folderExpandIcon}
+                              size={12}
+                              onClick={() => tree.toggleExpanded(node.value)}
+                            />
+                          </Box>
+                          <CloseButton
+                            size="lg"
+                            icon={<IconCaretDownFilled size={16} />}
+                            hiddenFrom="sm"
+                            onClick={() => tree.toggleExpanded(node.value)}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <Box visibleFrom="sm">
+                            <IconCaretRightFilled
+                              className={classes.folderExpandIcon}
+                              size={12}
+                              onClick={() => tree.toggleExpanded(node.value)}
+                            />
+                          </Box>
+                          <CloseButton
+                            size="lg"
+                            icon={<IconCaretRightFilled size={16} />}
+                            hiddenFrom="sm"
+                            onClick={() => tree.toggleExpanded(node.value)}
+                          />
+                        </>
+                      ))}
+                    <MainLinkButton
+                      to={folderPath}
+                      icon={folderIcon}
+                      label={node.label}
+                      count={
+                        hasChildren && !expanded ? aggregateCount : directCount
+                      }
+                      onMouseDown={(event) => {
+                        if (event.detail === 2) {
+                          event.preventDefault();
+                        }
+                      }}
+                      onDoubleClick={(event) => {
+                        event.preventDefault();
+                        tree.toggleExpanded(node.value);
+                      }}
+                    />
+                  </div>
+                </div>
+              );
+            }}
           />
         </section>
 
@@ -413,4 +521,52 @@ function buildFolderTreeData(folders: Folder[]): TreeNodeData[] {
     .filter((folder) => folder.parentId === undefined)
     .sort(sortByManualOrder)
     .map((folder) => buildNode(folder));
+}
+
+export function buildAggregateSmartFolderCounts(
+  smartFolders: SmartFolder[],
+  directCounts: Map<string, number>,
+): Map<string, number> {
+  const totals = new Map<string, number>();
+
+  const traverse = (folder: SmartFolder): number => {
+    const direct = directCounts.get(folder.id) ?? 0;
+    let childTotal = 0;
+
+    for (const child of folder.children) {
+      childTotal += traverse(child);
+    }
+
+    const total = direct + childTotal;
+    totals.set(folder.id, total);
+    return total;
+  };
+
+  smartFolders.forEach((folder) => {
+    traverse(folder);
+  });
+
+  return totals;
+}
+
+function buildSmartFolderTreeData(smartFolders: SmartFolder[]): TreeNodeData[] {
+  const buildNode = (folder: SmartFolder): TreeNodeData => ({
+    value: folder.id,
+    label: folder.name || folder.id,
+    children: folder.children.map((child) => buildNode(child)),
+  });
+
+  return smartFolders.map((folder) => buildNode(folder));
+}
+
+function countSmartFolderNodes(smartFolders: SmartFolder[]): number {
+  let total = 0;
+
+  const traverse = (folder: SmartFolder) => {
+    total += 1;
+    folder.children.forEach(traverse);
+  };
+
+  smartFolders.forEach(traverse);
+  return total;
 }
