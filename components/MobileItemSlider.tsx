@@ -91,7 +91,8 @@ export function MobileItemSlider({
         if (isZoomRef.current) return;
 
         const target = e.target as HTMLElement;
-        if (target.closest(".no-swiping")) return;
+        if (target.closest(".no-swiping") || target.closest(".no-ui-toggle"))
+          return;
 
         setIsUIPresented(!isUIPresented);
       },
@@ -283,7 +284,7 @@ function MobileUrlContent({ item, libraryPath }: MobileContentProps) {
     const itemName = metadata.name || metadata.url || "Untitled item";
     metaContent = hasUrl ? (
       <Anchor
-        className={`${classes.urlText} no-swiping`}
+        className={`${classes.urlText} no-ui-toggle`}
         target={target}
         href={itemUrl}
         rel={rel}
@@ -301,7 +302,7 @@ function MobileUrlContent({ item, libraryPath }: MobileContentProps) {
   return (
     <div className={classes.urlContent}>
       <a
-        className={`${classes.urlImage} no-swiping`}
+        className={`${classes.urlImage} no-ui-toggle`}
         target={target}
         href={itemUrl}
         rel={rel}
