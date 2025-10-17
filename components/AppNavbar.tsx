@@ -18,6 +18,7 @@ import {
   IconCaretDownFilled,
   IconCaretRightFilled,
   IconFolder,
+  IconFolderCog,
   IconFolderOpen,
   IconFolderQuestion,
   IconInbox,
@@ -276,8 +277,7 @@ export function AppNavbar({
             }) => {
               const folderId = String(node.value);
               const folderPath = `/smartfolder/${encodeURIComponent(folderId)}`;
-              const folderIcon =
-                hasChildren && expanded ? IconFolderOpen : IconFolder;
+              const folderIcon = IconFolderCog;
 
               const directCount = smartFolderCounts.get(folderId) ?? 0;
               const aggregateCount =
