@@ -14,8 +14,15 @@ import {
   IconChevronRight,
   IconExternalLink,
 } from "@tabler/icons-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ItemPreview } from "@/data/types";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import type { Item, ItemPreview } from "@/data/types";
 import { useSliderState } from "@/stores/slider-state";
 import { getImageUrl, getThumbnailUrl } from "@/utils/item";
 import AppHeader from "./AppHeader";
@@ -37,7 +44,7 @@ export function ItemSlider({
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
   const initialIndex = useMemo(
     () => Math.max(itemIds.indexOf(initialItemId), 0),
-    [initialItemId, itemIds]
+    [initialItemId, itemIds],
   );
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -78,7 +85,7 @@ export function ItemSlider({
         }
       }
     },
-    [items]
+    [items],
   );
 
   const handlePrevious = useCallback(() => {
@@ -104,7 +111,7 @@ export function ItemSlider({
           )}
         </SwiperSlide>
       )),
-    [items, libraryPath]
+    [items, libraryPath],
   );
 
   return (
@@ -218,26 +225,75 @@ type URLContentProp = {
 };
 
 function URLContent({ item, libraryPath }: URLContentProp) {
+  const [metadata, setMetadata] = useState<Pick<Item, "name" | "url"> | null>(
+    null,
+  );
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setMetadata(null);
+
+    async function load() {
+      try {
+        const response = await fetch(`/api/items/${item.id}`, {
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+        const data = (await response.json()) as Item;
+        if (controller.signal.aborted) return;
+        setMetadata({
+          name: data.name,
+          url: data.url,
+        });
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        console.error(`[URLContent] Failed to load item ${item.id}:`, error);
+      }
+    }
+
+    load();
+
+    return () => {
+      controller.abort();
+    };
+  }, [item.id]);
+
+  const itemUrl =
+    metadata?.url && metadata.url.length > 0 ? metadata.url : undefined;
+  const hasUrl = Boolean(itemUrl);
+  const target = hasUrl ? "_blank" : undefined;
+  const rel = hasUrl ? "noopener" : undefined;
+
+  let metaContent: ReactNode = null;
+
+  if (metadata) {
+    const itemName = metadata.name || metadata.url || "Untitled item";
+    metaContent = hasUrl ? (
+      <Anchor
+        className={classes.urlText}
+        target={target}
+        href={itemUrl}
+        rel={rel}
+      >
+        {itemName}
+        <IconExternalLink size={18} stroke={1} />
+      </Anchor>
+    ) : (
+      <Text className={classes.urlText} component="span">
+        {itemName}
+      </Text>
+    );
+  }
+
   return (
     <div className={classes.urlContent}>
-      <a
-        className={classes.urlImage}
-        target="_blank"
-        href="itemUrl"
-        rel="noopener"
-      >
+      <a className={classes.urlImage} target={target} href={itemUrl} rel={rel}>
         {/** biome-ignore lint/performance/noImgElement: url thumbnail */}
         <img src={getThumbnailUrl(item.id, libraryPath)} alt="thumbnail" />
       </a>
-      <Anchor
-        className={classes.urlText}
-        target="_blank"
-        href="itemUrl"
-        rel="noopener"
-      >
-        Item Name
-        <IconExternalLink size={18} stroke={1} />
-      </Anchor>
+      <div className={classes.urlMeta}>{metaContent}</div>
     </div>
   );
 }
