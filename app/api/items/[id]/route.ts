@@ -2,11 +2,13 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getStore } from "@/data/store";
 
+type RouteParams = Promise<{ id?: string }>;
+
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id?: string } },
+  { params }: { params: RouteParams },
 ) {
-  const itemId = params.id;
+  const { id: itemId } = await params;
 
   if (!itemId) {
     return NextResponse.json(
