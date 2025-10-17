@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import CollectionPage from "@/components/CollectionPage";
-import type { Subfolder } from "@/components/SubfolderList";
 import { loadListScaleSetting } from "@/data/settings";
 import { getStore } from "@/data/store";
 
@@ -25,15 +24,6 @@ export default async function SmartFolderPage(props: SmartFolderPageProps) {
   }
 
   const items = store.getSmartFolderItemPreviews(smartFolderId);
-  const subfolders: Subfolder[] = folder.children.map((child) => {
-    const coverId =
-      child.coverId ?? store.getFirstSmartFolderItem(child.id)?.id;
-    return {
-      id: child.id,
-      name: child.name,
-      coverId: coverId ?? undefined,
-    };
-  });
 
   return (
     <CollectionPage
@@ -41,7 +31,7 @@ export default async function SmartFolderPage(props: SmartFolderPageProps) {
       libraryPath={store.libraryPath}
       items={items}
       initialListScale={listScale}
-      subfolders={subfolders}
+      subfolders={[]}
       subfolderBasePath="/smartfolder"
       sortState={{
         kind: "smart-folder",
