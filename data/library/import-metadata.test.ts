@@ -70,6 +70,36 @@ describe("importLibraryMetadata", () => {
     expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
   });
 
+  it("imports items when duration is expressed as a string", async () => {
+    const libraryPath = await createLibrary({
+      metadata: {
+        applicationVersion: "4.1.0",
+        modificationTime: 0,
+        folders: [],
+        smartFolders: [],
+        quickAccess: [],
+        tagsGroups: [],
+      },
+      mtime: {
+        ITEM_WITH_STRING_DURATION: 1,
+        all: 1,
+      },
+      items: {
+        ITEM_WITH_STRING_DURATION: {
+          id: "ITEM_WITH_STRING_DURATION",
+          name: "Duration String",
+          duration: "100.5",
+        },
+      },
+    });
+
+    const data = await importLibraryMetadata(libraryPath);
+    const item = data.items.get("ITEM_WITH_STRING_DURATION");
+
+    expect(item?.duration).toBe(100.5);
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
   it("throws when the Eagle application version is incompatible", async () => {
     const libraryPath = await createLibrary({
       metadata: {
