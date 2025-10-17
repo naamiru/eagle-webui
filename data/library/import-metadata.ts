@@ -165,7 +165,7 @@ const itemMetadataSchema = {
       type: "array",
       items: paletteSchema,
     },
-    duration: { type: "number" },
+    duration: { type: ["number", "string"] },
     star: { type: "number" },
     order: {
       type: "object",
@@ -444,7 +444,16 @@ function formatAjvErrors(errors: ErrorObject[] | null | undefined): string {
 }
 
 function toNumber(value: unknown): number {
-  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number.parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  return 0;
 }
 
 function toStringArray(value: unknown): string[] {

@@ -16,7 +16,7 @@ export class Store {
     public readonly folders: Map<string, Folder>,
     public readonly items: Map<string, Item>,
     public readonly globalSortSettings: GlobalSortOptions,
-    public readonly itemCounts: ItemCounts,
+    public readonly itemCounts: ItemCounts
   ) {}
 
   getFolders(): Folder[] {
@@ -146,7 +146,7 @@ export class Store {
 
 export function computeItemCounts(
   items: Map<string, Item>,
-  folders: Map<string, Folder>,
+  folders: Map<string, Folder>
 ): ItemCounts {
   let all = 0;
   let uncategorized = 0;
@@ -263,7 +263,7 @@ async function initializeStore(): Promise<Store> {
     data.folders,
     data.items,
     globalSortSettings,
-    itemCounts,
+    itemCounts
   );
 }
 
