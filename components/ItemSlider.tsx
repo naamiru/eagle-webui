@@ -7,11 +7,12 @@ import "swiper/css";
 import "swiper/css/zoom";
 import "swiper/css/virtual";
 import "swiper/css/keyboard";
-import { CloseButton, Text } from "@mantine/core";
+import { Anchor, CloseButton, Text } from "@mantine/core";
 import {
   IconArrowLeft,
   IconChevronLeft,
   IconChevronRight,
+  IconExternalLink,
 } from "@tabler/icons-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ItemPreview } from "@/data/types";
@@ -36,7 +37,7 @@ export function ItemSlider({
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
   const initialIndex = useMemo(
     () => Math.max(itemIds.indexOf(initialItemId), 0),
-    [initialItemId, itemIds],
+    [initialItemId, itemIds]
   );
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -77,7 +78,7 @@ export function ItemSlider({
         }
       }
     },
-    [items],
+    [items]
   );
 
   const handlePrevious = useCallback(() => {
@@ -94,41 +95,16 @@ export function ItemSlider({
     () =>
       items.map((item, index) => (
         <SwiperSlide key={item.id} virtualIndex={index}>
-          {item.duration > 0 ? (
-            <div className={classes.videoContainer}>
-              <div
-                className={classes.videoFitbox}
-                style={
-                  {
-                    "--ratio": `(${item.width}/${item.height})`,
-                  } as React.CSSProperties
-                }
-              >
-                {/** biome-ignore lint/a11y/useMediaCaption: simple video */}
-                <video
-                  className={classes.video}
-                  src={getImageUrl(item.id, libraryPath)}
-                  poster={getThumbnailUrl(item.id, libraryPath)}
-                  playsInline
-                  loop
-                  controls
-                />
-              </div>
-            </div>
+          {item.ext === "url" ? (
+            <URLContent item={item} libraryPath={libraryPath} />
+          ) : item.duration > 0 ? (
+            <VideoContent item={item} libraryPath={libraryPath} />
           ) : (
-            <div className="swiper-zoom-container">
-              {/** biome-ignore lint/performance/noImgElement: use swiper */}
-              <img
-                src={getImageUrl(item.id, libraryPath)}
-                alt={item.id}
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
+            <ImageContent item={item} libraryPath={libraryPath} />
           )}
         </SwiperSlide>
       )),
-    [items, libraryPath],
+    [items, libraryPath]
   );
 
   return (
@@ -184,5 +160,84 @@ export function ItemSlider({
         {slides}
       </Swiper>
     </>
+  );
+}
+
+type ImageContentProp = {
+  item: ItemPreview;
+  libraryPath: string;
+};
+
+function ImageContent({ item, libraryPath }: ImageContentProp) {
+  return (
+    <div className="swiper-zoom-container">
+      {/** biome-ignore lint/performance/noImgElement: use swiper */}
+      <img
+        src={getImageUrl(item.id, libraryPath)}
+        alt={item.id}
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  );
+}
+
+type VideoContentProp = {
+  item: ItemPreview;
+  libraryPath: string;
+};
+
+function VideoContent({ item, libraryPath }: VideoContentProp) {
+  return (
+    <div className={classes.videoContent}>
+      <div
+        className={classes.videoFitbox}
+        style={
+          {
+            "--ratio": `(${item.width}/${item.height})`,
+          } as React.CSSProperties
+        }
+      >
+        {/** biome-ignore lint/a11y/useMediaCaption: simple video */}
+        <video
+          className={classes.video}
+          src={getImageUrl(item.id, libraryPath)}
+          poster={getThumbnailUrl(item.id, libraryPath)}
+          playsInline
+          loop
+          controls
+        />
+      </div>
+    </div>
+  );
+}
+
+type URLContentProp = {
+  item: ItemPreview;
+  libraryPath: string;
+};
+
+function URLContent({ item, libraryPath }: URLContentProp) {
+  return (
+    <div className={classes.urlContent}>
+      <a
+        className={classes.urlImage}
+        target="_blank"
+        href="itemUrl"
+        rel="noopener"
+      >
+        {/** biome-ignore lint/performance/noImgElement: url thumbnail */}
+        <img src={getThumbnailUrl(item.id, libraryPath)} alt="thumbnail" />
+      </a>
+      <Anchor
+        className={classes.urlText}
+        target="_blank"
+        href="itemUrl"
+        rel="noopener"
+      >
+        Item Name
+        <IconExternalLink size={18} stroke={1} />
+      </Anchor>
+    </div>
   );
 }

@@ -11,7 +11,7 @@
   height: 100%;
 }
 
-.videoContainer {
+.videoContent {
   container-type: size;
   position: relative;
   width: 100%;
@@ -42,4 +42,24 @@
   &:focus {
     outline: none;
   }
+}
+
+.urlContent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mantine-spacing-md);
+}
+
+.urlImage img {
+  max-width: 400px;
+}
+
+.urlText {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mantine-spacing-xs);
 }
