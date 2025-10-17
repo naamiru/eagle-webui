@@ -3,6 +3,7 @@ import path from "node:path";
 
 import type { ErrorObject } from "ajv";
 import Ajv from "ajv";
+import pLimit from "p-limit";
 
 import { LibraryImportError } from "../errors";
 import { computeNameForSort } from "../name-for-sort";
@@ -184,6 +185,8 @@ const validateLibraryMetadata = ajv.compile<RawLibraryMetadata>(
 const validateMTime = ajv.compile<RawMTimeIndex>(mtimeSchema);
 const validateItemMetadata = ajv.compile<RawItemMetadata>(itemMetadataSchema);
 
+const MAX_CONCURRENT_ITEM_LOADS = 32;
+
 export type LibraryImportPayload = {
   libraryPath: string;
   applicationVersion: string;
@@ -267,16 +270,19 @@ async function loadItems(
   mtimeIndex: RawMTimeIndex,
 ): Promise<Map<string, Item>> {
   const items = new Map<string, Item>();
+  const limit = pLimit(MAX_CONCURRENT_ITEM_LOADS);
 
   await Promise.all(
     Object.keys(mtimeIndex)
       .filter((key) => key !== "all")
-      .map(async (itemId) => {
-        const item = await loadItem(libraryPath, itemId);
-        if (item) {
-          items.set(item.id, item);
-        }
-      }),
+      .map((itemId) =>
+        limit(async () => {
+          const item = await loadItem(libraryPath, itemId);
+          if (item) {
+            items.set(item.id, item);
+          }
+        }),
+      ),
   );
 
   return items;

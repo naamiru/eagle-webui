@@ -47,7 +47,7 @@ export function MobileItemSlider({
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
   const initialIndex = useMemo(
     () => Math.max(itemIds.indexOf(initialItemId), 0),
-    [initialItemId, itemIds]
+    [initialItemId, itemIds],
   );
 
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -70,7 +70,7 @@ export function MobileItemSlider({
         }
       }
     },
-    [items]
+    [items],
   );
 
   const [isUIPresented, setIsUIPresented] = useState(true);
@@ -96,7 +96,7 @@ export function MobileItemSlider({
 
         setIsUIPresented(!isUIPresented);
       },
-      [isUIPresented]
+      [isUIPresented],
     ),
   });
 
@@ -113,7 +113,7 @@ export function MobileItemSlider({
           )}
         </SwiperSlide>
       )),
-    [items, libraryPath]
+    [items, libraryPath],
   );
 
   return (
@@ -235,7 +235,7 @@ function MobileVideoContent({ item, libraryPath }: MobileContentProps) {
 
 function MobileUrlContent({ item, libraryPath }: MobileContentProps) {
   const [metadata, setMetadata] = useState<Pick<Item, "name" | "url"> | null>(
-    null
+    null,
   );
 
   useEffect(() => {
@@ -260,7 +260,7 @@ function MobileUrlContent({ item, libraryPath }: MobileContentProps) {
         if (controller.signal.aborted) return;
         console.error(
           `[MobileUrlContent] Failed to load item ${item.id}:`,
-          error
+          error,
         );
       }
     }
