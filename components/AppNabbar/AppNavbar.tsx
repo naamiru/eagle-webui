@@ -6,14 +6,12 @@ import {
   Box,
   Burger,
   CloseButton,
-  Loader,
   ScrollArea,
   Text,
   Tree,
   type TreeNodeData,
   UnstyledButton,
 } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
 import {
   IconCaretDownFilled,
   IconCaretRightFilled,
@@ -23,21 +21,18 @@ import {
   IconFolderQuestion,
   IconInbox,
   IconLayoutSidebarLeftCollapse,
-  IconRefresh,
   IconSettings,
   IconTrash,
 } from "@tabler/icons-react";
 import { usePathname, useRouter } from "next/navigation";
 import type { ComponentPropsWithoutRef, ComponentType, ReactNode } from "react";
-import { useMemo, useTransition } from "react";
+import { useMemo } from "react";
 import { useSwipeable } from "react-swipeable";
-import { reloadLibrary } from "@/actions/reloadLibrary";
-import { getLibraryImportErrorMessageKey } from "@/data/errors";
 import type { SmartFolder } from "@/data/smart-folders";
 import type { Folder, ItemCounts } from "@/data/types";
 import { useTranslations } from "@/i18n/client";
-import { resolveErrorMessage } from "@/utils/resolve-error-message";
 import classes from "./AppNavbar.module.css";
+import { ReloadButton } from "./ReloadButton";
 
 type AppNavbarProps = {
   mobileOpened: boolean;
@@ -81,71 +76,39 @@ export function AppNavbar({
   const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
-  const [isReloading, startReload] = useTransition();
-  const reloadLabel = isReloading
-    ? t("common.library.reloading")
-    : t("common.library.reload");
   const folderTreeData = useMemo(() => buildFolderTreeData(folders), [folders]);
   const folderCounts = useMemo(
     () => new Map(folders.map((folder) => [folder.id, folder.itemCount])),
-    [folders],
+    [folders]
   );
   const aggregateFolderCounts = useMemo(
     () => buildAggregateFolderCounts(folders),
-    [folders],
+    [folders]
   );
   const folderCount = folders.length;
   const flattenedSmartFolders = useMemo(
     () => flattenSmartFolderTree(smartFolders),
-    [smartFolders],
+    [smartFolders]
   );
   const smartFolderTreeData = useMemo(
     () => buildSmartFolderTreeData(smartFolders),
-    [smartFolders],
+    [smartFolders]
   );
   const smartFolderCounts = useMemo(
     () =>
       new Map(
-        flattenedSmartFolders.map((folder) => [folder.id, folder.itemCount]),
+        flattenedSmartFolders.map((folder) => [folder.id, folder.itemCount])
       ),
-    [flattenedSmartFolders],
+    [flattenedSmartFolders]
   );
   const aggregateSmartFolderCounts = useMemo(
     () => buildAggregateSmartFolderCounts(smartFolders, smartFolderCounts),
-    [smartFolders, smartFolderCounts],
+    [smartFolders, smartFolderCounts]
   );
   const smartFolderCount = useMemo(
     () => countSmartFolderNodes(smartFolders),
-    [smartFolders],
+    [smartFolders]
   );
-
-  const handleReload = () => {
-    startReload(async () => {
-      try {
-        const result = await reloadLibrary();
-
-        if (result.ok) {
-          router.refresh();
-          return;
-        }
-
-        notifications.show({
-          color: "red",
-          title: t("common.notifications.librarySyncFailedTitle"),
-          message: t(getLibraryImportErrorMessageKey(result.code)),
-        });
-      } catch (error) {
-        notifications.show({
-          color: "red",
-          title: t("common.notifications.librarySyncFailedTitle"),
-          message: resolveErrorMessage(
-            error,
-            t("common.notifications.librarySyncFailedMessage"),
-          ),
-        });
-      }
-    });
-  };
 
   const MainLinkButton = ({
     to,
@@ -211,21 +174,7 @@ export function AppNavbar({
         />
 
         <div className={classes.headerMain}>
-          <UnstyledButton
-            className={classes.libraryName}
-            aria-label={reloadLabel}
-            onClick={handleReload}
-            disabled={isReloading}
-          >
-            <Text size="sm" fw={600}>
-              {libraryName}
-            </Text>
-            {isReloading ? (
-              <Loader size={16} color="gray" />
-            ) : (
-              <IconRefresh size={16} stroke={1.2} />
-            )}
-          </UnstyledButton>
+          <ReloadButton libraryName={libraryName} />
         </div>
 
         {desktopOpened && (
@@ -417,10 +366,10 @@ export function AppNavbar({
                       label={node.label}
                       count={
                         hasChildren && !expanded
-                          ? (aggregateFolderCounts.get(folderId) ??
+                          ? aggregateFolderCounts.get(folderId) ??
                             folderCounts.get(folderId) ??
-                            0)
-                          : (folderCounts.get(folderId) ?? 0)
+                            0
+                          : folderCounts.get(folderId) ?? 0
                       }
                       onMouseDown={(event) => {
                         if (event.detail === 2) {
@@ -453,7 +402,7 @@ export function AppNavbar({
 }
 
 export function buildAggregateFolderCounts(
-  folders: Folder[],
+  folders: Folder[]
 ): Map<string, number> {
   const totals = new Map<string, number>();
 
@@ -528,7 +477,7 @@ function buildFolderTreeData(folders: Folder[]): TreeNodeData[] {
 
 export function buildAggregateSmartFolderCounts(
   smartFolders: SmartFolder[],
-  directCounts: Map<string, number>,
+  directCounts: Map<string, number>
 ): Map<string, number> {
   const totals = new Map<string, number>();
 

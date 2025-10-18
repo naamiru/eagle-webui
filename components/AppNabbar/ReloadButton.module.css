@@ -1,0 +1,13 @@
+.button {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-xs);
+  padding: var(--mantine-spacing-xxxs);
+  border-radius: var(--mantine-radius-sm);
+
+  @media (min-width: 48em) {
+    &:hover {
+      background-color: var(--mantine-color-gray-2);
+    }
+  }
+}
