@@ -95,13 +95,20 @@ export function AppNavbar({
     [folders],
   );
   const folderCount = folders.length;
+  const flattenedSmartFolders = useMemo(
+    () => flattenSmartFolderTree(smartFolders),
+    [smartFolders],
+  );
   const smartFolderTreeData = useMemo(
     () => buildSmartFolderTreeData(smartFolders),
     [smartFolders],
   );
   const smartFolderCounts = useMemo(
-    () => new Map(smartFolders.map((folder) => [folder.id, folder.itemCount])),
-    [smartFolders],
+    () =>
+      new Map(
+        flattenedSmartFolders.map((folder) => [folder.id, folder.itemCount]),
+      ),
+    [flattenedSmartFolders],
   );
   const aggregateSmartFolderCounts = useMemo(
     () => buildAggregateSmartFolderCounts(smartFolders, smartFolderCounts),
@@ -280,8 +287,6 @@ export function AppNavbar({
               const folderIcon = IconFolderCog;
 
               const directCount = smartFolderCounts.get(folderId) ?? 0;
-              const aggregateCount =
-                aggregateSmartFolderCounts.get(folderId) ?? directCount;
 
               return (
                 <div {...elementProps}>
@@ -327,9 +332,7 @@ export function AppNavbar({
                       to={folderPath}
                       icon={folderIcon}
                       label={node.label}
-                      count={
-                        hasChildren && !expanded ? aggregateCount : directCount
-                      }
+                      count={directCount}
                       onMouseDown={(event) => {
                         if (event.detail === 2) {
                           event.preventDefault();
@@ -557,6 +560,18 @@ function buildSmartFolderTreeData(smartFolders: SmartFolder[]): TreeNodeData[] {
   });
 
   return smartFolders.map((folder) => buildNode(folder));
+}
+
+function flattenSmartFolderTree(smartFolders: SmartFolder[]): SmartFolder[] {
+  const result: SmartFolder[] = [];
+
+  const traverse = (folder: SmartFolder) => {
+    result.push(folder);
+    folder.children.forEach(traverse);
+  };
+
+  smartFolders.forEach(traverse);
+  return result;
 }
 
 function countSmartFolderNodes(smartFolders: SmartFolder[]): number {
