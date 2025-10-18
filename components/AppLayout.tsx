@@ -4,6 +4,7 @@ import { AppShell, Burger, CloseButton, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconLayoutSidebarRightCollapse } from "@tabler/icons-react";
 import type { ReactNode } from "react";
+import type { NavbarExpandedState } from "@/data/settings";
 import type { SmartFolder } from "@/data/smart-folders";
 import type { Folder, ItemCounts } from "@/data/types";
 import { useSliderState } from "@/stores/slider-state";
@@ -17,6 +18,7 @@ type AppLayoutProps = {
   libraryName: string;
   itemCounts: ItemCounts;
   smartFolders: SmartFolder[];
+  initialNavbarExpandedState: NavbarExpandedState;
 };
 
 function HeaderOutlet() {
@@ -30,6 +32,7 @@ export function AppLayout({
   libraryName,
   itemCounts,
   smartFolders,
+  initialNavbarExpandedState,
 }: AppLayoutProps) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
@@ -78,6 +81,7 @@ export function AppLayout({
           itemCounts={itemCounts}
           libraryName={libraryName}
           smartFolders={smartFolders}
+          initialNavbarExpandedState={initialNavbarExpandedState}
         />
 
         <AppShell.Main

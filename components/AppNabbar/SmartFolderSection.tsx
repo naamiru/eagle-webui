@@ -1,8 +1,10 @@
 "use client";
 
 import { Text, type TreeNodeData } from "@mantine/core";
+import { useDebouncedCallback } from "@mantine/hooks";
 import { IconFolderCog } from "@tabler/icons-react";
 import { useCallback, useMemo } from "react";
+import { updateNavbarExpandedState } from "@/actions/updateNavbarExpandedState";
 import type { SmartFolder } from "@/data/smart-folders";
 import { useTranslations } from "@/i18n/client";
 import classes from "./FolderSection.module.css";
@@ -11,31 +13,45 @@ import { NavigationTree, type NavigationTreeMeta } from "./NavigationTree";
 type SmartFolderSectionProps = {
   smartFolders: SmartFolder[];
   onLinkClick: () => void;
+  initialExpandedIds: string[];
 };
 
 export function SmartFolderSection({
   smartFolders,
   onLinkClick,
+  initialExpandedIds,
 }: SmartFolderSectionProps) {
   const t = useTranslations();
   const smartFolderTreeData = useMemo(
     () => buildSmartFolderTreeData(smartFolders),
     [smartFolders],
   );
-  const flattenedSmartFolders = useMemo(
-    () => flattenSmartFolderTree(smartFolders),
-    [smartFolders],
-  );
-  const smartFolderCounts = useMemo(
-    () =>
-      new Map(
-        flattenedSmartFolders.map((folder) => [folder.id, folder.itemCount]),
-      ),
-    [flattenedSmartFolders],
-  );
+  const smartFolderCounts = useMemo(() => {
+    const flattenedSmartFolders = flattenSmartFolderTree(smartFolders);
+    return new Map(
+      flattenedSmartFolders.map((folder) => [folder.id, folder.itemCount]),
+    );
+  }, [smartFolders]);
   const smartFolderCount = useMemo(
     () => countSmartFolderNodes(smartFolders),
     [smartFolders],
+  );
+  const persistExpandedState = useDebouncedCallback(
+    async (expandedIds: string[]) => {
+      const result = await updateNavbarExpandedState({
+        area: "smart-folders",
+        expandedIds,
+      });
+
+      if (!result.ok) {
+        console.error(
+          "[navbar] Failed to persist smart folder expansion:",
+          result,
+        );
+        return;
+      }
+    },
+    300,
   );
 
   const getLinkProps = useCallback(
@@ -53,6 +69,13 @@ export function SmartFolderSection({
     [smartFolderCounts],
   );
 
+  const handleExpandedChange = useCallback(
+    (expandedIds: string[]) => {
+      persistExpandedState(expandedIds);
+    },
+    [persistExpandedState],
+  );
+
   return (
     <section>
       <Text size="xs" fw={500} c="dimmed" className={classes.title}>
@@ -66,6 +89,8 @@ export function SmartFolderSection({
         onLinkClick={onLinkClick}
         linkWrapperClassName={classes.link}
         expandIconClassName={classes.expandIcon}
+        initialExpandedIds={initialExpandedIds}
+        onExpandedChange={handleExpandedChange}
       />
     </section>
   );

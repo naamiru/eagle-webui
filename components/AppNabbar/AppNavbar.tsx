@@ -10,6 +10,7 @@ import {
 } from "@tabler/icons-react";
 import { useCallback } from "react";
 import { useSwipeable } from "react-swipeable";
+import type { NavbarExpandedState } from "@/data/settings";
 import type { SmartFolder } from "@/data/smart-folders";
 import type { Folder, ItemCounts } from "@/data/types";
 import { useTranslations } from "@/i18n/client";
@@ -28,6 +29,7 @@ type AppNavbarProps = {
   itemCounts: ItemCounts;
   libraryName: string;
   smartFolders: SmartFolder[];
+  initialNavbarExpandedState: NavbarExpandedState;
 };
 
 export function AppNavbar({
@@ -39,6 +41,7 @@ export function AppNavbar({
   itemCounts,
   libraryName,
   smartFolders,
+  initialNavbarExpandedState,
 }: AppNavbarProps) {
   const t = useTranslations();
 
@@ -114,9 +117,14 @@ export function AppNavbar({
         <SmartFolderSection
           smartFolders={smartFolders}
           onLinkClick={handleMainLinkClick}
+          initialExpandedIds={initialNavbarExpandedState.smartFolders}
         />
 
-        <FolderSection folders={folders} onLinkClick={handleMainLinkClick} />
+        <FolderSection
+          folders={folders}
+          onLinkClick={handleMainLinkClick}
+          initialExpandedIds={initialNavbarExpandedState.folders}
+        />
 
         <section className={classes.settingsSection}>
           <MainLink

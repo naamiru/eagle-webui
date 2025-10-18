@@ -1,8 +1,16 @@
 "use client";
 
-import { Box, CloseButton, Tree, type TreeNodeData } from "@mantine/core";
+import {
+  Box,
+  CloseButton,
+  getTreeExpandedState,
+  Tree,
+  type TreeNodeData,
+  useTree,
+} from "@mantine/core";
 import { IconCaretDownFilled, IconCaretRightFilled } from "@tabler/icons-react";
 import type { ComponentType } from "react";
+import { useMemo } from "react";
 import { MainLink } from "./MainLink";
 
 export type NavigationTreeMeta = {
@@ -28,6 +36,8 @@ type NavigationTreeProps = {
   onLinkClick: () => void;
   linkWrapperClassName: string;
   expandIconClassName?: string;
+  initialExpandedIds: string[];
+  onExpandedChange: (expandedIds: string[]) => void;
 };
 
 export function NavigationTree({
@@ -36,10 +46,35 @@ export function NavigationTree({
   onLinkClick,
   linkWrapperClassName,
   expandIconClassName,
+  initialExpandedIds,
+  onExpandedChange,
 }: NavigationTreeProps) {
+  const initialExpandedState = useMemo(
+    () => getTreeExpandedState(data, initialExpandedIds),
+    [data, initialExpandedIds],
+  );
+  const tree = useTree({
+    initialExpandedState,
+    onNodeExpand: (value) => {
+      const nextState = {
+        ...tree.expandedState,
+        [value]: true,
+      };
+      onExpandedChange(getExpandedIds(nextState));
+    },
+    onNodeCollapse: (value) => {
+      const nextState = {
+        ...tree.expandedState,
+        [value]: false,
+      };
+      onExpandedChange(getExpandedIds(nextState));
+    },
+  });
+
   return (
     <Tree
       data={data}
+      tree={tree}
       expandOnClick={false}
       renderNode={({ node, expanded, hasChildren, elementProps, tree }) => {
         const { to, icon, count, withLeftMargin } = getLinkProps({
@@ -111,4 +146,11 @@ export function NavigationTree({
       }}
     />
   );
+}
+
+function getExpandedIds(state: Record<string, boolean>): string[] {
+  return Object.entries(state)
+    .filter(([, isExpanded]) => isExpanded)
+    .map(([id]) => id)
+    .sort();
 }

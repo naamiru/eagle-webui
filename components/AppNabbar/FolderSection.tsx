@@ -1,8 +1,10 @@
 "use client";
 
 import { Text, type TreeNodeData } from "@mantine/core";
+import { useDebouncedCallback } from "@mantine/hooks";
 import { IconFolder, IconFolderOpen } from "@tabler/icons-react";
 import { useCallback, useMemo } from "react";
+import { updateNavbarExpandedState } from "@/actions/updateNavbarExpandedState";
 import type { Folder } from "@/data/types";
 import { useTranslations } from "@/i18n/client";
 import classes from "./FolderSection.module.css";
@@ -11,9 +13,14 @@ import { NavigationTree, type NavigationTreeMeta } from "./NavigationTree";
 type FolderSectionProps = {
   folders: Folder[];
   onLinkClick: () => void;
+  initialExpandedIds: string[];
 };
 
-export function FolderSection({ folders, onLinkClick }: FolderSectionProps) {
+export function FolderSection({
+  folders,
+  onLinkClick,
+  initialExpandedIds,
+}: FolderSectionProps) {
   const t = useTranslations();
   const folderTreeData = useMemo(() => buildFolderTreeData(folders), [folders]);
   const folderCounts = useMemo(
@@ -25,6 +32,20 @@ export function FolderSection({ folders, onLinkClick }: FolderSectionProps) {
     [folders],
   );
   const folderCount = folders.length;
+  const persistExpandedState = useDebouncedCallback(
+    async (expandedIds: string[]) => {
+      const result = await updateNavbarExpandedState({
+        area: "folders",
+        expandedIds,
+      });
+
+      if (!result.ok) {
+        console.error("[navbar] Failed to persist folder expansion:", result);
+        return;
+      }
+    },
+    300,
+  );
 
   const getLinkProps = useCallback(
     ({ node, expanded, hasChildren }: NavigationTreeMeta) => {
@@ -48,6 +69,13 @@ export function FolderSection({ folders, onLinkClick }: FolderSectionProps) {
     [aggregateFolderCounts, folderCounts],
   );
 
+  const handleExpandedChange = useCallback(
+    (expandedIds: string[]) => {
+      persistExpandedState(expandedIds);
+    },
+    [persistExpandedState],
+  );
+
   return (
     <section>
       <Text size="xs" fw={500} c="dimmed" className={classes.title}>
@@ -61,6 +89,8 @@ export function FolderSection({ folders, onLinkClick }: FolderSectionProps) {
         onLinkClick={onLinkClick}
         linkWrapperClassName={classes.link}
         expandIconClassName={classes.expandIcon}
+        initialExpandedIds={initialExpandedIds}
+        onExpandedChange={handleExpandedChange}
       />
     </section>
   );

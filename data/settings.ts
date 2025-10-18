@@ -19,6 +19,12 @@ export type SettingsFile = {
   globalSort?: Partial<GlobalSortOptions>;
   locale?: AppLocale;
   listScale?: number;
+  navbarExpandedState?: Partial<NavbarExpandedState>;
+};
+
+export type NavbarExpandedState = {
+  folders: string[];
+  smartFolders: string[];
 };
 
 let cachedSettings: SettingsFile | null = null;
@@ -107,6 +113,34 @@ export async function saveListScaleSetting(scale: number): Promise<void> {
   await saveSettings({ listScale: sanitizeListScale(scale) });
 }
 
+export async function loadNavbarExpandedState(): Promise<NavbarExpandedState> {
+  const settings = await loadSettings();
+  const candidate = settings.navbarExpandedState ?? {};
+
+  return {
+    folders: sanitizeExpandedIdsForRead(candidate.folders),
+    smartFolders: sanitizeExpandedIdsForRead(candidate.smartFolders),
+  };
+}
+
+export async function saveNavbarExpandedState(
+  partial: Partial<NavbarExpandedState>,
+): Promise<void> {
+  const current = await loadNavbarExpandedState();
+  const next: NavbarExpandedState = {
+    folders:
+      partial.folders !== undefined
+        ? sanitizeExpandedIdsForWrite(partial.folders)
+        : current.folders,
+    smartFolders:
+      partial.smartFolders !== undefined
+        ? sanitizeExpandedIdsForWrite(partial.smartFolders)
+        : current.smartFolders,
+  };
+
+  await saveSettings({ navbarExpandedState: next });
+}
+
 export function __resetSettingsCacheForTests(): void {
   cachedSettings = null;
   pendingSettings = null;
@@ -153,4 +187,32 @@ function sanitizeListScale(value: unknown): number {
     return clamped;
   }
   return DEFAULT_LIST_SCALE;
+}
+
+function sanitizeExpandedIdsForRead(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const entry of value) {
+    if (typeof entry !== "string") {
+      continue;
+    }
+    const trimmed = entry.trim();
+    if (trimmed.length === 0 || seen.has(trimmed)) {
+      continue;
+    }
+    seen.add(trimmed);
+    result.push(trimmed);
+  }
+
+  return result;
+}
+
+function sanitizeExpandedIdsForWrite(value: unknown): string[] {
+  const normalized = sanitizeExpandedIdsForRead(value);
+  return [...normalized].sort((a, b) => a.localeCompare(b));
 }
