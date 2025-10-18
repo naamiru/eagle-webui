@@ -9,8 +9,8 @@ import {
   useTree,
 } from "@mantine/core";
 import { IconCaretDownFilled, IconCaretRightFilled } from "@tabler/icons-react";
-import { useMemo } from "react";
 import type { ComponentType } from "react";
+import { useMemo } from "react";
 import { MainLink } from "./MainLink";
 
 export type NavigationTreeMeta = {
@@ -53,14 +53,22 @@ export function NavigationTree({
     () => getTreeExpandedState(data, initialExpandedIds),
     [data, initialExpandedIds],
   );
-  const handleExpandedChange = () => {
-    const expandedIds = getExpandedIds(tree.expandedState);
-    onExpandedChange(expandedIds);
-  };
   const tree = useTree({
     initialExpandedState,
-    onNodeExpand: handleExpandedChange,
-    onNodeCollapse: handleExpandedChange,
+    onNodeExpand: (value) => {
+      const nextState = {
+        ...tree.expandedState,
+        [value]: true,
+      };
+      onExpandedChange(getExpandedIds(nextState));
+    },
+    onNodeCollapse: (value) => {
+      const nextState = {
+        ...tree.expandedState,
+        [value]: false,
+      };
+      onExpandedChange(getExpandedIds(nextState));
+    },
   });
 
   return (

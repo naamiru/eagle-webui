@@ -11,7 +11,7 @@
 
 **Server wiring**
 - In `ImportReadyLayout` (`app/layout.tsx`), load the expanded state alongside the store with `Promise.all`. Pass the full `NavbarExpandedState` object into `AppLayout` as `initialNavbarExpandedState`.
-- Thread that state through `AppLayout` → `AppNavbar`, reusing the same type for the prop. Within `AppNavbar`, forward `initialExpandedIds` to `FolderSection`/`SmartFolderSection` without widening the types. Keep the existing mobile toggling behaviour untouched.
+- Thread that state through `AppLayout` → `AppNavbar`, reusing the same type for the prop. Within `AppNavbar`, destructure the two arrays and pass them straight into `FolderSection`/`SmartFolderSection` as initial values; no additional client state tracking is required.
 
 **Navigation tree handling**
 - Update `NavigationTree` to accept two required props: `initialExpandedIds: string[]` and `onExpandedChange: (expandedIds: string[]) => void`.
@@ -20,12 +20,11 @@
 - In both `onNodeExpand` and `onNodeCollapse`, read the current `tree.expandedState`, collect ids with `true`, sort them, and forward the array via `onExpandedChange`. Rely entirely on Mantine’s state; do not add extra React state or refs.
 
 **Folder section integration**
-- Enhance `FolderSection` to accept `initialExpandedIds` and `onExpandedChange`. Pass them through to `NavigationTree`.
-- When either the folders list or the callback changes, ensure we persist only IDs that still exist: filter the expanded list against `foldersById` before sending it upward.
-- Add a debounced persistence handler (≈300 ms) that calls the new server action with `{ area: "folders", expandedIds }`. Avoid firing the action when the list is unchanged.
+- `FolderSection` should accept `initialExpandedIds` and wire them into `NavigationTree`.
+- Debounce persistence work by ~300 ms; when the tree notifies about expansion changes, call the server action with `{ area: "folders", expandedIds }` without additional filtering — the action performs its own sanitisation.
 
 **Smart folder section**
-- Mirror the folder integration: accept the same props, pass them to `NavigationTree`, filter against the flattened smart folder IDs, and debounce calls to the persistence action with `{ area: "smart-folders", expandedIds }`.
+- Mirror the folder integration: accept `initialExpandedIds`, pass them to `NavigationTree`, and debounce persistence via `{ area: "smart-folders", expandedIds }`.
 
 **Server action**
 - Create `actions/updateNavbarExpandedState.ts` (name can vary) that accepts `{ area: "folders" | "smart-folders"; expandedIds: unknown }`.

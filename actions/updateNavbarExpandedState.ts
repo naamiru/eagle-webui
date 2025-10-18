@@ -1,8 +1,8 @@
 "use server";
 
 import {
-  saveNavbarExpandedState,
   type NavbarExpandedState,
+  saveNavbarExpandedState,
 } from "@/data/settings";
 
 export type UpdateNavbarExpandedStateArgs = {
