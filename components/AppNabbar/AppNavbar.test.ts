@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Folder } from "@/data/types";
-import { buildAggregateFolderCounts } from "./AppNavbar";
+import { buildAggregateFolderCounts } from "./FolderSection";
 
 describe("buildAggregateFolderCounts", () => {
   it("sums descendant folder counts", () => {

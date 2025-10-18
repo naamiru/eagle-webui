@@ -1,0 +1,31 @@
+.title {
+  margin: var(--mantine-spacing-lg) 0 var(--mantine-spacing-xs)
+    calc(var(--mantine-spacing-md) + var(--mantine-spacing-xxxs));
+
+  @media (max-width: 48em) {
+    margin-left: calc(34px + var(--mantine-spacing-sm));
+  }
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  -webkit-tap-highlight-color: transparent;
+
+  &[data-has-children] {
+    @media (min-width: 48em) {
+      margin-left: calc(var(--mantine-spacing-md) - 12px);
+    }
+  }
+}
+
+@media (min-width: 48em) {
+  .expandIcon {
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}

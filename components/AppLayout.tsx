@@ -9,7 +9,7 @@ import type { Folder, ItemCounts } from "@/data/types";
 import { useSliderState } from "@/stores/slider-state";
 import { HeaderSlotProvider, useHeaderSlot } from "./AppHeader";
 import classes from "./AppLayout.module.css";
-import { AppNavbar } from "./AppNavbar";
+import { AppNavbar } from "./AppNabbar/AppNavbar";
 
 type AppLayoutProps = {
   children: ReactNode;

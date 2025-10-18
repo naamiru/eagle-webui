@@ -1,0 +1,45 @@
+.navbar {
+  background-color: var(--mantine-color-gray-0);
+  /* biome-ignore lint/complexity/noImportantStyles: override mantine script */
+  padding: 0 !important;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+}
+
+.headerMain {
+  @media (max-width: 48em) {
+    flex-grow: 1;
+    margin-right: 40px;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.headerTrailing {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+.scrollable {
+  padding: 0 var(--mantine-spacing-md) var(--mantine-spacing-md) 0;
+
+  @media (max-width: 48em) {
+    padding-right: 34px;
+  }
+}
+
+.navbar [role="treeitem"] {
+  /* biome-ignore lint/complexity/noImportantStyles: override mantine */
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.settingsSection {
+  margin-top: var(--mantine-spacing-lg);
+}
