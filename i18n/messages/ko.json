@@ -28,7 +28,8 @@
   },
   "navbar": {
     "folders": "폴더",
-    "settings": "설정"
+    "settings": "설정",
+    "smartFolders": "스마트 폴더"
   },
   "common": {
     "library": {

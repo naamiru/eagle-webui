@@ -6,6 +6,15 @@ export type Palette = {
   $$hashKey?: string;
 };
 
+export type ItemComment = {
+  id: string;
+  annotation: string;
+};
+
+export type FontMetas = {
+  numGlyphs?: number;
+};
+
 export type Folder = {
   id: string;
   name: string;
@@ -46,6 +55,10 @@ export type Item = {
   duration: number;
   star: number;
   order: Record<string, number>;
+  fontMetas?: FontMetas;
+  bpm: number;
+  medium: string;
+  comments?: ItemComment[];
 };
 
 export type ItemPreview = {

@@ -104,6 +104,7 @@ async function ImportReadyLayout({ children }: { children: React.ReactNode }) {
       folders={store.getFolders()}
       itemCounts={store.itemCounts}
       libraryName={libraryName}
+      smartFolders={store.getSmartFolders()}
     >
       {children}
     </AppLayout>

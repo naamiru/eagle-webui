@@ -7,8 +7,17 @@ import pLimit from "p-limit";
 
 import { LibraryImportError } from "../errors";
 import { computeNameForSort } from "../name-for-sort";
-import { FOLDER_SORT_METHODS, type FolderSortMethod } from "../sort-options";
-import type { Folder, Item, Palette } from "../types";
+import {
+  buildSmartFolderTree,
+  type SmartFolder,
+  type SmartFolderItemMap,
+} from "../smart-folders";
+import {
+  FOLDER_SORT_METHODS,
+  type FolderSortMethod,
+  type GlobalSortOptions,
+} from "../sort-options";
+import type { Folder, Item, ItemComment, Palette } from "../types";
 
 type RawFolder = {
   id?: string;
@@ -62,6 +71,10 @@ type RawItemMetadata = {
   duration?: unknown;
   star?: unknown;
   order?: unknown;
+  fontMetas?: unknown;
+  bpm?: unknown;
+  medium?: unknown;
+  comments?: unknown;
 };
 
 const ajv = new Ajv({ allErrors: true, allowUnionTypes: true });
@@ -175,6 +188,27 @@ const itemMetadataSchema = {
         anyOf: [{ type: "string" }, { type: "number" }],
       },
     },
+    fontMetas: {
+      type: "object",
+      properties: {
+        numGlyphs: { type: ["number", "integer"] },
+      },
+      additionalProperties: true,
+    },
+    bpm: { type: ["number", "integer", "string"] },
+    medium: { type: "string" },
+    comments: {
+      type: "array",
+      items: {
+        type: "object",
+        required: ["id"],
+        properties: {
+          id: { type: "string" },
+          annotation: { type: "string" },
+        },
+        additionalProperties: true,
+      },
+    },
   },
   additionalProperties: true,
 } as const;
@@ -192,10 +226,13 @@ export type LibraryImportPayload = {
   applicationVersion: string;
   folders: Map<string, Folder>;
   items: Map<string, Item>;
+  smartFolders: SmartFolder[];
+  smartFolderItemIds: SmartFolderItemMap;
 };
 
 export async function importLibraryMetadata(
   libraryPath: string,
+  globalSort: GlobalSortOptions,
 ): Promise<LibraryImportPayload> {
   const metadataPath = path.join(libraryPath, "metadata.json");
   const metadata = await loadLibraryMetadata(metadataPath);
@@ -208,12 +245,20 @@ export async function importLibraryMetadata(
   const mtimeIndex = await loadMTimeIndex(mtimePath);
 
   const items = await loadItems(libraryPath, mtimeIndex);
+  const { smartFolders, itemIdMap } = buildSmartFolderTree(
+    metadata.smartFolders ?? [],
+    items,
+    globalSort,
+    { folders },
+  );
 
   return {
     libraryPath,
     applicationVersion: metadata.applicationVersion ?? "4.x",
     folders,
     items,
+    smartFolders,
+    smartFolderItemIds: itemIdMap,
   };
 }
 
@@ -329,7 +374,7 @@ function normalizeItem(raw: RawItemMetadata): Item {
     size: toNumber(raw.size),
     btime: toNumber(raw.btime),
     mtime: toNumber(raw.mtime),
-    ext: raw.ext ?? "",
+    ext: typeof raw.ext === "string" ? raw.ext.toLowerCase() : "",
     tags: toStringArray(raw.tags),
     folders: toStringArray(raw.folders),
     isDeleted: typeof raw.isDeleted === "boolean" ? raw.isDeleted : false,
@@ -346,6 +391,10 @@ function normalizeItem(raw: RawItemMetadata): Item {
     duration: toNumber(raw.duration),
     star: toNumber(raw.star),
     order: toOrderMap(raw.order),
+    fontMetas: normalizeFontMetas(raw.fontMetas),
+    bpm: toNumber(raw.bpm),
+    medium: typeof raw.medium === "string" ? raw.medium.toLowerCase() : "",
+    comments: normalizeComments(raw.comments),
   };
 }
 
@@ -362,6 +411,41 @@ function normalizePalette(raw: RawPalette): Palette {
     ratio: toNumber(raw.ratio),
     $$hashKey: typeof raw.$$hashKey === "string" ? raw.$$hashKey : undefined,
   };
+}
+
+function normalizeFontMetas(value: unknown): Item["fontMetas"] {
+  if (!value || typeof value !== "object") {
+    return undefined;
+  }
+
+  const record = value as Record<string, unknown>;
+  const numGlyphs = toNumber(record.numGlyphs);
+  return { numGlyphs };
+}
+
+function normalizeComments(value: unknown): Item["comments"] {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  const comments: ItemComment[] = [];
+  value.forEach((entry) => {
+    if (!entry || typeof entry !== "object") {
+      return;
+    }
+
+    const record = entry as Record<string, unknown>;
+    const id = record.id;
+    if (typeof id !== "string" || id.length === 0) {
+      return;
+    }
+
+    const annotation =
+      typeof record.annotation === "string" ? record.annotation : "";
+    comments.push({ id, annotation });
+  });
+
+  return comments.length > 0 ? comments : undefined;
 }
 
 function buildFolderMap(rawFolders: RawFolder[]): Map<string, Folder> {

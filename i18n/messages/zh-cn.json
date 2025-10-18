@@ -28,7 +28,8 @@
   },
   "navbar": {
     "folders": "文件夹",
-    "settings": "设置"
+    "settings": "设置",
+    "smartFolders": "智能文件夹"
   },
   "common": {
     "library": {
