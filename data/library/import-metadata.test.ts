@@ -212,6 +212,76 @@ describe("importLibraryMetadata", () => {
     expect(data.smartFolderItemIds.get("VIDEOS")).toEqual(["ITEM_ALPHA_VIDEO"]);
   });
 
+  it("captures item comments and evaluates folderName rules", async () => {
+    const libraryPath = await createLibrary({
+      metadata: {
+        applicationVersion: "4.2.0",
+        modificationTime: 0,
+        folders: [
+          {
+            id: "FOLDER_ALPHA",
+            name: "Alpha",
+            description: "",
+            children: [],
+            modificationTime: 0,
+            tags: [],
+            password: "",
+            passwordTips: "",
+          },
+        ],
+        smartFolders: [
+          {
+            id: "FOLDER_MATCH",
+            name: "Folder Match",
+            conditions: [
+              {
+                match: "AND",
+                boolean: "TRUE",
+                rules: [
+                  {
+                    property: "folderName",
+                    method: "equal",
+                    value: "alpha",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        quickAccess: [],
+        tagsGroups: [],
+      },
+      mtime: {
+        ITEM_ALPHA: 1,
+        all: 1,
+      },
+      items: {
+        ITEM_ALPHA: {
+          id: "ITEM_ALPHA",
+          name: "Alpha Item",
+          folders: ["FOLDER_ALPHA"],
+          comments: [
+            { id: "comment-1", annotation: "First" },
+            { id: "comment-2", annotation: "" },
+          ],
+        },
+      },
+    });
+
+    const data = await importLibraryMetadata(
+      libraryPath,
+      DEFAULT_GLOBAL_SORT_OPTIONS,
+    );
+
+    const item = data.items.get("ITEM_ALPHA");
+    expect(item?.comments).toEqual([
+      { id: "comment-1", annotation: "First" },
+      { id: "comment-2", annotation: "" },
+    ]);
+
+    expect(data.smartFolderItemIds.get("FOLDER_MATCH")).toEqual(["ITEM_ALPHA"]);
+  });
+
   it("throws when the Eagle application version is incompatible", async () => {
     const libraryPath = await createLibrary({
       metadata: {

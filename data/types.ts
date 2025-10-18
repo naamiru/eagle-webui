@@ -6,6 +6,11 @@ export type Palette = {
   $$hashKey?: string;
 };
 
+export type ItemComment = {
+  id: string;
+  annotation: string;
+};
+
 export type FontMetas = {
   numGlyphs?: number;
 };
@@ -53,6 +58,7 @@ export type Item = {
   fontMetas?: FontMetas;
   bpm: number;
   medium: string;
+  comments?: ItemComment[];
 };
 
 export type ItemPreview = {

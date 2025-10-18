@@ -17,7 +17,7 @@ import {
   type FolderSortMethod,
   type GlobalSortOptions,
 } from "../sort-options";
-import type { Folder, Item, Palette } from "../types";
+import type { Folder, Item, ItemComment, Palette } from "../types";
 
 type RawFolder = {
   id?: string;
@@ -74,6 +74,7 @@ type RawItemMetadata = {
   fontMetas?: unknown;
   bpm?: unknown;
   medium?: unknown;
+  comments?: unknown;
 };
 
 const ajv = new Ajv({ allErrors: true, allowUnionTypes: true });
@@ -196,6 +197,18 @@ const itemMetadataSchema = {
     },
     bpm: { type: ["number", "integer", "string"] },
     medium: { type: "string" },
+    comments: {
+      type: "array",
+      items: {
+        type: "object",
+        required: ["id"],
+        properties: {
+          id: { type: "string" },
+          annotation: { type: "string" },
+        },
+        additionalProperties: true,
+      },
+    },
   },
   additionalProperties: true,
 } as const;
@@ -236,6 +249,7 @@ export async function importLibraryMetadata(
     metadata.smartFolders ?? [],
     items,
     globalSort,
+    { folders },
   );
 
   return {
@@ -380,6 +394,7 @@ function normalizeItem(raw: RawItemMetadata): Item {
     fontMetas: normalizeFontMetas(raw.fontMetas),
     bpm: toNumber(raw.bpm),
     medium: typeof raw.medium === "string" ? raw.medium.toLowerCase() : "",
+    comments: normalizeComments(raw.comments),
   };
 }
 
@@ -406,6 +421,31 @@ function normalizeFontMetas(value: unknown): Item["fontMetas"] {
   const record = value as Record<string, unknown>;
   const numGlyphs = toNumber(record.numGlyphs);
   return { numGlyphs };
+}
+
+function normalizeComments(value: unknown): Item["comments"] {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  const comments: ItemComment[] = [];
+  value.forEach((entry) => {
+    if (!entry || typeof entry !== "object") {
+      return;
+    }
+
+    const record = entry as Record<string, unknown>;
+    const id = record.id;
+    if (typeof id !== "string" || id.length === 0) {
+      return;
+    }
+
+    const annotation =
+      typeof record.annotation === "string" ? record.annotation : "";
+    comments.push({ id, annotation });
+  });
+
+  return comments.length > 0 ? comments : undefined;
 }
 
 function buildFolderMap(rawFolders: RawFolder[]): Map<string, Folder> {
