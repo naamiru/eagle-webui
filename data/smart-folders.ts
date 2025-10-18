@@ -51,7 +51,6 @@ type SmartFolderColorRule = {
   property: "color";
   method: "similar" | "accuracy" | "grayscale";
   target?: [number, number, number];
-  threshold?: number;
 };
 
 type SmartFolderDateRule = {
@@ -150,8 +149,9 @@ type BuildFolderParams = {
   context: RuleContext;
 };
 
-const TRUE_FALSE_VALUES = new Set(["TRUE", "FALSE"] as const);
 const DAY_MS = 86_400_000;
+const COLOR_THRESHOLD_SIMILAR = 150;
+const COLOR_THRESHOLD_ACCURACY = 100;
 
 type BuildFolderResult = {
   folder: SmartFolder;
@@ -344,10 +344,12 @@ function parseCondition(
     record.match === "OR" || record.match === "AND"
       ? (record.match as "AND" | "OR")
       : "AND";
-  const boolean =
-    typeof record.boolean === "string" && TRUE_FALSE_VALUES.has(record.boolean)
-      ? (record.boolean as "TRUE" | "FALSE")
-      : "TRUE";
+  const boolean: "TRUE" | "FALSE" =
+    record.boolean === "FALSE"
+      ? "FALSE"
+      : record.boolean === "TRUE"
+        ? "TRUE"
+        : "TRUE";
 
   const rawRules = Array.isArray(record.rules) ? record.rules : [];
   const rules = rawRules
@@ -683,8 +685,7 @@ function parseColorRule(
     return null;
   }
 
-  const threshold = method === "similar" ? 32 : 12.8;
-  return { property: "color", method, target: color, threshold };
+  return { property: "color", method, target: color };
 }
 
 function parseDateRule(
@@ -1043,7 +1044,8 @@ function matchesColorRule(rule: SmartFolderColorRule, item: Item): boolean {
     });
   }
 
-  if (!rule.target || typeof rule.threshold !== "number") {
+  const target = rule.target;
+  if (!target) {
     return false;
   }
 
@@ -1064,7 +1066,7 @@ function matchesColorRule(rule: SmartFolderColorRule, item: Item): boolean {
       return;
     }
 
-    const distance = redmeanDistance(rule.target, [r, g, b]);
+    const distance = redmeanDistance(target, [r, g, b]);
     totalWeight += weight;
     weightedDistance += distance * weight;
   });
@@ -1073,8 +1075,14 @@ function matchesColorRule(rule: SmartFolderColorRule, item: Item): boolean {
     return false;
   }
 
-  const averageDistance = weightedDistance / totalWeight;
-  return averageDistance < rule.threshold;
+  const threshold =
+    rule.method === "similar"
+      ? COLOR_THRESHOLD_SIMILAR
+      : rule.method === "accuracy"
+        ? COLOR_THRESHOLD_ACCURACY
+        : Infinity;
+
+  return weightedDistance < threshold;
 }
 
 function matchesDateRule(

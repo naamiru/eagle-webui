@@ -76,9 +76,9 @@
     R̄ = (R1 + R2) / 2
     distance = sqrt((2 + R̄ / 256) * ΔR^2 + 4 * ΔG^2 + (2 + (255 - R̄) / 256) * ΔB^2)
     ```
-  - Compute the weighted average distance across the palette: `Σ(distance_i * weight_i)`.
-  - `"similar"`: match when weighted distance `< 32.0`.
-  - `"accuracy"`: match when weighted distance `< 12.8`.
+  - Compute the weighted sum across the palette: `Σ(distance_i * weight_i)`.
+  - `"similar"`: match when the total weighted distance `< 150`.
+  - `"accuracy"`: match when the total weighted distance `< 100`.
   - `"grayscale"`: every palette entry must be near-neutral. Treat a colour as grayscale when `max(rgb) - min(rgb) <= 8`. All entries must satisfy the condition.
 
 ### `createTime`
