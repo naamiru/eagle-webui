@@ -1,8 +1,10 @@
 "use client";
 
 import { Text, type TreeNodeData } from "@mantine/core";
+import { useDebouncedCallback } from "@mantine/hooks";
 import { IconFolderCog } from "@tabler/icons-react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { updateNavbarExpandedState } from "@/actions/updateNavbarExpandedState";
 import type { SmartFolder } from "@/data/smart-folders";
 import { useTranslations } from "@/i18n/client";
 import classes from "./FolderSection.module.css";
@@ -11,11 +13,15 @@ import { NavigationTree, type NavigationTreeMeta } from "./NavigationTree";
 type SmartFolderSectionProps = {
   smartFolders: SmartFolder[];
   onLinkClick: () => void;
+  initialExpandedIds: string[];
+  onExpandedChange: (expandedIds: string[]) => void;
 };
 
 export function SmartFolderSection({
   smartFolders,
   onLinkClick,
+  initialExpandedIds,
+  onExpandedChange,
 }: SmartFolderSectionProps) {
   const t = useTranslations();
   const smartFolderTreeData = useMemo(
@@ -32,6 +38,55 @@ export function SmartFolderSection({
     () => countSmartFolderNodes(smartFolders),
     [smartFolders],
   );
+  const smartFolderIdSet = useMemo(() => {
+    const flattenedSmartFolders = flattenSmartFolderTree(smartFolders);
+    return new Set(flattenedSmartFolders.map((folder) => folder.id));
+  }, [smartFolders]);
+  const lastNotifiedRef = useRef<string[]>(initialExpandedIds);
+  const lastPersistedRef = useRef<string[]>(initialExpandedIds);
+  const persistExpandedState = useDebouncedCallback(
+    async (expandedIds: string[]) => {
+      if (arraysEqual(lastPersistedRef.current, expandedIds)) {
+        return;
+      }
+
+      const result = await updateNavbarExpandedState({
+        area: "smart-folders",
+        expandedIds,
+      });
+
+      if (!result.ok) {
+        console.error(
+          "[navbar] Failed to persist smart folder expansion:",
+          result,
+        );
+        return;
+      }
+
+      lastPersistedRef.current = expandedIds;
+    },
+    300,
+  );
+
+  useEffect(() => {
+    lastNotifiedRef.current = initialExpandedIds;
+    lastPersistedRef.current = initialExpandedIds;
+  }, [initialExpandedIds]);
+
+  useEffect(() => {
+    const filtered = initialExpandedIds.filter((id) => smartFolderIdSet.has(id));
+
+    if (!arraysEqual(initialExpandedIds, filtered)) {
+      lastNotifiedRef.current = filtered;
+      onExpandedChange(filtered);
+      persistExpandedState(filtered);
+    }
+  }, [
+    initialExpandedIds,
+    smartFolderIdSet,
+    onExpandedChange,
+    persistExpandedState,
+  ]);
 
   const getLinkProps = useCallback(
     ({ node }: NavigationTreeMeta) => {
@@ -48,6 +103,21 @@ export function SmartFolderSection({
     [smartFolderCounts],
   );
 
+  const handleExpandedChange = useCallback(
+    (expandedIds: string[]) => {
+      const filtered = expandedIds.filter((id) => smartFolderIdSet.has(id));
+
+      if (arraysEqual(lastNotifiedRef.current, filtered)) {
+        return;
+      }
+
+      lastNotifiedRef.current = filtered;
+      onExpandedChange(filtered);
+      persistExpandedState(filtered);
+    },
+    [onExpandedChange, persistExpandedState, smartFolderIdSet],
+  );
+
   return (
     <section>
       <Text size="xs" fw={500} c="dimmed" className={classes.title}>
@@ -61,6 +131,8 @@ export function SmartFolderSection({
         onLinkClick={onLinkClick}
         linkWrapperClassName={classes.link}
         expandIconClassName={classes.expandIcon}
+        initialExpandedIds={initialExpandedIds}
+        onExpandedChange={handleExpandedChange}
       />
     </section>
   );
@@ -98,4 +170,12 @@ function countSmartFolderNodes(smartFolders: SmartFolder[]): number {
 
   smartFolders.forEach(traverse);
   return total;
+}
+
+function arraysEqual(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  return a.every((value, index) => value === b[index]);
 }

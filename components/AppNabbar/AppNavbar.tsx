@@ -8,8 +8,9 @@ import {
   IconSettings,
   IconTrash,
 } from "@tabler/icons-react";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useSwipeable } from "react-swipeable";
+import type { NavbarExpandedState } from "@/data/settings";
 import type { SmartFolder } from "@/data/smart-folders";
 import type { Folder, ItemCounts } from "@/data/types";
 import { useTranslations } from "@/i18n/client";
@@ -28,6 +29,7 @@ type AppNavbarProps = {
   itemCounts: ItemCounts;
   libraryName: string;
   smartFolders: SmartFolder[];
+  initialNavbarExpandedState: NavbarExpandedState;
 };
 
 export function AppNavbar({
@@ -39,14 +41,37 @@ export function AppNavbar({
   itemCounts,
   libraryName,
   smartFolders,
+  initialNavbarExpandedState,
 }: AppNavbarProps) {
   const t = useTranslations();
+  const [navbarExpandedState, setNavbarExpandedState] = useState(
+    initialNavbarExpandedState,
+  );
 
   const handleMainLinkClick = useCallback(() => {
     if (mobileOpened) {
       toggleMobile();
     }
   }, [mobileOpened, toggleMobile]);
+
+  const handleFolderExpandedChange = useCallback((expandedIds: string[]) => {
+    setNavbarExpandedState((current) =>
+      arraysEqual(current.folders, expandedIds)
+        ? current
+        : { ...current, folders: expandedIds },
+    );
+  }, []);
+
+  const handleSmartFolderExpandedChange = useCallback(
+    (expandedIds: string[]) => {
+      setNavbarExpandedState((current) =>
+        arraysEqual(current.smartFolders, expandedIds)
+          ? current
+          : { ...current, smartFolders: expandedIds },
+      );
+    },
+    [],
+  );
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: toggleMobile,
@@ -114,9 +139,16 @@ export function AppNavbar({
         <SmartFolderSection
           smartFolders={smartFolders}
           onLinkClick={handleMainLinkClick}
+          initialExpandedIds={navbarExpandedState.smartFolders}
+          onExpandedChange={handleSmartFolderExpandedChange}
         />
 
-        <FolderSection folders={folders} onLinkClick={handleMainLinkClick} />
+        <FolderSection
+          folders={folders}
+          onLinkClick={handleMainLinkClick}
+          initialExpandedIds={navbarExpandedState.folders}
+          onExpandedChange={handleFolderExpandedChange}
+        />
 
         <section className={classes.settingsSection}>
           <MainLink
@@ -129,4 +161,12 @@ export function AppNavbar({
       </AppShell.Section>
     </AppShell.Navbar>
   );
+}
+
+function arraysEqual(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  return a.every((value, index) => value === b[index]);
 }

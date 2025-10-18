@@ -1,8 +1,10 @@
 "use client";
 
 import { Text, type TreeNodeData } from "@mantine/core";
+import { useDebouncedCallback } from "@mantine/hooks";
 import { IconFolder, IconFolderOpen } from "@tabler/icons-react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { updateNavbarExpandedState } from "@/actions/updateNavbarExpandedState";
 import type { Folder } from "@/data/types";
 import { useTranslations } from "@/i18n/client";
 import classes from "./FolderSection.module.css";
@@ -11,9 +13,16 @@ import { NavigationTree, type NavigationTreeMeta } from "./NavigationTree";
 type FolderSectionProps = {
   folders: Folder[];
   onLinkClick: () => void;
+  initialExpandedIds: string[];
+  onExpandedChange: (expandedIds: string[]) => void;
 };
 
-export function FolderSection({ folders, onLinkClick }: FolderSectionProps) {
+export function FolderSection({
+  folders,
+  onLinkClick,
+  initialExpandedIds,
+  onExpandedChange,
+}: FolderSectionProps) {
   const t = useTranslations();
   const folderTreeData = useMemo(() => buildFolderTreeData(folders), [folders]);
   const folderCounts = useMemo(
@@ -25,6 +34,47 @@ export function FolderSection({ folders, onLinkClick }: FolderSectionProps) {
     [folders],
   );
   const folderCount = folders.length;
+  const folderIdSet = useMemo(
+    () => new Set(folders.map((folder) => folder.id)),
+    [folders],
+  );
+  const lastNotifiedRef = useRef<string[]>(initialExpandedIds);
+  const lastPersistedRef = useRef<string[]>(initialExpandedIds);
+  const persistExpandedState = useDebouncedCallback(
+    async (expandedIds: string[]) => {
+      if (arraysEqual(lastPersistedRef.current, expandedIds)) {
+        return;
+      }
+
+      const result = await updateNavbarExpandedState({
+        area: "folders",
+        expandedIds,
+      });
+
+      if (!result.ok) {
+        console.error("[navbar] Failed to persist folder expansion:", result);
+        return;
+      }
+
+      lastPersistedRef.current = expandedIds;
+    },
+    300,
+  );
+
+  useEffect(() => {
+    lastNotifiedRef.current = initialExpandedIds;
+    lastPersistedRef.current = initialExpandedIds;
+  }, [initialExpandedIds]);
+
+  useEffect(() => {
+    const filtered = initialExpandedIds.filter((id) => folderIdSet.has(id));
+
+    if (!arraysEqual(initialExpandedIds, filtered)) {
+      lastNotifiedRef.current = filtered;
+      onExpandedChange(filtered);
+      persistExpandedState(filtered);
+    }
+  }, [initialExpandedIds, folderIdSet, onExpandedChange, persistExpandedState]);
 
   const getLinkProps = useCallback(
     ({ node, expanded, hasChildren }: NavigationTreeMeta) => {
@@ -48,6 +98,21 @@ export function FolderSection({ folders, onLinkClick }: FolderSectionProps) {
     [aggregateFolderCounts, folderCounts],
   );
 
+  const handleExpandedChange = useCallback(
+    (expandedIds: string[]) => {
+      const filtered = expandedIds.filter((id) => folderIdSet.has(id));
+
+      if (arraysEqual(lastNotifiedRef.current, filtered)) {
+        return;
+      }
+
+      lastNotifiedRef.current = filtered;
+      onExpandedChange(filtered);
+      persistExpandedState(filtered);
+    },
+    [folderIdSet, onExpandedChange, persistExpandedState],
+  );
+
   return (
     <section>
       <Text size="xs" fw={500} c="dimmed" className={classes.title}>
@@ -61,6 +126,8 @@ export function FolderSection({ folders, onLinkClick }: FolderSectionProps) {
         onLinkClick={onLinkClick}
         linkWrapperClassName={classes.link}
         expandIconClassName={classes.expandIcon}
+        initialExpandedIds={initialExpandedIds}
+        onExpandedChange={handleExpandedChange}
       />
     </section>
   );
@@ -138,4 +205,12 @@ function buildFolderTreeData(folders: Folder[]): TreeNodeData[] {
     .filter((folder) => folder.parentId === undefined)
     .sort(sortByManualOrder)
     .map((folder) => buildNode(folder));
+}
+
+function arraysEqual(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  return a.every((value, index) => value === b[index]);
 }

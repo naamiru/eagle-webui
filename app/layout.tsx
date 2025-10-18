@@ -16,6 +16,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { AppMantineProvider } from "@/components/AppMantineProvider";
 import { ImportErrorScreen } from "@/components/ImportErrorScreen";
 import { ImportLoader } from "@/components/ImportLoader";
+import { loadNavbarExpandedState } from "@/data/settings";
 import {
   getStore,
   getStoreImportState,
@@ -96,7 +97,10 @@ function ImportLoadingScreen({ label }: { label: string }) {
 }
 
 async function ImportReadyLayout({ children }: { children: React.ReactNode }) {
-  const store = await getStore();
+  const [store, navbarExpandedState] = await Promise.all([
+    getStore(),
+    loadNavbarExpandedState(),
+  ]);
   const libraryName = getLibraryName(store.libraryPath);
 
   return (
@@ -105,6 +109,7 @@ async function ImportReadyLayout({ children }: { children: React.ReactNode }) {
       itemCounts={store.itemCounts}
       libraryName={libraryName}
       smartFolders={store.getSmartFolders()}
+      initialNavbarExpandedState={navbarExpandedState}
     >
       {children}
     </AppLayout>

@@ -17,7 +17,7 @@
 - Update `NavigationTree` to accept two required props: `initialExpandedIds: string[]` and `onExpandedChange: (expandedIds: string[]) => void`.
 - Call `const tree = useTree({ initialExpandedState, onNodeExpand, onNodeCollapse })`, where `initialExpandedState` comes from `getTreeExpandedState(data, initialExpandedIds)`, and pass it into `<Tree tree={tree} ... />`.
 - Leave the existing `tree.toggleExpanded` logic untouched so the UI keeps working.
-- When `onNodeExpand` / `onNodeCollapse` fire, use `tree.expandedState` to gather the `true` entries, filter them against the current `data`, sort, and forward them via `onExpandedChange`. Rely entirely on Mantine’s state; do not add extra React state or refs.
+- In both `onNodeExpand` and `onNodeCollapse`, read the current `tree.expandedState`, collect ids with `true`, sort them, and forward the array via `onExpandedChange`. Rely entirely on Mantine’s state; do not add extra React state or refs.
 
 **Folder section integration**
 - Enhance `FolderSection` to accept `initialExpandedIds` and `onExpandedChange`. Pass them through to `NavigationTree`.

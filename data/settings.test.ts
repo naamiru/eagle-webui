@@ -25,12 +25,15 @@ import {
   loadGlobalSortSettings,
   loadListScaleSetting,
   loadLocaleSetting,
+  loadNavbarExpandedState,
   loadSettings,
+  type NavbarExpandedState,
   type SettingsFile,
   saveGlobalSortSettings,
   saveListScaleSetting,
   saveLocaleSetting,
   saveSettings,
+  saveNavbarExpandedState,
 } from "./settings";
 import { DEFAULT_GLOBAL_SORT_OPTIONS } from "./sort-options";
 
@@ -143,5 +146,50 @@ describe("settings helpers", () => {
 
     await saveListScaleSetting(-30);
     expect(await loadListScaleSetting()).toBe(0);
+  });
+
+  it("returns empty arrays for navbar expanded state when missing", async () => {
+    expect(await loadNavbarExpandedState()).toEqual({
+      folders: [],
+      smartFolders: [],
+    });
+  });
+
+  it("sanitizes stored navbar expanded state when loading", async () => {
+    await fs.mkdir(settingsDir, { recursive: true });
+    const raw: Partial<SettingsFile> = {
+      navbarExpandedState: {
+        folders: ["folder-a", " folder-b ", "folder-a", "", "   "],
+        smartFolders: ["alpha", "beta", "alpha", " ", "gamma"],
+      } as unknown as NavbarExpandedState,
+    };
+    await fs.writeFile(settingsPath, `${JSON.stringify(raw, null, 2)}\n`, "utf8");
+
+    expect(await loadNavbarExpandedState()).toEqual({
+      folders: ["folder-a", "folder-b"],
+      smartFolders: ["alpha", "beta", "gamma"],
+    });
+  });
+
+  it("merges and sorts navbar expanded state when saving partial updates", async () => {
+    await saveNavbarExpandedState({
+      folders: ["folder-c", "folder-a", "folder-c"],
+    });
+    await saveNavbarExpandedState({
+      smartFolders: ["beta", "alpha", "alpha", "delta"],
+    });
+
+    const raw = await fs.readFile(settingsPath, "utf8");
+    const parsed = JSON.parse(raw) as SettingsFile;
+
+    expect(parsed.navbarExpandedState).toEqual({
+      folders: ["folder-a", "folder-c"],
+      smartFolders: ["alpha", "beta", "delta"],
+    });
+
+    expect(await loadNavbarExpandedState()).toEqual({
+      folders: ["folder-a", "folder-c"],
+      smartFolders: ["alpha", "beta", "delta"],
+    });
   });
 });
