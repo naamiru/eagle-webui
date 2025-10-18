@@ -22,17 +22,12 @@ export function SmartFolderSection({
     () => buildSmartFolderTreeData(smartFolders),
     [smartFolders],
   );
-  const flattenedSmartFolders = useMemo(
-    () => flattenSmartFolderTree(smartFolders),
-    [smartFolders],
-  );
-  const smartFolderCounts = useMemo(
-    () =>
-      new Map(
-        flattenedSmartFolders.map((folder) => [folder.id, folder.itemCount]),
-      ),
-    [flattenedSmartFolders],
-  );
+  const smartFolderCounts = useMemo(() => {
+    const flattenedSmartFolders = flattenSmartFolderTree(smartFolders);
+    return new Map(
+      flattenedSmartFolders.map((folder) => [folder.id, folder.itemCount]),
+    );
+  }, [smartFolders]);
   const smartFolderCount = useMemo(
     () => countSmartFolderNodes(smartFolders),
     [smartFolders],
