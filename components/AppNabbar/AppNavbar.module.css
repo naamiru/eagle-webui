@@ -44,57 +44,6 @@
   }
 }
 
-.mainLink {
-  display: flex;
-  align-items: center;
-  width: stretch;
-  min-width: 0;
-  margin-left: var(--mantine-spacing-md);
-  margin-bottom: 1px;
-  padding: var(--mantine-spacing-xxxs);
-  border-radius: var(--mantine-radius-sm);
-  font-weight: 500;
-  text-decoration: none;
-
-  &:hover {
-    background-color: var(--mantine-color-gray-2);
-  }
-
-  &[aria-current],
-  &[aria-current]:hover {
-    background-color: var(--mantine-color-gray-3);
-  }
-
-  @media (max-width: 48em) {
-    margin-left: 34px;
-    width: stretch;
-    padding: var(--mantine-spacing-sm);
-  }
-}
-
-.mainLinkIcon {
-  flex-shrink: 0;
-  margin-right: var(--mantine-spacing-xxs);
-}
-
-.mainLinkLabel {
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.mainLinkTrailing {
-  flex: 0 0 auto;
-  margin-left: auto;
-  margin-right: var(--mantine-spacing-xxs);
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: var(--mantine-spacing-xxxs);
-}
-
 .folderLink {
   display: flex;
   align-items: center;
@@ -104,10 +53,6 @@
   &[data-has-children] {
     @media (min-width: 48em) {
       margin-left: calc(var(--mantine-spacing-md) - 12px);
-    }
-
-    .mainLink {
-      margin-left: 0;
     }
   }
 }

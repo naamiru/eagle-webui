@@ -1,6 +1,5 @@
 "use client";
 
-import type { UnstyledButtonProps } from "@mantine/core";
 import {
   AppShell,
   Box,
@@ -10,7 +9,6 @@ import {
   Text,
   Tree,
   type TreeNodeData,
-  UnstyledButton,
 } from "@mantine/core";
 import {
   IconCaretDownFilled,
@@ -24,14 +22,13 @@ import {
   IconSettings,
   IconTrash,
 } from "@tabler/icons-react";
-import { usePathname, useRouter } from "next/navigation";
-import type { ComponentPropsWithoutRef, ComponentType, ReactNode } from "react";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useSwipeable } from "react-swipeable";
 import type { SmartFolder } from "@/data/smart-folders";
 import type { Folder, ItemCounts } from "@/data/types";
 import { useTranslations } from "@/i18n/client";
 import classes from "./AppNavbar.module.css";
+import { MainLink } from "./MainLink";
 import { ReloadButton } from "./ReloadButton";
 
 type AppNavbarProps = {
@@ -45,24 +42,6 @@ type AppNavbarProps = {
   smartFolders: SmartFolder[];
 };
 
-type MainLinkButtonProps = Omit<
-  UnstyledButtonProps,
-  "aria-current" | "className" | "children" | "onClick"
-> &
-  Omit<
-    ComponentPropsWithoutRef<"button">,
-    "aria-current" | "className" | "children" | "onClick"
-  > & {
-    to: string;
-    icon: ComponentType<{
-      className?: string;
-      size?: number;
-      stroke?: number;
-    }>;
-    label: ReactNode;
-    count?: number;
-  };
-
 export function AppNavbar({
   mobileOpened,
   toggleMobile,
@@ -74,87 +53,42 @@ export function AppNavbar({
   smartFolders,
 }: AppNavbarProps) {
   const t = useTranslations();
-  const router = useRouter();
-  const pathname = usePathname();
   const folderTreeData = useMemo(() => buildFolderTreeData(folders), [folders]);
   const folderCounts = useMemo(
     () => new Map(folders.map((folder) => [folder.id, folder.itemCount])),
-    [folders]
+    [folders],
   );
   const aggregateFolderCounts = useMemo(
     () => buildAggregateFolderCounts(folders),
-    [folders]
+    [folders],
   );
   const folderCount = folders.length;
   const flattenedSmartFolders = useMemo(
     () => flattenSmartFolderTree(smartFolders),
-    [smartFolders]
+    [smartFolders],
   );
   const smartFolderTreeData = useMemo(
     () => buildSmartFolderTreeData(smartFolders),
-    [smartFolders]
+    [smartFolders],
   );
   const smartFolderCounts = useMemo(
     () =>
       new Map(
-        flattenedSmartFolders.map((folder) => [folder.id, folder.itemCount])
+        flattenedSmartFolders.map((folder) => [folder.id, folder.itemCount]),
       ),
-    [flattenedSmartFolders]
-  );
-  const aggregateSmartFolderCounts = useMemo(
-    () => buildAggregateSmartFolderCounts(smartFolders, smartFolderCounts),
-    [smartFolders, smartFolderCounts]
+    [flattenedSmartFolders],
   );
   const smartFolderCount = useMemo(
     () => countSmartFolderNodes(smartFolders),
-    [smartFolders]
+    [smartFolders],
   );
 
-  const MainLinkButton = ({
-    to,
-    icon: IconComponent,
-    label,
-    count,
-    ...props
-  }: MainLinkButtonProps) => {
-    const isActive =
-      pathname === to || (to !== "/" && pathname.startsWith(`${to}/`));
+  const handleMainLinkClick = useCallback(() => {
+    if (mobileOpened) {
+      toggleMobile();
+    }
+  }, [mobileOpened, toggleMobile]);
 
-    const handleClick = () => {
-      if (pathname !== to) {
-        router.push(to);
-      }
-
-      if (mobileOpened) {
-        toggleMobile();
-      }
-    };
-
-    return (
-      <UnstyledButton
-        className={classes.mainLink}
-        aria-current={isActive ? "page" : undefined}
-        onClick={handleClick}
-        {...props}
-      >
-        <IconComponent className={classes.mainLinkIcon} size={20} stroke={1} />
-        <Text size="sm" className={classes.mainLinkLabel}>
-          {label}
-        </Text>
-        {!!count && (
-          <div className={classes.mainLinkTrailing}>
-            <Text
-              size="xs"
-              c="dimmed"
-              ff="var(--mantine-font-family-monospace)"
-            >
-              {count}
-            </Text>
-          </div>
-        )}
-      </UnstyledButton>
-    );
-  };
   const swipeHandlers = useSwipeable({
     onSwipedLeft: toggleMobile,
   });
@@ -193,25 +127,28 @@ export function AppNavbar({
         className={classes.scrollable}
       >
         <section>
-          <MainLinkButton
+          <MainLink
             to="/"
             icon={IconInbox}
             label={t("collection.all")}
             count={itemCounts.all}
+            onClick={handleMainLinkClick}
           />
 
-          <MainLinkButton
+          <MainLink
             to="/uncategorized"
             icon={IconFolderQuestion}
             label={t("collection.uncategorized")}
             count={itemCounts.uncategorized}
+            onClick={handleMainLinkClick}
           />
 
-          <MainLinkButton
+          <MainLink
             to="/trash"
             icon={IconTrash}
             label={t("collection.trash")}
             count={itemCounts.trash}
+            onClick={handleMainLinkClick}
           />
         </section>
 
@@ -277,11 +214,13 @@ export function AppNavbar({
                           />
                         </>
                       ))}
-                    <MainLinkButton
+                    <MainLink
                       to={folderPath}
                       icon={folderIcon}
                       label={node.label}
                       count={directCount}
+                      onClick={handleMainLinkClick}
+                      withLeftMargin={!hasChildren}
                       onMouseDown={(event) => {
                         if (event.detail === 2) {
                           event.preventDefault();
@@ -360,17 +299,19 @@ export function AppNavbar({
                           />
                         </>
                       ))}
-                    <MainLinkButton
+                    <MainLink
                       to={folderPath}
                       icon={folderIcon}
                       label={node.label}
                       count={
                         hasChildren && !expanded
-                          ? aggregateFolderCounts.get(folderId) ??
+                          ? (aggregateFolderCounts.get(folderId) ??
                             folderCounts.get(folderId) ??
-                            0
-                          : folderCounts.get(folderId) ?? 0
+                            0)
+                          : (folderCounts.get(folderId) ?? 0)
                       }
+                      onClick={handleMainLinkClick}
+                      withLeftMargin={!hasChildren}
                       onMouseDown={(event) => {
                         if (event.detail === 2) {
                           event.preventDefault();
@@ -389,11 +330,11 @@ export function AppNavbar({
         </section>
 
         <section className={classes.settingsSection}>
-          <MainLinkButton
+          <MainLink
             to="/settings"
             icon={IconSettings}
             label={t("navbar.settings")}
-            count={0}
+            onClick={handleMainLinkClick}
           />
         </section>
       </AppShell.Section>
@@ -402,7 +343,7 @@ export function AppNavbar({
 }
 
 export function buildAggregateFolderCounts(
-  folders: Folder[]
+  folders: Folder[],
 ): Map<string, number> {
   const totals = new Map<string, number>();
 
@@ -473,32 +414,6 @@ function buildFolderTreeData(folders: Folder[]): TreeNodeData[] {
     .filter((folder) => folder.parentId === undefined)
     .sort(sortByManualOrder)
     .map((folder) => buildNode(folder));
-}
-
-export function buildAggregateSmartFolderCounts(
-  smartFolders: SmartFolder[],
-  directCounts: Map<string, number>
-): Map<string, number> {
-  const totals = new Map<string, number>();
-
-  const traverse = (folder: SmartFolder): number => {
-    const direct = directCounts.get(folder.id) ?? 0;
-    let childTotal = 0;
-
-    for (const child of folder.children) {
-      childTotal += traverse(child);
-    }
-
-    const total = direct + childTotal;
-    totals.set(folder.id, total);
-    return total;
-  };
-
-  smartFolders.forEach((folder) => {
-    traverse(folder);
-  });
-
-  return totals;
 }
 
 function buildSmartFolderTreeData(smartFolders: SmartFolder[]): TreeNodeData[] {
