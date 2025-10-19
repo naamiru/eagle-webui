@@ -1,8 +1,7 @@
 "use client";
 
-import { Text, TextInput } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
-import { IconCircleXFilled, IconSearch } from "@tabler/icons-react";
 import { useCallback, useState } from "react";
 import { updateListScale } from "@/actions/updateListScale";
 import AppHeader from "@/components/AppHeader";
@@ -15,6 +14,7 @@ import {
   CollectionSortControls,
   type CollectionSortState,
 } from "./CollectionControls/CollectionSortControls";
+import { SearchControl } from "./CollectionControls/SearchControl";
 import classes from "./CollectionPage.module.css";
 import { ItemSlider } from "./ItemSlider";
 import { MobileItemSlider } from "./MobileItemSlider";
@@ -25,6 +25,7 @@ interface CollectionPageProps {
   libraryPath: string;
   items: ItemPreview[];
   initialListScale: number;
+  search: string;
   sortState: CollectionSortState;
   subfolders: Subfolder[];
   subfolderBasePath?: string;
@@ -35,6 +36,7 @@ export default function CollectionPage({
   libraryPath,
   items,
   initialListScale,
+  search,
   sortState,
   subfolders,
   subfolderBasePath = "/folders",
@@ -80,13 +82,7 @@ export default function CollectionPage({
         <div className={classes.headerTrailing}>
           <ScaleControl value={listScale} onChange={handleListScaleChange} />
           <CollectionSortControls sortState={sortState} />
-          <TextInput
-            size="sm"
-            leftSectionPointerEvents="none"
-            leftSection={<IconSearch size={16} />}
-            rightSection={<IconCircleXFilled size={16} />}
-            placeholder="Search"
-          />
+          <SearchControl search={search} />
         </div>
       </AppHeader>
 

@@ -24,6 +24,10 @@
     "sections": {
       "subfolders": "子文件夹",
       "contents": "内容"
+    },
+    "controls": {
+      "searchPlaceholder": "Search items",
+      "clearSearch": "Clear search"
     }
   },
   "navbar": {

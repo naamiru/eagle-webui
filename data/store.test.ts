@@ -432,6 +432,171 @@ describe("Store smart folders", () => {
   });
 });
 
+describe("Store search filtering", () => {
+  it("returns all items when search text is empty or whitespace", () => {
+    const store = createStore({
+      items: [
+        createItem({ id: "alpha", name: "Alpha" }),
+        createItem({ id: "bravo", name: "Bravo" }),
+      ],
+    });
+
+    expect(store.getItemPreviews("").map((entry) => entry.id)).toEqual([
+      "alpha",
+      "bravo",
+    ]);
+    expect(store.getItemPreviews("   ").map((entry) => entry.id)).toEqual([
+      "alpha",
+      "bravo",
+    ]);
+  });
+
+  it("matches item previews across name, tags, URL, annotation, and comments", () => {
+    const store = createStore({
+      items: [
+        createItem({
+          id: "match",
+          name: "Blue Horizon",
+          ext: "png",
+          tags: ["Cats"],
+          url: "https://example.com/felines",
+          annotation: "Night skyline",
+          comments: [{ id: "c1", annotation: "Cat nap" }],
+        }),
+        createItem({
+          id: "other",
+          name: "Crimson Dusk",
+          tags: ["Dogs"],
+        }),
+      ],
+    });
+
+    expect(store.getItemPreviews("CAT").map((entry) => entry.id)).toEqual([
+      "match",
+    ]);
+    expect(store.getItemPreviews("blue nap").map((entry) => entry.id)).toEqual([
+      "match",
+    ]);
+    expect(store.getItemPreviews("wolf").map((entry) => entry.id)).toEqual([]);
+  });
+
+  it("honours folder name and description when filtering folder previews", () => {
+    const folder = createFolder({
+      id: "folder-1",
+      name: "Travel",
+      description: "Ocean scenes",
+    });
+    const otherFolder = createFolder({
+      id: "folder-2",
+      name: "Archive",
+      description: "City views",
+    });
+    const store = createStore({
+      folders: [folder, otherFolder],
+      items: [
+        createItem({
+          id: "ocean-shot",
+          name: "Sunset",
+          folders: ["folder-1"],
+        }),
+        createItem({
+          id: "mountain",
+          name: "Mountain",
+          folders: ["folder-2"],
+        }),
+      ],
+    });
+
+    expect(
+      store.getFolderItemPreviews("folder-1", "ocean").map((entry) => entry.id),
+    ).toEqual(["ocean-shot"]);
+    expect(
+      store.getFolderItemPreviews("folder-2", "ocean").map((entry) => entry.id),
+    ).toEqual([]);
+  });
+
+  it("filters uncategorized previews using annotations", () => {
+    const store = createStore({
+      items: [
+        createItem({
+          id: "uncat",
+          annotation: "Cozy cat on the sofa",
+        }),
+        createItem({
+          id: "ignored",
+          annotation: "Wide landscape",
+        }),
+      ],
+    });
+
+    expect(
+      store.getUncategorizedItemPreviews("sofa").map((entry) => entry.id),
+    ).toEqual(["uncat"]);
+    expect(
+      store.getUncategorizedItemPreviews("landscape").map((entry) => entry.id),
+    ).toEqual(["ignored"]);
+  });
+
+  it("filters trash previews by tag matches", () => {
+    const store = createStore({
+      items: [
+        createItem({
+          id: "trashed",
+          isDeleted: true,
+          tags: ["Archive"],
+        }),
+        createItem({
+          id: "other-trash",
+          isDeleted: true,
+          tags: ["Remove"],
+        }),
+      ],
+    });
+
+    expect(
+      store.getTrashItemPreviews("archive").map((entry) => entry.id),
+    ).toEqual(["trashed"]);
+    expect(
+      store.getTrashItemPreviews("missing").map((entry) => entry.id),
+    ).toEqual([]);
+  });
+
+  it("filters smart folder previews using search terms", () => {
+    const smartFolder = createSmartFolder({
+      id: "sf",
+      name: "Highlights",
+      itemCount: 2,
+      coverId: "feature",
+    });
+    const store = createStore({
+      items: [
+        createItem({
+          id: "feature",
+          name: "Hero Shot",
+          tags: ["Featured"],
+        }),
+        createItem({
+          id: "secondary",
+          name: "Supporting image",
+        }),
+      ],
+      smartFolders: [smartFolder],
+      smartFolderItemIds: new Map([["sf", ["feature", "secondary"]]]),
+    });
+
+    expect(
+      store
+        .getSmartFolderItemPreviews("sf", "featured")
+        .map((entry) => entry.id),
+    ).toEqual(["feature"]);
+    expect(
+      store
+        .getSmartFolderItemPreviews("sf", "missing")
+        .map((entry) => entry.id),
+    ).toEqual([]);
+  });
+});
+
 function createStore(options: {
   libraryPath?: string;
   applicationVersion?: string;
@@ -515,6 +680,7 @@ function createItem(overrides: Partial<Item>): Item {
     fontMetas: overrides.fontMetas,
     bpm: overrides.bpm ?? 0,
     medium: overrides.medium ?? "",
+    comments: overrides.comments,
   };
 }
 

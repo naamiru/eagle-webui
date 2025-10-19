@@ -24,6 +24,10 @@
     "sections": {
       "subfolders": "Subfolders",
       "contents": "Contents"
+    },
+    "controls": {
+      "searchPlaceholder": "Search items",
+      "clearSearch": "Clear search"
     }
   },
   "navbar": {

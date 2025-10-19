@@ -32,10 +32,13 @@ import {
   saveGlobalSortSettings,
   saveListScaleSetting,
   saveLocaleSetting,
-  saveSettings,
   saveNavbarExpandedState,
+  saveSettings,
 } from "./settings";
-import { DEFAULT_GLOBAL_SORT_OPTIONS } from "./sort-options";
+import {
+  DEFAULT_GLOBAL_SORT_OPTIONS,
+  type GlobalSortOptions,
+} from "./sort-options";
 
 describe("settings helpers", () => {
   const settingsPath = getSettingsFilePath();
@@ -112,7 +115,7 @@ describe("settings helpers", () => {
   it("normalizes persisted global sort settings", async () => {
     await saveSettings({
       globalSort: {
-        orderBy: "UNKNOWN",
+        orderBy: "UNKNOWN" as unknown as GlobalSortOptions["orderBy"],
         sortIncrease: "nope" as unknown as boolean,
       },
     });
@@ -163,7 +166,11 @@ describe("settings helpers", () => {
         smartFolders: ["alpha", "beta", "alpha", " ", "gamma"],
       } as unknown as NavbarExpandedState,
     };
-    await fs.writeFile(settingsPath, `${JSON.stringify(raw, null, 2)}\n`, "utf8");
+    await fs.writeFile(
+      settingsPath,
+      `${JSON.stringify(raw, null, 2)}\n`,
+      "utf8",
+    );
 
     expect(await loadNavbarExpandedState()).toEqual({
       folders: ["folder-a", "folder-b"],

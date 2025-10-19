@@ -24,6 +24,10 @@
     "sections": {
       "subfolders": "하위 폴더",
       "contents": "콘텐츠"
+    },
+    "controls": {
+      "searchPlaceholder": "Search items",
+      "clearSearch": "Clear search"
     }
   },
   "navbar": {

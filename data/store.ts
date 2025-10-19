@@ -26,7 +26,7 @@ export class Store {
     return Array.from(this.folders.values());
   }
 
-  getItems(): Item[] {
+  getItems(search?: string): Item[] {
     const items: Item[] = [];
 
     for (const item of this.items.values()) {
@@ -35,14 +35,15 @@ export class Store {
       }
     }
 
-    return sortItems(items, this.getGlobalSortContext());
+    const sorted = sortItems(items, this.getGlobalSortContext());
+    return this.filterItemsBySearch(sorted, search);
   }
 
-  getItemPreviews(): ItemPreview[] {
-    return this.toItemPreviews(this.getItems());
+  getItemPreviews(search?: string): ItemPreview[] {
+    return this.toItemPreviews(this.getItems(search));
   }
 
-  getUncategorizedItems(): Item[] {
+  getUncategorizedItems(search?: string): Item[] {
     const items: Item[] = [];
 
     for (const item of this.items.values()) {
@@ -55,14 +56,15 @@ export class Store {
       }
     }
 
-    return sortItems(items, this.getGlobalSortContext());
+    const sorted = sortItems(items, this.getGlobalSortContext());
+    return this.filterItemsBySearch(sorted, search);
   }
 
-  getUncategorizedItemPreviews(): ItemPreview[] {
-    return this.toItemPreviews(this.getUncategorizedItems());
+  getUncategorizedItemPreviews(search?: string): ItemPreview[] {
+    return this.toItemPreviews(this.getUncategorizedItems(search));
   }
 
-  getTrashItems(): Item[] {
+  getTrashItems(search?: string): Item[] {
     const items: Item[] = [];
 
     for (const item of this.items.values()) {
@@ -71,11 +73,12 @@ export class Store {
       }
     }
 
-    return sortItems(items, this.getGlobalSortContext());
+    const sorted = sortItems(items, this.getGlobalSortContext());
+    return this.filterItemsBySearch(sorted, search);
   }
 
-  getTrashItemPreviews(): ItemPreview[] {
-    return this.toItemPreviews(this.getTrashItems());
+  getTrashItemPreviews(search?: string): ItemPreview[] {
+    return this.toItemPreviews(this.getTrashItems(search));
   }
 
   getSmartFolders(): SmartFolder[] {
@@ -159,7 +162,7 @@ export class Store {
     return true;
   }
 
-  getSmartFolderItemPreviews(id: string): ItemPreview[] {
+  getSmartFolderItemPreviews(id: string, search?: string): ItemPreview[] {
     const folder = this.getSmartFolder(id);
     if (!folder) {
       return [];
@@ -167,7 +170,8 @@ export class Store {
 
     const itemIds = this.smartFolderItemIds.get(id) ?? [];
     const items = this.collectItemsByIds(itemIds);
-    return this.toItemPreviews(items);
+    const filtered = this.filterItemsBySearch(items, search);
+    return this.toItemPreviews(filtered);
   }
 
   getFirstSmartFolderItem(id: string): Item | undefined {
@@ -186,7 +190,7 @@ export class Store {
     return undefined;
   }
 
-  getFolderItems(folderId: string): Item[] {
+  getFolderItems(folderId: string, search?: string): Item[] {
     const items: Item[] = [];
 
     for (const item of this.items.values()) {
@@ -202,11 +206,12 @@ export class Store {
     const folder = this.folders.get(folderId);
     const sortContext = this.resolveFolderSortContext(folder);
 
-    return sortItems(items, { ...sortContext, folderId });
+    const sorted = sortItems(items, { ...sortContext, folderId });
+    return this.filterItemsBySearch(sorted, search);
   }
 
-  getFolderItemPreviews(folderId: string): ItemPreview[] {
-    return this.toItemPreviews(this.getFolderItems(folderId));
+  getFolderItemPreviews(folderId: string, search?: string): ItemPreview[] {
+    return this.toItemPreviews(this.getFolderItems(folderId, search));
   }
 
   getFirstFolderItem(folderId: string): Item | undefined {
@@ -221,6 +226,78 @@ export class Store {
     }
 
     return undefined;
+  }
+
+  private filterItemsBySearch(items: Item[], search?: string): Item[] {
+    const terms = this.parseSearchTerms(search);
+    if (terms.length === 0) {
+      return items;
+    }
+
+    return items.filter((item) => this.matchesSearch(item, terms));
+  }
+
+  private parseSearchTerms(search?: string): string[] {
+    if (!search) {
+      return [];
+    }
+
+    return search
+      .trim()
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((term) => term.length > 0);
+  }
+
+  private matchesSearch(item: Item, terms: string[]): boolean {
+    if (terms.length === 0) {
+      return true;
+    }
+
+    const haystacks: string[] = [];
+    const pushValue = (value: string | undefined) => {
+      if (!value) {
+        return;
+      }
+
+      const normalized = value.trim().toLowerCase();
+      if (normalized.length > 0) {
+        haystacks.push(normalized);
+      }
+    };
+
+    pushValue(item.name);
+    pushValue(item.ext);
+    pushValue(item.url);
+    pushValue(item.annotation);
+
+    for (const tag of item.tags) {
+      pushValue(tag);
+    }
+
+    if (item.comments) {
+      for (const comment of item.comments) {
+        pushValue(comment.annotation);
+      }
+    }
+
+    for (const folderId of item.folders) {
+      const folder = this.folders.get(folderId);
+      if (!folder) {
+        continue;
+      }
+
+      pushValue(folder.name);
+      pushValue(folder.description);
+    }
+
+    if (haystacks.length === 0) {
+      return false;
+    }
+
+    return terms.every((term) =>
+      haystacks.some((haystack) => haystack.includes(term)),
+    );
   }
 
   private resolveFolderSortContext(folder: Folder | undefined): SortContext {
