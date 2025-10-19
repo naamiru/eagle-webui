@@ -4,7 +4,13 @@ import { CloseButton, TextInput } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { IconCircleXFilled, IconSearch } from "@tabler/icons-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { type ChangeEvent, useCallback, useState } from "react";
+import {
+  type ChangeEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useTranslations } from "@/i18n/client";
 
 type SearchControlProps = {
@@ -17,6 +23,7 @@ export function SearchControl({ search }: SearchControlProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const t = useTranslations("collection.controls");
+  const lastAppliedValueRef = useRef(search);
 
   const applySearch = useCallback(
     (raw: string) => {
@@ -32,11 +39,23 @@ export function SearchControl({ search }: SearchControlProps) {
       const query = params.toString();
       const nextUrl = query.length > 0 ? `${pathname}?${query}` : pathname;
       router.replace(nextUrl, { scroll: false });
+      lastAppliedValueRef.current = normalized;
     },
     [pathname, router, searchParams],
   );
 
   const debouncedUpdate = useDebouncedCallback(applySearch, 300);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset on route change
+  useEffect(() => {
+    if (search === lastAppliedValueRef.current) {
+      return;
+    }
+
+    lastAppliedValueRef.current = search;
+    debouncedUpdate.cancel();
+    setValue(search);
+  }, [search]);
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
