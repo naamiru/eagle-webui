@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { clampListScale, LIST_SCALE_MAX } from "./ListScaleControl";
+import { clampScale, SCALE_MAX } from "./CollectionControls/ScaleControl";
 
 export type GridStyle = CSSProperties & {
   "--item-min-width": string;
@@ -7,15 +7,15 @@ export type GridStyle = CSSProperties & {
 };
 
 export function computeGridStyle(scale: number): GridStyle {
-  const normalized = clampListScale(scale);
-  if (normalized >= LIST_SCALE_MAX) {
+  const normalized = clampScale(scale);
+  if (normalized >= SCALE_MAX) {
     return {
       "--item-min-width": "100%",
       "--item-min-width-mobile": "100%",
     } as GridStyle;
   }
 
-  const progress = normalized / LIST_SCALE_MAX;
+  const progress = normalized / SCALE_MAX;
   const eased = progress ** 1.6;
 
   const desktopWidth = Math.round(

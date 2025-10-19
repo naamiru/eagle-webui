@@ -4,31 +4,31 @@ import { CloseButton, Group, Slider } from "@mantine/core";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import { useCallback, useMemo } from "react";
 
-export const LIST_SCALE_MIN = 0;
-export const LIST_SCALE_MAX = 100;
+export const SCALE_MIN = 0;
+export const SCALE_MAX = 100;
 const BUTTON_STEP = 10;
 
-export function clampListScale(value: number | undefined): number {
+export function clampScale(value: number | undefined): number {
   if (typeof value !== "number" || !Number.isFinite(value)) {
-    return LIST_SCALE_MIN;
+    return SCALE_MIN;
   }
   const rounded = Math.round(value);
-  return Math.min(Math.max(rounded, LIST_SCALE_MIN), LIST_SCALE_MAX);
+  return Math.min(Math.max(rounded, SCALE_MIN), SCALE_MAX);
 }
 
-type ListScaleControlProps = {
+type ScaleControlProps = {
   value: number;
   onChange: (value: number) => void;
 };
 
-export function ListScaleControl({ value, onChange }: ListScaleControlProps) {
-  const safeValue = useMemo(() => clampListScale(value), [value]);
-  const canDecrease = safeValue > LIST_SCALE_MIN;
-  const canIncrease = safeValue < LIST_SCALE_MAX;
+export function ScaleControl({ value, onChange }: ScaleControlProps) {
+  const safeValue = useMemo(() => clampScale(value), [value]);
+  const canDecrease = safeValue > SCALE_MIN;
+  const canIncrease = safeValue < SCALE_MAX;
 
   const emitChange = useCallback(
     (next: number) => {
-      const clamped = clampListScale(next);
+      const clamped = clampScale(next);
       onChange(clamped);
     },
     [onChange],
@@ -60,8 +60,8 @@ export function ListScaleControl({ value, onChange }: ListScaleControlProps) {
       />
       <Slider
         aria-label="Scale"
-        min={LIST_SCALE_MIN}
-        max={LIST_SCALE_MAX}
+        min={SCALE_MIN}
+        max={SCALE_MAX}
         step={1}
         value={safeValue}
         onChange={handleSliderChange}

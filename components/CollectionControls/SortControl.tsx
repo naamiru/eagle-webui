@@ -22,19 +22,19 @@ import {
   type GlobalSortOptions,
   type SortOptions,
 } from "@/data/sort-options";
-import classes from "./ListSortControl.module.css";
+import classes from "./SortControl.module.css";
 
-type ListSortControlProps<SortMethod extends string> = {
+type SortControlProps<SortMethod extends string> = {
   sortMethods: readonly SortMethod[];
   value: SortOptions<SortMethod>;
   onChange: (value: SortOptions<SortMethod>) => void;
 };
 
-function ListSortControl<SortMethod extends string>({
+function SortControl<SortMethod extends string>({
   sortMethods,
   value,
   onChange,
-}: ListSortControlProps<SortMethod>) {
+}: SortControlProps<SortMethod>) {
   const t = useTranslations("collection.sortLabels");
 
   return (
@@ -112,17 +112,14 @@ function ListSortControl<SortMethod extends string>({
   );
 }
 
-type FolderListSortControlProps = {
+type FolderSortControlProps = {
   value: FolderSortOptions;
   onChange: (value: FolderSortOptions) => void;
 };
 
-export function FolderListSortControl({
-  value,
-  onChange,
-}: FolderListSortControlProps) {
+export function FolderSortControl({ value, onChange }: FolderSortControlProps) {
   return (
-    <ListSortControl
+    <SortControl
       sortMethods={FOLDER_SORT_METHODS}
       value={value}
       onChange={onChange}
@@ -130,17 +127,14 @@ export function FolderListSortControl({
   );
 }
 
-type GlobalListSortControlProps = {
+type GlobalSortControlProps = {
   value: GlobalSortOptions;
   onChange: (value: GlobalSortOptions) => void;
 };
 
-export function GlobalListSortControl({
-  value,
-  onChange,
-}: GlobalListSortControlProps) {
+export function GlobalSortControl({ value, onChange }: GlobalSortControlProps) {
   return (
-    <ListSortControl
+    <SortControl
       sortMethods={GLOBAL_SORT_METHODS}
       value={value}
       onChange={onChange}
