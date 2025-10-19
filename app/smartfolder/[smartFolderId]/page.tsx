@@ -7,10 +7,8 @@ import { resolveSearchQuery } from "@/utils/search-query";
 export const dynamic = "force-dynamic";
 
 type SmartFolderPageProps = {
-  params: {
-    smartFolderId: string;
-  };
-  searchParams?: Record<string, string | string[] | undefined>;
+  params: Promise<Record<string, string>>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function SmartFolderPage({
@@ -28,7 +26,8 @@ export default async function SmartFolderPage({
     notFound();
   }
 
-  const search = resolveSearchQuery(searchParams?.search);
+  const resolvedSearchParams = await searchParams;
+  const search = resolveSearchQuery(resolvedSearchParams?.search);
   const items = store.getSmartFolderItemPreviews(smartFolderId, search);
 
   return (

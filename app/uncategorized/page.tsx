@@ -7,7 +7,7 @@ import { resolveSearchQuery } from "@/utils/search-query";
 export const dynamic = "force-dynamic";
 
 type UncategorizedPageProps = {
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function UncategorizedPage({
@@ -18,7 +18,8 @@ export default async function UncategorizedPage({
     getStore(),
     loadListScaleSetting(),
   ]);
-  const search = resolveSearchQuery(searchParams?.search);
+  const resolvedSearchParams = await searchParams;
+  const search = resolveSearchQuery(resolvedSearchParams?.search);
   const items = store.getUncategorizedItemPreviews(search);
 
   return (

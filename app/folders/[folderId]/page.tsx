@@ -8,10 +8,8 @@ import { resolveSearchQuery } from "@/utils/search-query";
 export const dynamic = "force-dynamic";
 
 type FolderPageProps = {
-  params: {
-    folderId: string;
-  };
-  searchParams?: Record<string, string | string[] | undefined>;
+  params: Promise<Record<string, string>>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function FolderPage({
@@ -19,6 +17,7 @@ export default async function FolderPage({
   searchParams,
 }: FolderPageProps) {
   const { folderId } = await params;
+  const resolvedSearchParams = await searchParams;
   const [store, listScale] = await Promise.all([
     getStore(),
     loadListScaleSetting(),
@@ -29,7 +28,7 @@ export default async function FolderPage({
     notFound();
   }
 
-  const search = resolveSearchQuery(searchParams?.search);
+  const search = resolveSearchQuery(resolvedSearchParams?.search);
   const items = store.getFolderItemPreviews(folderId, search);
   const subfolders: Subfolder[] = [];
 
