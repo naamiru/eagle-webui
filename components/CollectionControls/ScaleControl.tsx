@@ -1,8 +1,9 @@
 "use client";
 
-import { CloseButton, Group, Slider } from "@mantine/core";
-import { IconMinus, IconPlus } from "@tabler/icons-react";
+import { CloseButton, Group, Popover, Slider } from "@mantine/core";
+import { IconMinus, IconPlus, IconZoomIn } from "@tabler/icons-react";
 import { useCallback, useMemo } from "react";
+import classes from "./ScaleControl.module.css";
 
 export const SCALE_MIN = 0;
 export const SCALE_MAX = 100;
@@ -59,6 +60,7 @@ export function ScaleControl({ value, onChange }: ScaleControlProps) {
         disabled={!canDecrease}
       />
       <Slider
+        className={classes.slider}
         aria-label="Scale"
         min={SCALE_MIN}
         max={SCALE_MAX}
@@ -78,5 +80,18 @@ export function ScaleControl({ value, onChange }: ScaleControlProps) {
         disabled={!canIncrease}
       />
     </Group>
+  );
+}
+
+export function MobileScaleControl({ value, onChange }: ScaleControlProps) {
+  return (
+    <Popover width={200} position="bottom" offset={4} withArrow shadow="md">
+      <Popover.Target>
+        <CloseButton icon={<IconZoomIn stroke={1} />} aria-label="Zoom" />
+      </Popover.Target>
+      <Popover.Dropdown className={classes.mobileDropdown}>
+        <ScaleControl value={value} onChange={onChange} />
+      </Popover.Dropdown>
+    </Popover>
   );
 }

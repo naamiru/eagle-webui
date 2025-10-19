@@ -38,7 +38,7 @@ function SortControl<SortMethod extends string>({
   const t = useTranslations("collection.sortLabels");
 
   return (
-    <Popover width={200} position="bottom" withArrow shadow="md">
+    <Popover width={200} position="bottom" offset={4} withArrow shadow="md">
       <Popover.Target>
         <CloseButton icon={<IconArrowsUpDown stroke={1} />} aria-label="Sort" />
       </Popover.Target>

@@ -6,7 +6,10 @@ import Link from "next/link";
 import { useCallback, useState } from "react";
 import { updateListScale } from "@/actions/updateListScale";
 import AppHeader from "@/components/AppHeader";
-import { ScaleControl } from "@/components/CollectionControls/ScaleControl";
+import {
+  MobileScaleControl,
+  ScaleControl,
+} from "@/components/CollectionControls/ScaleControl";
 import { ItemList, type ItemSelection } from "@/components/ItemList";
 import type { ItemPreview } from "@/data/types";
 import { useTranslations } from "@/i18n/client";
@@ -89,7 +92,14 @@ export default function CollectionPage({
           )}
         </div>
         <div className={classes.headerTrailing}>
-          <ScaleControl value={listScale} onChange={handleListScaleChange} />
+          {isMobile ? (
+            <MobileScaleControl
+              value={listScale}
+              onChange={handleListScaleChange}
+            />
+          ) : (
+            <ScaleControl value={listScale} onChange={handleListScaleChange} />
+          )}
           <CollectionSortControls sortState={sortState} />
           <SearchControl search={search} />
         </div>
