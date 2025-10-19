@@ -3,6 +3,18 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  display: flex;
+  gap: var(--mantine-spacing-xxs);
+
+  a {
+    color: var(--mantine-color-text);
+    text-decoration: none;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .headerTrailing {

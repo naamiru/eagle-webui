@@ -2,6 +2,7 @@
 
 import { Text } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
+import Link from "next/link";
 import { useCallback, useState } from "react";
 import { updateListScale } from "@/actions/updateListScale";
 import AppHeader from "@/components/AppHeader";
@@ -78,7 +79,15 @@ export default function CollectionPage({
   return (
     <>
       <AppHeader>
-        <Text className={classes.headerTitle}>{title}</Text>
+        <div className={classes.headerTitle}>
+          <Link href="/">{title}</Link>
+          {search && (
+            <>
+              <Text c="dimmed">/</Text>
+              <Text c="dimmed">Search results ({items.length})</Text>
+            </>
+          )}
+        </div>
         <div className={classes.headerTrailing}>
           <ScaleControl value={listScale} onChange={handleListScaleChange} />
           <CollectionSortControls sortState={sortState} />
