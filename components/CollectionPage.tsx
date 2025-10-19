@@ -1,7 +1,8 @@
 "use client";
 
-import { Text } from "@mantine/core";
+import { Text, TextInput } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
+import { IconCircleXFilled, IconSearch } from "@tabler/icons-react";
 import { useCallback, useState } from "react";
 import { updateListScale } from "@/actions/updateListScale";
 import AppHeader from "@/components/AppHeader";
@@ -76,11 +77,16 @@ export default function CollectionPage({
     <>
       <AppHeader>
         <Text className={classes.headerTitle}>{title}</Text>
-        <div className={classes.headerCenter}>
-          <ScaleControl value={listScale} onChange={handleListScaleChange} />
-        </div>
         <div className={classes.headerTrailing}>
+          <ScaleControl value={listScale} onChange={handleListScaleChange} />
           <CollectionSortControls sortState={sortState} />
+          <TextInput
+            size="sm"
+            leftSectionPointerEvents="none"
+            leftSection={<IconSearch size={16} />}
+            rightSection={<IconCircleXFilled size={16} />}
+            placeholder="Search"
+          />
         </div>
       </AppHeader>
 
