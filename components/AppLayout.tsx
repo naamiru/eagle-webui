@@ -1,6 +1,12 @@
 "use client";
 
-import { AppShell, Burger, CloseButton, Group } from "@mantine/core";
+import {
+  AppShell,
+  Burger,
+  CloseButton,
+  Group,
+  ScrollArea,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconLayoutSidebarRightCollapse } from "@tabler/icons-react";
 import type { ReactNode } from "react";
@@ -101,7 +107,13 @@ export function AppLayout({
         </AppShell.Main>
 
         <AppShell.Aside className={classes.aside}>
-          {inspectedItemId && <ItemInspector itemId={inspectedItemId} />}
+          <AppShell.Section
+            grow
+            component={ScrollArea}
+            className={classes.asideScrollabel}
+          >
+            {inspectedItemId && <ItemInspector itemId={inspectedItemId} />}
+          </AppShell.Section>
         </AppShell.Aside>
       </HeaderSlotProvider>
     </AppShell>

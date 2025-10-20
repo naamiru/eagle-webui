@@ -61,6 +61,15 @@ export type Item = {
   comments?: ItemComment[];
 };
 
+export type ItemFolderSummary = {
+  id: string;
+  name: string;
+};
+
+export type ItemDetails = Item & {
+  folderSummaries: ItemFolderSummary[];
+};
+
 export type ItemPreview = {
   id: string;
   duration: number;

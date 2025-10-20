@@ -34,6 +34,38 @@
       "searchResultsMobile": "搜索 ({count})"
     }
   },
+  "itemInspector": {
+    "status": {
+      "loading": "Loading item…",
+      "error": "Unable to load item."
+    },
+    "actions": {
+      "retry": "Retry"
+    },
+    "sections": {
+      "details": "Details",
+      "comments": "Comments",
+      "properties": "Properties"
+    },
+    "fields": {
+      "name": "Name",
+      "annotation": "Note",
+      "url": "URL",
+      "tags": "Tags",
+      "folders": "Folders"
+    },
+    "properties": {
+      "rating": "Rating",
+      "duration": "Duration",
+      "bpm": "BPM",
+      "dimensions": "Dimensions",
+      "size": "File size",
+      "type": "Type",
+      "dateImported": "Date Imported",
+      "dateCreated": "Date Created",
+      "dateModified": "Date Modified"
+    }
+  },
   "navbar": {
     "folders": "文件夹",
     "settings": "设置",

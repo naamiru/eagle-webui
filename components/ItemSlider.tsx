@@ -23,7 +23,7 @@ import {
   useRef,
   useState,
 } from "react";
-import type { Item, ItemPreview } from "@/data/types";
+import type { ItemDetails, ItemPreview } from "@/data/types";
 import { useSliderState } from "@/stores/slider-state";
 import { getImageUrl, getThumbnailUrl } from "@/utils/item";
 import AppHeader from "./AppHeader";
@@ -244,9 +244,10 @@ type URLContentProp = {
 };
 
 function URLContent({ item, libraryPath }: URLContentProp) {
-  const [metadata, setMetadata] = useState<Pick<Item, "name" | "url"> | null>(
-    null,
-  );
+  const [metadata, setMetadata] = useState<Pick<
+    ItemDetails,
+    "name" | "url"
+  > | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -260,7 +261,7 @@ function URLContent({ item, libraryPath }: URLContentProp) {
         if (!response.ok) {
           throw new Error(`Request failed with status ${response.status}`);
         }
-        const data = (await response.json()) as Item;
+        const data = (await response.json()) as ItemDetails;
         if (controller.signal.aborted) return;
         setMetadata({
           name: data.name,

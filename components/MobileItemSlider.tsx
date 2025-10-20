@@ -33,7 +33,7 @@ import {
 import { Keyboard, Virtual, Zoom } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper/types";
-import type { Item, ItemPreview } from "@/data/types";
+import type { ItemDetails, ItemPreview } from "@/data/types";
 import { getImageUrl, getThumbnailUrl } from "@/utils/item";
 import "swiper/css";
 import "swiper/css/zoom";
@@ -274,9 +274,10 @@ function MobileVideoContent({ item, libraryPath }: MobileContentProps) {
 }
 
 function MobileUrlContent({ item, libraryPath }: MobileContentProps) {
-  const [metadata, setMetadata] = useState<Pick<Item, "name" | "url"> | null>(
-    null,
-  );
+  const [metadata, setMetadata] = useState<Pick<
+    ItemDetails,
+    "name" | "url"
+  > | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -290,7 +291,7 @@ function MobileUrlContent({ item, libraryPath }: MobileContentProps) {
         if (!response.ok) {
           throw new Error(`Request failed with status ${response.status}`);
         }
-        const data = (await response.json()) as Item;
+        const data = (await response.json()) as ItemDetails;
         if (controller.signal.aborted) return;
         setMetadata({
           name: data.name,
