@@ -54,7 +54,7 @@ npx @naamiru/eagle-webui --hostname 0.0.0.0
 
 After running this command, open `http://<your-computer's-LAN-IP>:34917/` from each device.
 
-**⚠️ Security Warning:** This application serves images without authentication. Do not expose it to public networks. If you need remote access, I recommend using a VPN—services like [Tailscale](https://tailscale.com) can help.
+**⚠️ Security Warning:** This application serves images without authentication. Do not expose it to public networks. If you need remote access, I recommend using a VPN—services like [Tailscale](https://tailscale.com) could help.
 
 ### Command-line Options
 
