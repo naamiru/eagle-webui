@@ -31,7 +31,7 @@ type PropertyRow = {
 };
 
 export function ItemInspector({ itemId }: ItemInspectorProps) {
-  const t = useTranslations("itemInspector");
+  const t = useTranslations("inspector");
   const locale = useLocale();
   const pathname = usePathname();
   const [state, setState] = useState<InspectorState>({
@@ -196,7 +196,7 @@ export function ItemInspector({ itemId }: ItemInspectorProps) {
         {item.annotation && (
           <div className={classes.subsection}>
             <Text className={classes.sectionTitle}>
-              {t("fields.annotation")}
+              {t("properties.annotation")}
             </Text>
             <div className={classes.annotation}>{item.annotation}</div>
           </div>
@@ -219,7 +219,7 @@ export function ItemInspector({ itemId }: ItemInspectorProps) {
 
       {item.tags.length > 0 && (
         <div className={classes.section}>
-          <Text className={classes.sectionTitle}>{t("fields.tags")}</Text>
+          <Text className={classes.sectionTitle}>{t("properties.tags")}</Text>
           <div className={classes.tags}>
             {item.tags.map((tag) => (
               <Anchor
@@ -238,7 +238,7 @@ export function ItemInspector({ itemId }: ItemInspectorProps) {
 
       {item.folders.length > 0 && (
         <div className={classes.section}>
-          <Text className={classes.sectionTitle}>{t("fields.folders")}</Text>
+          <Text className={classes.sectionTitle}>{t("properties.folders")}</Text>
           <div className={classes.tags}>
             {item.folderSummaries.map((folder) => (
               <Anchor
@@ -257,7 +257,7 @@ export function ItemInspector({ itemId }: ItemInspectorProps) {
 
       {(item.comments?.length ?? 0) > 0 && (
         <div className={classes.section}>
-          <Text className={classes.sectionTitle}>{t("sections.comments")}</Text>
+          <Text className={classes.sectionTitle}>{t("properties.comments")}</Text>
           {(item.comments ?? []).map((comment) => (
             <div key={comment.id} className={classes.subsection}>
               <div className={classes.annotation}>{comment.annotation}</div>

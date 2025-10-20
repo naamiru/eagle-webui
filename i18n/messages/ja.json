@@ -34,36 +34,24 @@
       "searchResultsMobile": "検索 ({count})"
     }
   },
-  "itemInspector": {
-    "status": {
-      "loading": "Loading item…",
-      "error": "Unable to load item."
-    },
-    "actions": {
-      "retry": "Retry"
-    },
+  "inspector": {
     "sections": {
-      "details": "Details",
-      "comments": "Comments",
-      "properties": "Properties"
-    },
-    "fields": {
-      "name": "Name",
-      "annotation": "Note",
-      "url": "URL",
-      "tags": "Tags",
-      "folders": "Folders"
+      "properties": "プロパティ"
     },
     "properties": {
-      "rating": "Rating",
-      "duration": "Duration",
+      "comments": "コメント",
+      "annotation": "メモ",
+      "tags": "タグ",
+      "folders": "フォルダ",
+      "rating": "評価",
+      "duration": "再生時間",
       "bpm": "BPM",
-      "dimensions": "Dimensions",
-      "size": "File size",
-      "type": "Type",
-      "dateImported": "Date Imported",
-      "dateCreated": "Date Created",
-      "dateModified": "Date Modified"
+      "dimensions": "寸法",
+      "size": "ファイルサイズ",
+      "type": "種類",
+      "dateImported": "追加日",
+      "dateCreated": "作成日",
+      "dateModified": "変更日"
     }
   },
   "navbar": {

@@ -34,36 +34,24 @@
       "searchResultsMobile": "搜尋 ({count})"
     }
   },
-  "itemInspector": {
-    "status": {
-      "loading": "Loading item…",
-      "error": "Unable to load item."
-    },
-    "actions": {
-      "retry": "Retry"
-    },
+  "inspector": {
     "sections": {
-      "details": "Details",
-      "comments": "Comments",
-      "properties": "Properties"
-    },
-    "fields": {
-      "name": "Name",
-      "annotation": "Note",
-      "url": "URL",
-      "tags": "Tags",
-      "folders": "Folders"
+      "properties": "屬性"
     },
     "properties": {
-      "rating": "Rating",
-      "duration": "Duration",
+      "comments": "評論",
+      "annotation": "備註",
+      "tags": "標籤",
+      "folders": "資料夾",
+      "rating": "評分",
+      "duration": "時長",
       "bpm": "BPM",
-      "dimensions": "Dimensions",
-      "size": "File size",
-      "type": "Type",
-      "dateImported": "Date Imported",
-      "dateCreated": "Date Created",
-      "dateModified": "Date Modified"
+      "dimensions": "尺寸",
+      "size": "檔案大小",
+      "type": "類型",
+      "dateImported": "加入日期",
+      "dateCreated": "建立日期",
+      "dateModified": "修改日期"
     }
   },
   "navbar": {

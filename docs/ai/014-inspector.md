@@ -48,7 +48,7 @@
   - Return early in the effect cleanup by aborting the controller.
 - Rendering:
   - The parent containers already provide scrolling; render the inspector as a full-height flex column (`className={classes.root}` with `height: 100%`, `display: flex`, `flexDirection: "column"`, and `padding: var(--mantine-spacing-md)`) without introducing a nested `ScrollArea`.
-  - Inject `useTranslations("itemInspector")` and `useLocale()` to support localisation.
+  - Inject `useTranslations("inspector")` and `useLocale()` to support localisation.
   - Loading state: show a `Loader` (size `"sm"`) with `Text` beneath reading `t("status.loading")`.
   - Error state: show a `Paper` with `t("status.error")` and a subtle `Button` labelled `t("actions.retry")` that reruns the fetch.
   - Ready state:
@@ -65,7 +65,7 @@
         - `Tags`: show only when trimmed tags exist; render each tag inside a light `Badge size="sm"` inside a wrapping `Group gap="xs"`.
         - `Folders`: show only when trimmed folder names exist; render each summary as `NextLink` (`href={`/folders/${summary.id}`}`) styled like an `Anchor`.
     - Comments section:
-      - Render the section (`t("sections.comments")`) only when trimmed comment annotations exist.
+      - Render the section (`t("properties.comments")`) only when trimmed comment annotations exist.
       - Display each comment annotation inside a `Paper radius="sm" withBorder`.
     - Properties section:
       - Always render the section (`t("sections.properties")`) because rating is always available.
@@ -83,30 +83,18 @@
 - Create `components/ItemInspector.module.css` with helpers for the layout described above (`root`, `header`, `section`, `sectionTitle`, `definitionList`, `label`, `value`, `link`, `tagGroup`, `commentStack`, `commentCard`, `propertiesTable`, `propertyLabel`, `propertyValue`, `multilineText`).
 
 **Translations**
-- Add an `itemInspector` namespace to every locale file under `i18n/messages/` (`en.json`, `ja.json`, `ko.json`, `zh-cn.json`, `zh-tw.json`). English copy:
+- Add an `inspector` namespace to every locale file under `i18n/messages/` (`en.json`, `ja.json`, `ko.json`, `zh-cn.json`, `zh-tw.json`). English copy:
   ```json
   {
-    "itemInspector": {
-      "status": {
-        "loading": "Loading item…",
-        "error": "Unable to load item."
-      },
-      "actions": {
-        "retry": "Retry"
-      },
+    "inspector": {
       "sections": {
-        "details": "Details",
-        "comments": "Comments",
         "properties": "Properties"
       },
-      "fields": {
-        "name": "Name",
-        "annotation": "Note",
-        "url": "URL",
-        "tags": "Tags",
-        "folders": "Folders"
-      },
       "properties": {
+        "comments": "Comments",
+        "annotation": "Note",
+        "tags": "Tags",
+        "folders": "Folders",
         "rating": "Rating",
         "duration": "Duration",
         "bpm": "BPM",
@@ -120,7 +108,7 @@
     }
   }
   ```
-- For the other locales, reuse the English strings until proper translations exist.
+- For the other locales, keep the date labels aligned with the `collection.sortLabels` copy so terminology stays consistent.
 
 **Manual QA checklist**
 - Desktop: select an item, expand the inspector aside, confirm folder links navigate correctly and that each property matches the Eagle desktop app.
