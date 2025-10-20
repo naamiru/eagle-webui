@@ -3,10 +3,10 @@
 import { Anchor, Center, Loader, Table, Text } from "@mantine/core";
 import { IconExternalLink, IconStarFilled } from "@tabler/icons-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ItemDetails } from "@/data/types";
 import { useLocale, useTranslations } from "@/i18n/client";
-import { useCollectionPageKey } from "@/stores/collection-page";
 import {
   formatDateTime,
   formatDimensions,
@@ -33,13 +33,12 @@ type PropertyRow = {
 export function ItemInspector({ itemId }: ItemInspectorProps) {
   const t = useTranslations("itemInspector");
   const locale = useLocale();
+  const pathname = usePathname();
   const [state, setState] = useState<InspectorState>({
     status: "loading",
     item: null,
   });
   const controllerRef = useRef<AbortController | null>(null);
-
-  const { reset: resetPage } = useCollectionPageKey();
 
   const fetchItem = useCallback(
     async (signal: AbortSignal) => {
@@ -71,6 +70,21 @@ export function ItemInspector({ itemId }: ItemInspectorProps) {
     setState({ status: "loading", item: null });
     void fetchItem(controller.signal);
   }, [fetchItem]);
+
+  const getHrefWithKey = useCallback(
+    (targetPathname: string, params: Record<string, string> = {}) => {
+      const query = { ...params };
+
+      if (targetPathname === pathname) {
+        query.key = Date.now().toString();
+      }
+
+      return Object.keys(query).length > 0
+        ? { pathname: targetPathname, query }
+        : { pathname: targetPathname };
+    },
+    [pathname],
+  );
 
   useEffect(() => {
     startFetch();
@@ -211,10 +225,9 @@ export function ItemInspector({ itemId }: ItemInspectorProps) {
               <Anchor
                 key={tag}
                 component={Link}
-                href={`/?tag=${encodeURIComponent(tag)}`}
+                href={getHrefWithKey("/", { tag })}
                 underline="never"
                 className={classes.tag}
-                onClick={resetPage}
               >
                 {tag}
               </Anchor>
@@ -231,10 +244,9 @@ export function ItemInspector({ itemId }: ItemInspectorProps) {
               <Anchor
                 key={folder.id}
                 component={Link}
-                href={`/folders/${folder.id}`}
+                href={getHrefWithKey(`/folders/${folder.id}`)}
                 underline="never"
                 className={classes.tag}
-                onClick={resetPage}
               >
                 {folder.name}
               </Anchor>

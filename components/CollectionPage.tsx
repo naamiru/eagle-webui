@@ -3,7 +3,8 @@
 import { Text } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import { updateListScale } from "@/actions/updateListScale";
 import AppHeader from "@/components/AppHeader";
 import {
@@ -13,7 +14,6 @@ import {
 import { ItemList, type ItemSelection } from "@/components/ItemList";
 import type { ItemPreview } from "@/data/types";
 import { useTranslations } from "@/i18n/client";
-import { useCollectionPageKey } from "@/stores/collection-page";
 import { useIsMobile } from "@/utils/responsive";
 import {
   CollectionSortControls,
@@ -41,7 +41,25 @@ interface CollectionPageProps {
 }
 
 export default function CollectionPage(props: CollectionPageProps) {
-  const { key } = useCollectionPageKey();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [key, setKey] = useState("0");
+
+  useEffect(() => {
+    const incoming = searchParams.get("key");
+    if (incoming == null) return;
+
+    setKey(incoming);
+
+    const sp = new URLSearchParams(searchParams.toString());
+    sp.delete("key");
+    router.replace(sp.toString() ? `${pathname}?${sp}` : pathname, {
+      scroll: false,
+    });
+  }, [pathname, router, searchParams]);
+
   return <CollectionPageImpl key={key} {...props} />;
 }
 
