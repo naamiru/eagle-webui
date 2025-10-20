@@ -13,6 +13,7 @@ import {
 import { ItemList, type ItemSelection } from "@/components/ItemList";
 import type { ItemPreview } from "@/data/types";
 import { useTranslations } from "@/i18n/client";
+import { useCollectionPageKey } from "@/stores/collection-page";
 import { useIsMobile } from "@/utils/responsive";
 import {
   CollectionSortControls,
@@ -39,7 +40,12 @@ interface CollectionPageProps {
   subfolderBasePath?: string;
 }
 
-export default function CollectionPage({
+export default function CollectionPage(props: CollectionPageProps) {
+  const { key } = useCollectionPageKey();
+  return <CollectionPageImpl key={key} {...props} />;
+}
+
+function CollectionPageImpl({
   title,
   libraryPath,
   items,

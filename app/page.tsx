@@ -20,6 +20,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const search = resolveSearchQuery(resolvedSearchParams?.search);
   const tag = resolveTagFilter(resolvedSearchParams?.tag);
   const items = store.getItemPreviews(search, tag);
+
   return (
     <CollectionPage
       title={t("collection.all")}

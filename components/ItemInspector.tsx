@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ItemDetails } from "@/data/types";
 import { useLocale, useTranslations } from "@/i18n/client";
+import { useCollectionPageKey } from "@/stores/collection-page";
 import {
   formatDateTime,
   formatDimensions,
@@ -37,6 +38,8 @@ export function ItemInspector({ itemId }: ItemInspectorProps) {
     item: null,
   });
   const controllerRef = useRef<AbortController | null>(null);
+
+  const { reset: resetPage } = useCollectionPageKey();
 
   const fetchItem = useCallback(
     async (signal: AbortSignal) => {
@@ -211,6 +214,7 @@ export function ItemInspector({ itemId }: ItemInspectorProps) {
                 href={`/?tag=${encodeURIComponent(tag)}`}
                 underline="never"
                 className={classes.tag}
+                onClick={resetPage}
               >
                 {tag}
               </Anchor>
@@ -230,6 +234,7 @@ export function ItemInspector({ itemId }: ItemInspectorProps) {
                 href={`/folders/${folder.id}`}
                 underline="never"
                 className={classes.tag}
+                onClick={resetPage}
               >
                 {folder.name}
               </Anchor>
