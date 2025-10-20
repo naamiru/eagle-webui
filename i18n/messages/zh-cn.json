@@ -28,6 +28,10 @@
     "controls": {
       "searchPlaceholder": "搜索",
       "clearSearch": "Clear search"
+    },
+    "header": {
+      "searchResults": "搜索结果 ({count})",
+      "searchResultsMobile": "搜索 ({count})"
     }
   },
   "navbar": {

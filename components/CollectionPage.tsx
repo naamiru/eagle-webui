@@ -53,7 +53,8 @@ export default function CollectionPage({
     useState<ItemSelection["stateSnapshot"]>(null);
   const [listScale, setListScale] = useState<number>(initialListScale);
   const persistListScale = useDebouncedCallback(updateListScale, 300);
-  const t = useTranslations("collection.sections");
+  const sectionTranslations = useTranslations("collection.sections");
+  const headerTranslations = useTranslations("collection.header");
 
   const handleListScaleChange = useCallback(
     (scale: number) => {
@@ -90,7 +91,15 @@ export default function CollectionPage({
           {search && (
             <>
               <Text c="dimmed">/</Text>
-              <Text c="dimmed">Search results ({items.length})</Text>
+              <Text c="dimmed">
+                {isMobile
+                  ? headerTranslations("searchResultsMobile", {
+                      count: items.length,
+                    })
+                  : headerTranslations("searchResults", {
+                      count: items.length,
+                    })}
+              </Text>
             </>
           )}
         </div>
@@ -115,7 +124,7 @@ export default function CollectionPage({
       {subfolders.length > 0 && (
         <div className={classes.section}>
           <div className={classes.sectionTitle}>
-            {t("subfolders")} ({subfolders.length})
+            {sectionTranslations("subfolders")} ({subfolders.length})
           </div>
           <SubfolderList
             libraryPath={libraryPath}
@@ -130,7 +139,7 @@ export default function CollectionPage({
         <div className={classes.section}>
           {subfolders.length > 0 && (
             <div className={classes.sectionTitle}>
-              {t("contents")} ({items.length})
+              {sectionTranslations("contents")} ({items.length})
             </div>
           )}
           <ItemList

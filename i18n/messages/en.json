@@ -28,6 +28,10 @@
     "controls": {
       "searchPlaceholder": "Search",
       "clearSearch": "Clear search"
+    },
+    "header": {
+      "searchResults": "Search results ({count})",
+      "searchResultsMobile": "Search ({count})"
     }
   },
   "navbar": {

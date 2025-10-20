@@ -28,6 +28,10 @@
     "controls": {
       "searchPlaceholder": "검색",
       "clearSearch": "Clear search"
+    },
+    "header": {
+      "searchResults": "검색 결과 ({count})",
+      "searchResultsMobile": "검색 ({count})"
     }
   },
   "navbar": {

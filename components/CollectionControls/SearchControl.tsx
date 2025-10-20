@@ -103,7 +103,7 @@ export function SearchControl({ search, mobile = false }: SearchControlProps) {
           />
         ) : undefined
       }
-      w={220}
+      w={200}
       style={{ flexShrink: 1 }}
     />
   );

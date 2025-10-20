@@ -28,6 +28,10 @@
     "controls": {
       "searchPlaceholder": "検索",
       "clearSearch": "Clear search"
+    },
+    "header": {
+      "searchResults": "検索結果 ({count})",
+      "searchResultsMobile": "検索 ({count})"
     }
   },
   "navbar": {
