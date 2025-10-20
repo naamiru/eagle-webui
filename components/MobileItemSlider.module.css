@@ -26,6 +26,13 @@
   }
 }
 
+.headerTrailing {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .wrapper {
   width: 100%;
   height: 100%;
@@ -70,4 +77,12 @@
 .urlText svg {
   margin-left: var(--mantine-spacing-xs);
   vertical-align: middle;
+}
+
+.drawerHeader {
+  background-color: var(--mantine-color-gray-0);
+}
+
+.drawerContent {
+  background-color: var(--mantine-color-gray-0);
 }

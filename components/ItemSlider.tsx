@@ -13,6 +13,7 @@ import {
   IconChevronLeft,
   IconChevronRight,
   IconExternalLink,
+  IconInfoCircle,
 } from "@tabler/icons-react";
 import {
   type ReactNode,
@@ -59,12 +60,23 @@ export function ItemSlider({
     return () => window.removeEventListener("keydown", handleKey);
   }, [dismiss]);
 
-  const { setIsPresented } = useSliderState();
+  const { setIsPresented, inspectedItemId, inspectItem } = useSliderState();
   // biome-ignore lint/correctness/useExhaustiveDependencies: depend on lifecycle
   useEffect(() => {
     setIsPresented(true);
     return () => setIsPresented(false);
   }, []);
+
+  // inspector handling
+  const toggleInspector = useCallback(() => {
+    inspectItem(inspectedItemId ? undefined : items[activeIndex].id);
+  }, [inspectItem, inspectedItemId, items, activeIndex]);
+
+  useEffect(() => {
+    if (inspectedItemId) {
+      inspectItem(items[activeIndex].id);
+    }
+  }, [inspectItem, inspectedItemId, items, activeIndex]);
 
   const playAndPauseVideo = useCallback(
     (swiper: SwiperType) => {
@@ -126,11 +138,18 @@ export function ItemSlider({
             icon={<IconChevronLeft stroke={1.2} />}
             disabled={activeIndex === 0}
             onClick={handlePrevious}
+            aria-label="Prev"
           />
           <CloseButton
             icon={<IconChevronRight stroke={1.2} />}
             disabled={activeIndex === items.length - 1}
             onClick={handleNext}
+            aria-label="Next"
+          />
+          <CloseButton
+            icon={<IconInfoCircle stroke={1.2} />}
+            onClick={toggleInspector}
+            aria-label="Inspector"
           />
         </div>
       </AppHeader>
