@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import CollectionPage from "@/components/CollectionPage";
 import { loadListScaleSetting } from "@/data/settings";
 import { getStore } from "@/data/store";
-import { resolveSearchQuery } from "@/utils/search-query";
+import { resolveSearchQuery, resolveTagFilter } from "@/utils/search-query";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +18,8 @@ export default async function TrashPage({ searchParams }: TrashPageProps) {
   ]);
   const resolvedSearchParams = await searchParams;
   const search = resolveSearchQuery(resolvedSearchParams?.search);
-  const items = store.getTrashItemPreviews(search);
+  const tag = resolveTagFilter(resolvedSearchParams?.tag);
+  const items = store.getTrashItemPreviews(search, tag);
 
   return (
     <CollectionPage
@@ -27,6 +28,7 @@ export default async function TrashPage({ searchParams }: TrashPageProps) {
       items={items}
       initialListScale={listScale}
       search={search}
+      tag={tag}
       subfolders={[]}
       sortState={{
         kind: "global",

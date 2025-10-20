@@ -1,6 +1,6 @@
 "use client";
 
-import { Anchor, Center, Loader, Table, Text, Title } from "@mantine/core";
+import { Anchor, Center, Loader, Table, Text } from "@mantine/core";
 import { IconExternalLink, IconStarFilled } from "@tabler/icons-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";

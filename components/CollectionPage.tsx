@@ -33,6 +33,7 @@ interface CollectionPageProps {
   items: ItemPreview[];
   initialListScale: number;
   search: string;
+  tag: string;
   sortState: CollectionSortState;
   subfolders: Subfolder[];
   subfolderBasePath?: string;
@@ -44,6 +45,7 @@ export default function CollectionPage({
   items,
   initialListScale,
   search,
+  tag,
   sortState,
   subfolders,
   subfolderBasePath = "/folders",
@@ -55,6 +57,7 @@ export default function CollectionPage({
   const persistListScale = useDebouncedCallback(updateListScale, 300);
   const sectionTranslations = useTranslations("collection.sections");
   const headerTranslations = useTranslations("collection.header");
+  const hasActiveFilters = !!search || !!tag;
 
   const handleListScaleChange = useCallback(
     (scale: number) => {
@@ -88,7 +91,7 @@ export default function CollectionPage({
       <AppHeader>
         <div className={classes.headerTitle}>
           <Link href="/">{title}</Link>
-          {search && (
+          {hasActiveFilters && (
             <>
               <Text c="dimmed">/</Text>
               <Text c="dimmed">

@@ -597,6 +597,76 @@ describe("Store search filtering", () => {
   });
 });
 
+describe("Store tag filtering", () => {
+  it("filters item previews by exact tag match", () => {
+    const store = createStore({
+      items: [
+        createItem({ id: "match", tags: ["Concept"] }),
+        createItem({ id: "other", tags: ["Archive"] }),
+        createItem({ id: "untagged", tags: [] }),
+      ],
+    });
+
+    expect(
+      store.getItemPreviews(undefined, "Concept").map((entry) => entry.id),
+    ).toEqual(["match"]);
+    expect(
+      store.getItemPreviews(undefined, "Concept ").map((entry) => entry.id),
+    ).toEqual(["match"]);
+    expect(
+      store.getItemPreviews(undefined, "concept").map((entry) => entry.id),
+    ).toEqual([]);
+  });
+
+  it("combines search and tag filters for smart folder previews", () => {
+    const smartFolder = createSmartFolder({
+      id: "featured",
+      name: "Featured",
+      itemCount: 2,
+      coverId: "hero",
+    });
+    const store = createStore({
+      items: [
+        createItem({
+          id: "hero",
+          name: "Hero Shot",
+          tags: ["Featured"],
+        }),
+        createItem({
+          id: "alternate",
+          name: "Alternate Angle",
+          tags: ["Featured"],
+        }),
+        createItem({
+          id: "other",
+          name: "Other entry",
+          tags: ["Archive"],
+        }),
+      ],
+      smartFolders: [smartFolder],
+      smartFolderItemIds: new Map([
+        ["featured", ["hero", "alternate", "other"]],
+      ]),
+    });
+
+    expect(
+      store
+        .getSmartFolderItemPreviews("featured", "hero", "Featured")
+        .map((entry) => entry.id),
+    ).toEqual(["hero"]);
+    expect(
+      store
+        .getSmartFolderItemPreviews("featured", "", "Featured")
+        .map((entry) => entry.id),
+    ).toEqual(["hero", "alternate"]);
+    expect(
+      store
+        .getSmartFolderItemPreviews("featured", "hero", "Archive")
+        .map((entry) => entry.id),
+    ).toEqual([]);
+  });
+});
+
 function createStore(options: {
   libraryPath?: string;
   applicationVersion?: string;
