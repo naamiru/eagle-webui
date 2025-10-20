@@ -1,6 +1,12 @@
 "use client";
 
-import { AppShell, Burger, CloseButton, Group } from "@mantine/core";
+import {
+  AppShell,
+  Burger,
+  CloseButton,
+  Group,
+  ScrollArea,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconLayoutSidebarRightCollapse } from "@tabler/icons-react";
 import type { ReactNode } from "react";
@@ -11,6 +17,7 @@ import { useSliderState } from "@/stores/slider-state";
 import { HeaderSlotProvider, useHeaderSlot } from "./AppHeader";
 import classes from "./AppLayout.module.css";
 import { AppNavbar } from "./AppNabbar/AppNavbar";
+import { ItemInspector } from "./ItemInspector";
 
 type AppLayoutProps = {
   children: ReactNode;
@@ -37,7 +44,7 @@ export function AppLayout({
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
 
-  const { isPresented: isSliderPresented } = useSliderState();
+  const { isPresented: isSliderPresented, inspectedItemId } = useSliderState();
 
   return (
     <AppShell
@@ -47,6 +54,14 @@ export function AppLayout({
         width: 240,
         breakpoint: "sm",
         collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+      }}
+      aside={{
+        width: 260,
+        breakpoint: "sm",
+        collapsed: {
+          mobile: !inspectedItemId,
+          desktop: !inspectedItemId,
+        },
       }}
       padding="md"
     >
@@ -90,6 +105,16 @@ export function AppLayout({
         >
           {children}
         </AppShell.Main>
+
+        <AppShell.Aside className={classes.aside}>
+          <AppShell.Section
+            grow
+            component={ScrollArea}
+            className={classes.asideScrollabel}
+          >
+            {inspectedItemId && <ItemInspector itemId={inspectedItemId} />}
+          </AppShell.Section>
+        </AppShell.Aside>
       </HeaderSlotProvider>
     </AppShell>
   );

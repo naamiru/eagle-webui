@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import CollectionPage from "@/components/CollectionPage";
 import { loadListScaleSetting } from "@/data/settings";
 import { getStore } from "@/data/store";
-import { resolveSearchQuery } from "@/utils/search-query";
+import { resolveSearchQuery, resolveTagFilter } from "@/utils/search-query";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +28,8 @@ export default async function SmartFolderPage({
 
   const resolvedSearchParams = await searchParams;
   const search = resolveSearchQuery(resolvedSearchParams?.search);
-  const items = store.getSmartFolderItemPreviews(smartFolderId, search);
+  const tag = resolveTagFilter(resolvedSearchParams?.tag);
+  const items = store.getSmartFolderItemPreviews(smartFolderId, search, tag);
 
   return (
     <CollectionPage
@@ -37,6 +38,7 @@ export default async function SmartFolderPage({
       items={items}
       initialListScale={listScale}
       search={search}
+      tag={tag}
       subfolders={[]}
       subfolderBasePath="/smartfolder"
       sortState={{

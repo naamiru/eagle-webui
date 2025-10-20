@@ -34,6 +34,26 @@
       "searchResultsMobile": "Search ({count})"
     }
   },
+  "inspector": {
+    "sections": {
+      "properties": "Properties"
+    },
+    "properties": {
+      "comments": "Comments",
+      "annotation": "Note",
+      "tags": "Tags",
+      "folders": "Folders",
+      "rating": "Rating",
+      "duration": "Duration",
+      "bpm": "BPM",
+      "dimensions": "Dimensions",
+      "size": "File size",
+      "type": "Type",
+      "dateImported": "Date Imported",
+      "dateCreated": "Date Created",
+      "dateModified": "Date Modified"
+    }
+  },
   "navbar": {
     "folders": "Folders",
     "settings": "Settings",

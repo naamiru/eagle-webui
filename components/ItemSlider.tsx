@@ -13,6 +13,7 @@ import {
   IconChevronLeft,
   IconChevronRight,
   IconExternalLink,
+  IconInfoCircle,
 } from "@tabler/icons-react";
 import {
   type ReactNode,
@@ -22,7 +23,7 @@ import {
   useRef,
   useState,
 } from "react";
-import type { Item, ItemPreview } from "@/data/types";
+import type { ItemDetails, ItemPreview } from "@/data/types";
 import { useSliderState } from "@/stores/slider-state";
 import { getImageUrl, getThumbnailUrl } from "@/utils/item";
 import AppHeader from "./AppHeader";
@@ -59,12 +60,23 @@ export function ItemSlider({
     return () => window.removeEventListener("keydown", handleKey);
   }, [dismiss]);
 
-  const { setIsPresented } = useSliderState();
+  const { setIsPresented, inspectedItemId, inspectItem } = useSliderState();
   // biome-ignore lint/correctness/useExhaustiveDependencies: depend on lifecycle
   useEffect(() => {
     setIsPresented(true);
     return () => setIsPresented(false);
   }, []);
+
+  // inspector handling
+  const toggleInspector = useCallback(() => {
+    inspectItem(inspectedItemId ? undefined : items[activeIndex].id);
+  }, [inspectItem, inspectedItemId, items, activeIndex]);
+
+  useEffect(() => {
+    if (inspectedItemId) {
+      inspectItem(items[activeIndex].id);
+    }
+  }, [inspectItem, inspectedItemId, items, activeIndex]);
 
   const playAndPauseVideo = useCallback(
     (swiper: SwiperType) => {
@@ -126,11 +138,18 @@ export function ItemSlider({
             icon={<IconChevronLeft stroke={1.2} />}
             disabled={activeIndex === 0}
             onClick={handlePrevious}
+            aria-label="Prev"
           />
           <CloseButton
             icon={<IconChevronRight stroke={1.2} />}
             disabled={activeIndex === items.length - 1}
             onClick={handleNext}
+            aria-label="Next"
+          />
+          <CloseButton
+            icon={<IconInfoCircle stroke={1.2} />}
+            onClick={toggleInspector}
+            aria-label="Inspector"
           />
         </div>
       </AppHeader>
@@ -225,9 +244,10 @@ type URLContentProp = {
 };
 
 function URLContent({ item, libraryPath }: URLContentProp) {
-  const [metadata, setMetadata] = useState<Pick<Item, "name" | "url"> | null>(
-    null,
-  );
+  const [metadata, setMetadata] = useState<Pick<
+    ItemDetails,
+    "name" | "url"
+  > | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -241,7 +261,7 @@ function URLContent({ item, libraryPath }: URLContentProp) {
         if (!response.ok) {
           throw new Error(`Request failed with status ${response.status}`);
         }
-        const data = (await response.json()) as Item;
+        const data = (await response.json()) as ItemDetails;
         if (controller.signal.aborted) return;
         setMetadata({
           name: data.name,

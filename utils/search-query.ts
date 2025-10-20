@@ -1,4 +1,12 @@
 export function resolveSearchQuery(input: unknown): string {
+  return resolveSingleValue(input) ?? "";
+}
+
+export function resolveTagFilter(input: unknown): string {
+  return resolveSingleValue(input) ?? "";
+}
+
+function resolveSingleValue(input: unknown): string | undefined {
   if (typeof input === "string") {
     return input.trim();
   }
@@ -10,5 +18,5 @@ export function resolveSearchQuery(input: unknown): string {
     }
   }
 
-  return "";
+  return undefined;
 }

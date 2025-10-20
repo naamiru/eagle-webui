@@ -13,3 +13,10 @@
     height: 100dvh;
   }
 }
+
+.aside {
+  background-color: var(--mantine-color-gray-0);
+}
+.asideScrollabel {
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+}

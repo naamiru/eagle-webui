@@ -26,7 +26,7 @@ export class Store {
     return Array.from(this.folders.values());
   }
 
-  getItems(search?: string): Item[] {
+  getItems(search?: string, tag?: string): Item[] {
     const items: Item[] = [];
 
     for (const item of this.items.values()) {
@@ -36,14 +36,14 @@ export class Store {
     }
 
     const sorted = sortItems(items, this.getGlobalSortContext());
-    return this.filterItemsBySearch(sorted, search);
+    return this.filterItems(sorted, search, tag);
   }
 
-  getItemPreviews(search?: string): ItemPreview[] {
-    return this.toItemPreviews(this.getItems(search));
+  getItemPreviews(search?: string, tag?: string): ItemPreview[] {
+    return this.toItemPreviews(this.getItems(search, tag));
   }
 
-  getUncategorizedItems(search?: string): Item[] {
+  getUncategorizedItems(search?: string, tag?: string): Item[] {
     const items: Item[] = [];
 
     for (const item of this.items.values()) {
@@ -57,14 +57,14 @@ export class Store {
     }
 
     const sorted = sortItems(items, this.getGlobalSortContext());
-    return this.filterItemsBySearch(sorted, search);
+    return this.filterItems(sorted, search, tag);
   }
 
-  getUncategorizedItemPreviews(search?: string): ItemPreview[] {
-    return this.toItemPreviews(this.getUncategorizedItems(search));
+  getUncategorizedItemPreviews(search?: string, tag?: string): ItemPreview[] {
+    return this.toItemPreviews(this.getUncategorizedItems(search, tag));
   }
 
-  getTrashItems(search?: string): Item[] {
+  getTrashItems(search?: string, tag?: string): Item[] {
     const items: Item[] = [];
 
     for (const item of this.items.values()) {
@@ -74,11 +74,11 @@ export class Store {
     }
 
     const sorted = sortItems(items, this.getGlobalSortContext());
-    return this.filterItemsBySearch(sorted, search);
+    return this.filterItems(sorted, search, tag);
   }
 
-  getTrashItemPreviews(search?: string): ItemPreview[] {
-    return this.toItemPreviews(this.getTrashItems(search));
+  getTrashItemPreviews(search?: string, tag?: string): ItemPreview[] {
+    return this.toItemPreviews(this.getTrashItems(search, tag));
   }
 
   getSmartFolders(): SmartFolder[] {
@@ -162,7 +162,11 @@ export class Store {
     return true;
   }
 
-  getSmartFolderItemPreviews(id: string, search?: string): ItemPreview[] {
+  getSmartFolderItemPreviews(
+    id: string,
+    search?: string,
+    tag?: string,
+  ): ItemPreview[] {
     const folder = this.getSmartFolder(id);
     if (!folder) {
       return [];
@@ -170,7 +174,7 @@ export class Store {
 
     const itemIds = this.smartFolderItemIds.get(id) ?? [];
     const items = this.collectItemsByIds(itemIds);
-    const filtered = this.filterItemsBySearch(items, search);
+    const filtered = this.filterItems(items, search, tag);
     return this.toItemPreviews(filtered);
   }
 
@@ -190,7 +194,7 @@ export class Store {
     return undefined;
   }
 
-  getFolderItems(folderId: string, search?: string): Item[] {
+  getFolderItems(folderId: string, search?: string, tag?: string): Item[] {
     const items: Item[] = [];
 
     for (const item of this.items.values()) {
@@ -207,11 +211,15 @@ export class Store {
     const sortContext = this.resolveFolderSortContext(folder);
 
     const sorted = sortItems(items, { ...sortContext, folderId });
-    return this.filterItemsBySearch(sorted, search);
+    return this.filterItems(sorted, search, tag);
   }
 
-  getFolderItemPreviews(folderId: string, search?: string): ItemPreview[] {
-    return this.toItemPreviews(this.getFolderItems(folderId, search));
+  getFolderItemPreviews(
+    folderId: string,
+    search?: string,
+    tag?: string,
+  ): ItemPreview[] {
+    return this.toItemPreviews(this.getFolderItems(folderId, search, tag));
   }
 
   getFirstFolderItem(folderId: string): Item | undefined {
@@ -226,6 +234,22 @@ export class Store {
     }
 
     return undefined;
+  }
+
+  private filterItems(items: Item[], search?: string, tag?: string): Item[] {
+    const filteredByTag = this.filterItemsByTag(items, tag);
+    return this.filterItemsBySearch(filteredByTag, search);
+  }
+
+  private filterItemsByTag(items: Item[], tag?: string): Item[] {
+    const normalized = this.normalizeTag(tag);
+    if (!normalized) {
+      return items;
+    }
+
+    return items.filter((item) =>
+      item.tags.some((itemTag) => itemTag === normalized),
+    );
   }
 
   private filterItemsBySearch(items: Item[], search?: string): Item[] {
@@ -360,6 +384,15 @@ export class Store {
       height,
       ext,
     }));
+  }
+
+  private normalizeTag(tag?: string): string | undefined {
+    if (!tag) {
+      return undefined;
+    }
+
+    const trimmed = tag.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
   }
 }
 

@@ -34,6 +34,26 @@
       "searchResultsMobile": "搜尋 ({count})"
     }
   },
+  "inspector": {
+    "sections": {
+      "properties": "屬性"
+    },
+    "properties": {
+      "comments": "評論",
+      "annotation": "備註",
+      "tags": "標籤",
+      "folders": "資料夾",
+      "rating": "評分",
+      "duration": "時長",
+      "bpm": "BPM",
+      "dimensions": "尺寸",
+      "size": "檔案大小",
+      "type": "類型",
+      "dateImported": "加入日期",
+      "dateCreated": "建立日期",
+      "dateModified": "修改日期"
+    }
+  },
   "navbar": {
     "folders": "資料夾",
     "settings": "設定",

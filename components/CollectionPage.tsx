@@ -3,7 +3,8 @@
 import { Text } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import { updateListScale } from "@/actions/updateListScale";
 import AppHeader from "@/components/AppHeader";
 import {
@@ -33,17 +34,42 @@ interface CollectionPageProps {
   items: ItemPreview[];
   initialListScale: number;
   search: string;
+  tag: string;
   sortState: CollectionSortState;
   subfolders: Subfolder[];
   subfolderBasePath?: string;
 }
 
-export default function CollectionPage({
+export default function CollectionPage(props: CollectionPageProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [key, setKey] = useState("0");
+
+  useEffect(() => {
+    const incoming = searchParams.get("key");
+    if (incoming == null) return;
+
+    setKey(incoming);
+
+    const sp = new URLSearchParams(searchParams.toString());
+    sp.delete("key");
+    router.replace(sp.toString() ? `${pathname}?${sp}` : pathname, {
+      scroll: false,
+    });
+  }, [pathname, router, searchParams]);
+
+  return <CollectionPageImpl key={key} {...props} />;
+}
+
+function CollectionPageImpl({
   title,
   libraryPath,
   items,
   initialListScale,
   search,
+  tag,
   sortState,
   subfolders,
   subfolderBasePath = "/folders",
@@ -55,6 +81,7 @@ export default function CollectionPage({
   const persistListScale = useDebouncedCallback(updateListScale, 300);
   const sectionTranslations = useTranslations("collection.sections");
   const headerTranslations = useTranslations("collection.header");
+  const hasActiveFilters = !!search || !!tag;
 
   const handleListScaleChange = useCallback(
     (scale: number) => {
@@ -88,7 +115,7 @@ export default function CollectionPage({
       <AppHeader>
         <div className={classes.headerTitle}>
           <Link href="/">{title}</Link>
-          {search && (
+          {hasActiveFilters && (
             <>
               <Text c="dimmed">/</Text>
               <Text c="dimmed">

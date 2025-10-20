@@ -34,6 +34,26 @@
       "searchResultsMobile": "搜索 ({count})"
     }
   },
+  "inspector": {
+    "sections": {
+      "properties": "属性"
+    },
+    "properties": {
+      "comments": "评论",
+      "annotation": "备注",
+      "tags": "标签",
+      "folders": "文件夹",
+      "rating": "评分",
+      "duration": "时长",
+      "bpm": "BPM",
+      "dimensions": "尺寸",
+      "size": "文件大小",
+      "type": "类型",
+      "dateImported": "添加日期",
+      "dateCreated": "创建日期",
+      "dateModified": "修改日期"
+    }
+  },
   "navbar": {
     "folders": "文件夹",
     "settings": "设置",

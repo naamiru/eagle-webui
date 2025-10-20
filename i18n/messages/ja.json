@@ -34,6 +34,26 @@
       "searchResultsMobile": "検索 ({count})"
     }
   },
+  "inspector": {
+    "sections": {
+      "properties": "プロパティ"
+    },
+    "properties": {
+      "comments": "コメント",
+      "annotation": "メモ",
+      "tags": "タグ",
+      "folders": "フォルダ",
+      "rating": "評価",
+      "duration": "再生時間",
+      "bpm": "BPM",
+      "dimensions": "寸法",
+      "size": "ファイルサイズ",
+      "type": "種類",
+      "dateImported": "追加日",
+      "dateCreated": "作成日",
+      "dateModified": "変更日"
+    }
+  },
   "navbar": {
     "folders": "フォルダ",
     "settings": "設定",

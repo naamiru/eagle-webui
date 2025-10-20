@@ -34,6 +34,26 @@
       "searchResultsMobile": "검색 ({count})"
     }
   },
+  "inspector": {
+    "sections": {
+      "properties": "속성"
+    },
+    "properties": {
+      "comments": "댓글",
+      "annotation": "메모",
+      "tags": "태그",
+      "folders": "폴더",
+      "rating": "평가",
+      "duration": "재생 시간",
+      "bpm": "BPM",
+      "dimensions": "크기",
+      "size": "파일 크기",
+      "type": "형식",
+      "dateImported": "가져오기 날짜",
+      "dateCreated": "만든 날짜",
+      "dateModified": "수정한 날짜"
+    }
+  },
   "navbar": {
     "folders": "폴더",
     "settings": "설정",
