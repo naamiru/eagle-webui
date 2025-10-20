@@ -18,7 +18,10 @@ import {
   CollectionSortControls,
   type CollectionSortState,
 } from "./CollectionControls/CollectionSortControls";
-import { SearchControl } from "./CollectionControls/SearchControl";
+import {
+  MobileSearchControl,
+  SearchControl,
+} from "./CollectionControls/SearchControl";
 import classes from "./CollectionPage.module.css";
 import { ItemSlider } from "./ItemSlider";
 import { MobileItemSlider } from "./MobileItemSlider";
@@ -101,7 +104,11 @@ export default function CollectionPage({
             <ScaleControl value={listScale} onChange={handleListScaleChange} />
           )}
           <CollectionSortControls sortState={sortState} />
-          <SearchControl search={search} />
+          {isMobile ? (
+            <MobileSearchControl search={search} />
+          ) : (
+            <SearchControl search={search} />
+          )}
         </div>
       </AppHeader>
 

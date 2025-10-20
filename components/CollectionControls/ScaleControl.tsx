@@ -85,7 +85,7 @@ export function ScaleControl({ value, onChange }: ScaleControlProps) {
 
 export function MobileScaleControl({ value, onChange }: ScaleControlProps) {
   return (
-    <Popover width={200} position="bottom" offset={4} withArrow shadow="md">
+    <Popover position="bottom" offset={4} withArrow shadow="md">
       <Popover.Target>
         <CloseButton icon={<IconZoomIn stroke={1} />} aria-label="Zoom" />
       </Popover.Target>
