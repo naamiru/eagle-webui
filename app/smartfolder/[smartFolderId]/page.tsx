@@ -2,17 +2,20 @@ import { notFound } from "next/navigation";
 import CollectionPage from "@/components/CollectionPage";
 import { loadListScaleSetting } from "@/data/settings";
 import { getStore } from "@/data/store";
+import { resolveSearchQuery } from "@/utils/search-query";
 
 export const dynamic = "force-dynamic";
 
 type SmartFolderPageProps = {
-  params: {
-    smartFolderId: string;
-  };
+  params: Promise<Record<string, string>>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function SmartFolderPage(props: SmartFolderPageProps) {
-  const { smartFolderId } = await props.params;
+export default async function SmartFolderPage({
+  params,
+  searchParams,
+}: SmartFolderPageProps) {
+  const { smartFolderId } = await params;
   const [store, listScale] = await Promise.all([
     getStore(),
     loadListScaleSetting(),
@@ -23,7 +26,9 @@ export default async function SmartFolderPage(props: SmartFolderPageProps) {
     notFound();
   }
 
-  const items = store.getSmartFolderItemPreviews(smartFolderId);
+  const resolvedSearchParams = await searchParams;
+  const search = resolveSearchQuery(resolvedSearchParams?.search);
+  const items = store.getSmartFolderItemPreviews(smartFolderId, search);
 
   return (
     <CollectionPage
@@ -31,6 +36,7 @@ export default async function SmartFolderPage(props: SmartFolderPageProps) {
       libraryPath={store.libraryPath}
       items={items}
       initialListScale={listScale}
+      search={search}
       subfolders={[]}
       subfolderBasePath="/smartfolder"
       sortState={{

@@ -24,6 +24,14 @@
     "sections": {
       "subfolders": "子文件夹",
       "contents": "内容"
+    },
+    "controls": {
+      "searchPlaceholder": "搜索",
+      "clearSearch": "Clear search"
+    },
+    "header": {
+      "searchResults": "搜索结果 ({count})",
+      "searchResultsMobile": "搜索 ({count})"
     }
   },
   "navbar": {

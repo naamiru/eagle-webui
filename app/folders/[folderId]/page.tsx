@@ -3,17 +3,21 @@ import CollectionPage from "@/components/CollectionPage";
 import type { Subfolder } from "@/components/SubfolderList";
 import { loadListScaleSetting } from "@/data/settings";
 import { getStore } from "@/data/store";
+import { resolveSearchQuery } from "@/utils/search-query";
 
 export const dynamic = "force-dynamic";
 
 type FolderPageProps = {
-  params: {
-    folderId: string;
-  };
+  params: Promise<Record<string, string>>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function FolderPage({ params }: FolderPageProps) {
+export default async function FolderPage({
+  params,
+  searchParams,
+}: FolderPageProps) {
   const { folderId } = await params;
+  const resolvedSearchParams = await searchParams;
   const [store, listScale] = await Promise.all([
     getStore(),
     loadListScaleSetting(),
@@ -24,7 +28,8 @@ export default async function FolderPage({ params }: FolderPageProps) {
     notFound();
   }
 
-  const items = store.getFolderItemPreviews(folderId);
+  const search = resolveSearchQuery(resolvedSearchParams?.search);
+  const items = store.getFolderItemPreviews(folderId, search);
   const subfolders: Subfolder[] = [];
 
   for (const childId of folder.children) {
@@ -52,6 +57,7 @@ export default async function FolderPage({ params }: FolderPageProps) {
       libraryPath={store.libraryPath}
       items={items}
       initialListScale={listScale}
+      search={search}
       subfolders={subfolders}
       sortState={{
         kind: "folder",

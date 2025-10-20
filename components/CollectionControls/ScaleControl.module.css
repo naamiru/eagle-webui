@@ -1,0 +1,10 @@
+.mobileDropdown {
+  right: 5px;
+  /* biome-ignore lint/complexity/noImportantStyles: override */
+  width: stretch !important;
+
+  .slider {
+    /* biome-ignore lint/complexity/noImportantStyles: override */
+    width: stretch !important;
+  }
+}

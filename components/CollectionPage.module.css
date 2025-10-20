@@ -3,14 +3,18 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
 
-.headerCenter {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--mantine-spacing-md);
-  margin-left: var(--mantine-spacing-sm);
+  gap: var(--mantine-spacing-xxs);
+
+  a {
+    color: var(--mantine-color-text);
+    text-decoration: none;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .headerTrailing {

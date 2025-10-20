@@ -24,6 +24,14 @@
     "sections": {
       "subfolders": "子資料夾",
       "contents": "內容"
+    },
+    "controls": {
+      "searchPlaceholder": "搜尋",
+      "clearSearch": "Clear search"
+    },
+    "header": {
+      "searchResults": "搜尋結果 ({count})",
+      "searchResultsMobile": "搜尋 ({count})"
     }
   },
   "navbar": {
