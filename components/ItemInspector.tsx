@@ -238,7 +238,9 @@ export function ItemInspector({ itemId }: ItemInspectorProps) {
 
       {item.folders.length > 0 && (
         <div className={classes.section}>
-          <Text className={classes.sectionTitle}>{t("properties.folders")}</Text>
+          <Text className={classes.sectionTitle}>
+            {t("properties.folders")}
+          </Text>
           <div className={classes.tags}>
             {item.folderSummaries.map((folder) => (
               <Anchor
@@ -257,7 +259,9 @@ export function ItemInspector({ itemId }: ItemInspectorProps) {
 
       {(item.comments?.length ?? 0) > 0 && (
         <div className={classes.section}>
-          <Text className={classes.sectionTitle}>{t("properties.comments")}</Text>
+          <Text className={classes.sectionTitle}>
+            {t("properties.comments")}
+          </Text>
           {(item.comments ?? []).map((comment) => (
             <div key={comment.id} className={classes.subsection}>
               <div className={classes.annotation}>{comment.annotation}</div>

@@ -76,23 +76,26 @@ async function fetchThumbnailPath(
   return decodeEaglePath(payload.data);
 }
 
-function extractLibraryPath(
-  pathWithAsset: string,
-  separator: string = path.sep,
-): string {
+function extractLibraryPath(pathWithAsset: string): string {
   const lowerPath = pathWithAsset.toLowerCase();
   if (lowerPath.endsWith(LIBRARY_SUFFIX)) {
     return pathWithAsset;
   }
 
-  const normalizedSeparator = separator.length > 0 ? separator : path.sep;
-  const searchTarget = `${LIBRARY_SUFFIX}${normalizedSeparator}`.toLowerCase();
-  const markerIndex = lowerPath.lastIndexOf(searchTarget);
-  if (markerIndex === -1) {
-    throw new LibraryImportError("LIBRARY_PATH_NOT_FOUND");
+  const separators = new Set<string>(["/", "\\", path.sep]);
+  for (const separator of separators) {
+    if (!separator) {
+      continue;
+    }
+
+    const searchTarget = `${LIBRARY_SUFFIX}${separator}`.toLowerCase();
+    const markerIndex = lowerPath.lastIndexOf(searchTarget);
+    if (markerIndex !== -1) {
+      return pathWithAsset.slice(0, markerIndex + LIBRARY_SUFFIX.length);
+    }
   }
 
-  return pathWithAsset.slice(0, markerIndex + LIBRARY_SUFFIX.length);
+  throw new LibraryImportError("LIBRARY_PATH_NOT_FOUND");
 }
 
 async function safeFetch(input: URL): Promise<Response> {

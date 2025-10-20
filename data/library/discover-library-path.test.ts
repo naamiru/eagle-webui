@@ -176,18 +176,18 @@ describe("extractLibraryPath (test utils)", () => {
     ).toThrow(LibraryImportError);
   });
 
-  it("extracts path when separator is provided explicitly", () => {
+  it("extracts path when path uses Windows separators", () => {
     const windowsPath =
       "C:\\Users\\demo\\Pictures\\sample.library\\images\\foo.jpg";
 
-    expect(__testUtils.extractLibraryPath(windowsPath, "\\")).toBe(
+    expect(__testUtils.extractLibraryPath(windowsPath)).toBe(
       "C:\\Users\\demo\\Pictures\\sample.library",
     );
   });
 
   it("extracts path that ends directly with .library", () => {
     const input = "/Users/demo/Pictures/sample.library";
-    expect(__testUtils.extractLibraryPath(input, "/")).toBe(
+    expect(__testUtils.extractLibraryPath(input)).toBe(
       "/Users/demo/Pictures/sample.library",
     );
   });
