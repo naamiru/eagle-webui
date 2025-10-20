@@ -36,6 +36,7 @@
 
 .url {
   font-size: var(--mantine-font-size-sm);
+  word-break: break-all;
 
   svg {
     margin-left: var(--mantine-spacing-xxs);
@@ -56,6 +57,11 @@
   background-color: var(--mantine-color-gray-2);
   font-size: var(--mantine-font-size-xs);
   padding: var(--mantine-spacing-xxxs) var(--mantine-spacing-xs);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 
   &:hover {
     border-color: var(--mantine-color-gray-4);

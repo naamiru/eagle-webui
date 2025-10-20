@@ -173,7 +173,7 @@ export function ItemInspector({ itemId }: ItemInspectorProps) {
     <div className={classes.root}>
       <div className={classes.section}>
         <div className={classes.subsection}>
-          <Title order={4}>{item.name}</Title>
+          <Text style={{ wordBreak: "break-all" }}>{item.name}</Text>
         </div>
 
         {item.annotation && (

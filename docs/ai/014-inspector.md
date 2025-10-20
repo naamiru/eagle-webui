@@ -7,7 +7,7 @@
   - Each descriptor is `{ id: string; name: string }`.
   - Skip folder IDs that no longer exist; preserve the original order for the rest.
 - Return the JSON body as `ItemDetails`: spread the original `Item` fields and append `folderSummaries` (see “Shared types”).
-- Add `app/api/items/[id]/route.test.ts` that mocks `getStore` and asserts the handler emits `folderSummaries` with the expected names and ordering.
+- Add `app/api/items/[id]/route.test.ts` that mocks `getStore` and asserts the handler emits `folderSummaries` with the expected names and ordering, ignoring missing folder entries.
 
 **Shared types**
 - Extend `data/types.ts` with:
@@ -61,11 +61,11 @@
       - Use a definition list (`<dl>`) with rows that appear conditionally:
         - `Name`: show only when `item.name` is non-empty.
         - `Note`: show only when `item.annotation.trim().length > 0`; render with `white-space: pre-wrap`.
-        - `URL`: show only when `item.url` exists; render via `Anchor` (`target="_blank"`, `rel="noopener"`) with `IconExternalLink`.
-        - `Tags`: show only when `item.tags.length > 0`; render each tag inside a `Badge size="sm"` within a `Group gap="xs"`.
-        - `Folders`: show only when `item.folderSummaries.length > 0`; render each summary as `NextLink` (`href={`/folders/${summary.id}`}`) styled like an `Anchor`.
+        - `URL`: show only when `item.url.trim().length > 0`; render via `Anchor` (`target="_blank"`, `rel="noopener"`) with `IconExternalLink`.
+        - `Tags`: show only when trimmed tags exist; render each tag inside a light `Badge size="sm"` inside a wrapping `Group gap="xs"`.
+        - `Folders`: show only when trimmed folder names exist; render each summary as `NextLink` (`href={`/folders/${summary.id}`}`) styled like an `Anchor`.
     - Comments section:
-      - Render the section (`t("sections.comments")`) only when `item.comments?.length` is truthy.
+      - Render the section (`t("sections.comments")`) only when trimmed comment annotations exist.
       - Display each comment annotation inside a `Paper radius="sm" withBorder`.
     - Properties section:
       - Always render the section (`t("sections.properties")`) because rating is always available.
@@ -80,7 +80,7 @@
         8. `t("properties.dateCreated")` when `formatDateTime(item.btime, locale)` returns a non-empty string.
         9. `t("properties.dateModified")` when `formatDateTime(item.mtime, locale)` returns a non-empty string.
       - Labels use `classes.propertyLabel` (dimmed, uppercase), values use `classes.propertyValue`.
-- Create `components/ItemInspector.module.css` with helpers for the layout described above (`root`, `section`, `sectionTitle`, `definitionList`, `label`, `value`, `propertyLabel`, `propertyValue`, `multilineText`).
+- Create `components/ItemInspector.module.css` with helpers for the layout described above (`root`, `header`, `section`, `sectionTitle`, `definitionList`, `label`, `value`, `link`, `tagGroup`, `commentStack`, `commentCard`, `propertiesTable`, `propertyLabel`, `propertyValue`, `multilineText`).
 
 **Translations**
 - Add an `itemInspector` namespace to every locale file under `i18n/messages/` (`en.json`, `ja.json`, `ko.json`, `zh-cn.json`, `zh-tw.json`). English copy:
